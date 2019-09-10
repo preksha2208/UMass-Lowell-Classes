@@ -13,13 +13,12 @@ Task 4: Unsure of what is meant by representing the set of states as a membershi
   - Need to think about what exactly the DFA class will be capable of doing
 */
 
-
 #include <iostream>
 #include <string>
 
 class myChar {
  public:
-  myCharacter() {}
+  myChar() {}
 }
 
 class myString {
@@ -27,11 +26,7 @@ class myString {
 
 }
 
-class oneString : public myString {
- public:
-  oneString
-
-}
+class oneString : public myString {}
 
 class DFA {
  public:
