@@ -18,19 +18,24 @@ Task 4: Unsure of what is meant by representing the set of states as a membershi
 
 class myChar {
  public:
-  myChar() {}
+  myChar(char c) {this.c = c;}
+  char c;
 }
 
 class myString {
  public:
+  myString() {}
+  std::list<myChar> thisString;
+
+
+ private:
 
 }
 
-class oneString : public myString {}
 
 class DFA {
  public:
-  DFA() {}
+  
 
  private:
 
