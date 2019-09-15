@@ -4,7 +4,7 @@
 /*
 TASK NOTES:
 Task 1: I will be using a std::list to represent an alphabet and I will be using an object to represent a character
-Task 2: I will be using an abstract class to represent a string and then I will make child-classes from that class which will allow for the building up of strings out of different elements
+Task 2: A string will be represented by a linked list of string objects, with there being an empty string object, a string with 1 character
 Task 3: Still need to complete. Unsure of what exactly it is I am supposed to do, so I am skipping forward to task 4.
   - I think my issue is likely that I just don't fully understand how the character and string classes are going to coursework
   - What are some examples of what the string objects will be holding? Will it be binary, will it be full words, will it be symbols?
@@ -15,32 +15,76 @@ Task 4: Unsure of what is meant by representing the set of states as a membershi
 
 #include <iostream>
 #include <string>
+#include <list>
+#include <iterator>
 
 class myChar {
  public:
-  myChar(char c) {this.c = c;}
+  myChar(char c) {this->c = c;}
+  myChar() {}
+  myChar(const myChar& charB) {c = charB.c;}
   char c;
-}
+  void print() {std::cout << c;}
+  myChar& operator=(const myChar& charB) {
+  c = charB.c;
+  return *this;
+  }
+};
 
 class myString {
  public:
+  myString(myChar str) {
+   thisString = &str; nextString = NULL; }
   myString() {}
-  std::list<myChar> thisString;
-  
+  myString* next() {return nextString;}
+  virtual bool isEmpty() {return true;}
+  void print() {thisString->print();}
 
  private:
+  myChar* thisString;      // CHARACTER OBJECT FOR THIS STRING ELEMENT
+  myString* nextString;  // POINTER TO NEXT CHARACTER OF STRING
+};
 
-}
 
-
-class DFA {
+class oneString : public myString {
  public:
+  oneString(myChar c);
+  bool isEmpty() {return false;}
 
+
+};
+
+class emptyString : public myString {
+ public:
+  emptyString() {epsilon = new myChar('E');}
+  bool isEmpty() {return true;}
+  ~emptyString() {delete epsilon;}
 
  private:
+  myChar* epsilon;
+  myString* nextString;
+};
+
+
+class DFA{
+ public:
+  DFA(std::string name, )
+
+ private:
+  std::string name;
+  std::list<myChar> alphabet;
+
+};
+
+/*
+myString lexi(std::list<myString> alphabet){
 
 }
+*/
 
-myString lexi(std::list<myString> alphabet) {
+int main() {
 
+
+
+  return 0;
 }
