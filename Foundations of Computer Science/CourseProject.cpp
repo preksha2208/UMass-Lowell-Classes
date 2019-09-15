@@ -26,7 +26,7 @@ class myString {
  public:
   myString() {}
   std::list<myChar> thisString;
-
+  
 
  private:
 
@@ -35,12 +35,12 @@ class myString {
 
 class DFA {
  public:
-  
+
 
  private:
 
 }
 
-string lexi(std::list<string> alphabet) {    // this is just a rough outline of how the function will work, need to replace string with self-created string class
-  // first sort the strings in lexicographical order, then just return the string at the given position in the list
+myString lexi(std::list<myString> alphabet) {
+
 }
