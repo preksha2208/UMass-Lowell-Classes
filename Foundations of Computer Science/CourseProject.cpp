@@ -34,33 +34,33 @@ class myChar {
 class myString {
  public:
   myString(){}
-  myString(myChar thisString, myString nextString) {this->thisString = &thisString; this->nextString = &nextString;}
+  myString(myChar thisString, myString* nextString) {this->thisString = &thisString; this->next = nextString;}
   virtual void print() {thisString->print();}
-  virtual myString* next() {return nextString;}
+  myString* next;  // POINTER TO NEXT CHARACTER OF STRING
  private:
   myChar* thisString;      // CHARACTER OBJECT FOR THIS STRING ELEMENT
-  myString* nextString;  // POINTER TO NEXT CHARACTER OF STRING
+
 };
 
 class oneString : public myString {
  public:
-  oneString(myChar c, myString nextString) {thisString = &c; this->nextString = &nextString;}
+  oneString(myChar c, myString *nextString) {thisString = &c; this->next = nextString;}
+  oneString() {}
   bool isEmpty() {return false;}
   void print() {thisString->print();}
-  myString* next() {return nextString;}
+  myString* next;
 
  private:
   myChar* thisString;      // CHARACTER OBJECT FOR THIS STRING ELEMENT
-  myString* nextString;  // POINTER TO NEXT CHARACTER OF STRING
 };
 
 class emptyString : public myString {
  public:
-  emptyString() {epsilon = new myChar('E');}   // NEED TO CHANGE THIS TO ACTUAL EPSILON SYMBOL
+  emptyString() {epsilon = new myChar('E'); next = NULL;}   // NEED TO CHANGE THIS TO ACTUAL EPSILON SYMBOL
   bool isEmpty() {return true;}
   void print() {epsilon->print();}
+  myString* next;
   ~emptyString() {delete epsilon;}
-  myString* next() {return NULL;}
 
  private:
   myChar* epsilon;
@@ -92,22 +92,25 @@ myString lexi(std::list<myString> alphabet){
 
 int main() {
   emptyString epsi;
-  oneString newString3('c', epsi);
-  newString3.next();
-  std::cout << "newString3: ";
-  newString3.print();
-  std::cout << std::endl;
-  oneString newString2('b', newString3);
-  oneString newString('a', newString2);
+  oneString newString3('c', &epsi);
+  oneString newString2('b', &newString3);
+  oneString newString1('a', &newString2);
 
-  myString* temp = &newString;
+  myString* temp = &newString1;
+  std::cout << "temp: " << std::endl;
   temp->print();
+  std::cout << std::endl;
+
+  temp = temp->next;
+  std::cout << "temp: " << std::endl;
+  temp->print();
+
   int i = 0;
   while(temp!= NULL) {
    std::cout << "i: " << i << std::endl;
-   temp->print();
+   //temp->print();
    std::cout << "printed value " << std::endl;
-   temp = temp->next();
+   temp = temp->next;
    std::cout << "Finished loop" << std::endl;
    i++;
   }
