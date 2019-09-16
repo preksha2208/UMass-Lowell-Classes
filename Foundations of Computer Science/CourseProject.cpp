@@ -32,13 +32,22 @@ class myChar {
 };
 
 class myString {
-  virtual void print() = 0;
+ public:
+  myString(){}
+  myString(myChar thisString, myString nextString) {this->thisString = &thisString; this->nextString = &nextString;}
+  virtual void print() {thisString->print();}
+  virtual myString* next() {return nextString;}
+ private:
+  myChar* thisString;      // CHARACTER OBJECT FOR THIS STRING ELEMENT
+  myString* nextString;  // POINTER TO NEXT CHARACTER OF STRING
 };
 
 class oneString : public myString {
  public:
-  oneString(myChar c, myString nString) {thisString = &c; nextString = &nString;}
+  oneString(myChar c, myString nextString) {thisString = &c; this->nextString = &nextString;}
   bool isEmpty() {return false;}
+  void print() {thisString->print();}
+  myString* next() {return nextString;}
 
  private:
   myChar* thisString;      // CHARACTER OBJECT FOR THIS STRING ELEMENT
@@ -47,13 +56,14 @@ class oneString : public myString {
 
 class emptyString : public myString {
  public:
-  emptyString() {epsilon = new myChar('E');}
+  emptyString() {epsilon = new myChar('E');}   // NEED TO CHANGE THIS TO ACTUAL EPSILON SYMBOL
   bool isEmpty() {return true;}
+  void print() {epsilon->print();}
   ~emptyString() {delete epsilon;}
+  myString* next() {return NULL;}
 
  private:
   myChar* epsilon;
-  myString* nextString;
 };
 
 /*
@@ -81,7 +91,24 @@ myString lexi(std::list<myString> alphabet){
 */
 
 int main() {
+  emptyString epsi;
+  oneString newString3('c', epsi);
+  newString3.next()->print();
+  /*
+  oneString newString2('b', newString3);
+  oneString newString('a', newString2);
 
-
+  myString* temp = &newString;
+  temp->print();
+  int i = 0;
+  while(temp!= NULL) {
+   std::cout << "i: " << i << std::endl;
+   temp->print();
+   std::cout << "printed value " << std::endl;
+   temp = temp->next();
+   std::cout << "Finished loop" << std::endl;
+   i++;
+  }
+*/
   return 0;
 }
