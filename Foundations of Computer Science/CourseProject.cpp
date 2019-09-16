@@ -32,26 +32,17 @@ class myChar {
 };
 
 class myString {
+  virtual void print() = 0;
+};
+
+class oneString : public myString {
  public:
-  myString(myChar str) {
-   thisString = &str; nextString = NULL; }
-  myString() {}
-  myString* next() {return nextString;}
-  virtual bool isEmpty() {return true;}
-  void print() {thisString->print();}
+  oneString(myChar c, myString nString) {thisString = &c; nextString = &nString;}
+  bool isEmpty() {return false;}
 
  private:
   myChar* thisString;      // CHARACTER OBJECT FOR THIS STRING ELEMENT
   myString* nextString;  // POINTER TO NEXT CHARACTER OF STRING
-};
-
-
-class oneString : public myString {
- public:
-  oneString(myChar c);
-  bool isEmpty() {return false;}
-
-
 };
 
 class emptyString : public myString {
@@ -65,16 +56,23 @@ class emptyString : public myString {
   myString* nextString;
 };
 
-
+/*
 class DFA{
  public:
-  DFA(std::string name, )
+  DFA(std::string name)
 
  private:
   std::string name;
+  // need function object to represent states
   std::list<myChar> alphabet;
+  // need function object to represent transition function
+  // need start state
+  // need accept states
+
+
 
 };
+*/
 
 /*
 myString lexi(std::list<myString> alphabet){
@@ -83,7 +81,6 @@ myString lexi(std::list<myString> alphabet){
 */
 
 int main() {
-
 
 
   return 0;
