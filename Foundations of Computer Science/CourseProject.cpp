@@ -93,8 +93,10 @@ myString lexi(std::list<myString> alphabet){
 int main() {
   emptyString epsi;
   oneString newString3('c', epsi);
-  newString3.next()->print();
-  /*
+  newString3.next();
+  std::cout << "newString3: ";
+  newString3.print();
+  std::cout << std::endl;
   oneString newString2('b', newString3);
   oneString newString('a', newString2);
 
@@ -109,6 +111,6 @@ int main() {
    std::cout << "Finished loop" << std::endl;
    i++;
   }
-*/
+
   return 0;
 }
