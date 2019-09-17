@@ -33,37 +33,41 @@ class myChar {
 
 class myString {
  public:
-  myString(){}
-  myString(myChar thisString, myString* nextString) {this->thisString = &thisString; this->next = nextString;}
-  virtual void print() {thisString->print();}
-  myString* next;  // POINTER TO NEXT CHARACTER OF STRING
- private:
-  myChar* thisString;      // CHARACTER OBJECT FOR THIS STRING ELEMENT
+  myString(char c, myString* nextString) : nextString(nextString) {this->c = new myChar(c);}
+  myString() {}
+  virtual void print() {c->print();}
+  virtual myString* next() {return nextString;}
+  ~myString() {delete this->c;}
 
+ private:
+  myChar* c;
+  myString* nextString;
 };
 
 class oneString : public myString {
  public:
-  oneString(myChar c, myString *nextString) {thisString = &c; this->next = nextString;}
+  oneString(char c, myString* nextString) : nextString(nextString) {this->c = new myChar(c);}
   oneString() {}
+  oneString* next() {return nextString;}
   bool isEmpty() {return false;}
-  void print() {thisString->print();}
-  myString* next;
+  ~oneString() {delete this->c;}
 
  private:
-  myChar* thisString;      // CHARACTER OBJECT FOR THIS STRING ELEMENT
+  myChar* c;
+  myString* nextString;
 };
+
 
 class emptyString : public myString {
  public:
-  emptyString() {epsilon = new myChar('E'); next = NULL;}   // NEED TO CHANGE THIS TO ACTUAL EPSILON SYMBOL
+  emptyString() {c = new myChar('E'); nextString = NULL;}
   bool isEmpty() {return true;}
-  void print() {epsilon->print();}
-  myString* next;
-  ~emptyString() {delete epsilon;}
+  void print() {c->print();}
+  ~emptyString() {delete this->c;}
 
  private:
-  myChar* epsilon;
+  myChar* c;
+  myString* nextString;
 };
 
 /*
@@ -78,9 +82,6 @@ class DFA{
   // need function object to represent transition function
   // need start state
   // need accept states
-
-
-
 };
 */
 
@@ -91,29 +92,16 @@ myString lexi(std::list<myString> alphabet){
 */
 
 int main() {
-  emptyString epsi;
-  oneString newString3('c', &epsi);
-  oneString newString2('b', &newString3);
-  oneString newString1('a', &newString2);
-
-  myString* temp = &newString1;
-  std::cout << "temp: " << std::endl;
+  // emptyString epsi;
+  oneString c('c', NULL);
+  oneString b('b', &c);
+  oneString a('a', &b);
+  oneString* temp = &a;
   temp->print();
-  std::cout << std::endl;
-
-  temp = temp->next;
-  std::cout << "temp: " << std::endl;
-  temp->print();
-
-  int i = 0;
-  while(temp!= NULL) {
-   std::cout << "i: " << i << std::endl;
-   //temp->print();
-   std::cout << "printed value " << std::endl;
-   temp = temp->next;
-   std::cout << "Finished loop" << std::endl;
-   i++;
-  }
+  while (temp != NULL) {
+   temp->print();
+   temp = temp->next();
+}
 
   return 0;
 }
