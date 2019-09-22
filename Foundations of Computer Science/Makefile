@@ -1,7 +1,7 @@
 # Makefile for Fall 2019 Foundations of Computer Science Course Project
 # Copyright Cameron Knopp 2019
 
-CC = g++
+CC = clang++
 OBJECTS = CourseProject.o
 
 all: CourseProject

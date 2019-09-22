@@ -23,42 +23,41 @@ class myChar {
 
 class myString {
  public:
-  myString(char c, myString* nextString) : nextString(nextString) {myChar newChar(c); this->c = &newChar;}
+  myString(char c, myString* nextString) : nextString(nextString) {this->c = myChar(c);}
   myString() {}
-  virtual void print() {c->print();}
+  virtual void print() {c.print();}
   virtual myString* next() {return nextString;}
   virtual void test() {std::cout << "myString function" << std::endl;}
 
  private:
-  myChar* c;
+  myChar c;
   myString* nextString;
 };
 
 class oneString : public myString {
  public:
-  oneString(char c, myString* nextString) : nextString(nextString) {myChar newChar(c); this->c = &newChar;}
+  oneString(char c, myString* nextString) : nextString(nextString) {this->c = myChar(c);}
   oneString() {}
   myString* next() {return nextString;}
   bool isEmpty() {return false;}
-  void print() {c->print();}
+  void print() {c.print();}
   void test() {std::cout << "oneString function" << std::endl;}
 
  private:
-  myChar* c;
+  myChar c;
   myString* nextString;
 };
 
-
 class emptyString : public myString {
  public:
-  emptyString() {myChar newChar('E'); this->c = &newChar;}
+  emptyString() {this->c = myChar('E');}
   bool isEmpty() {return true;}
   myString* next() {return NULL;}
-  void print() {c->print();}
+  void print() {c.print();}
   void test() {std::cout << "emptyString function" << std::endl;}
 
  private:
-  myChar* c;
+  myChar c;
 };
 
 /*
@@ -76,23 +75,13 @@ class DFA{
 };
 */
 
-
+/*
 myString lexi(std::list<myString> alphabet){
 
 }
-
+*/
 
 int main() {
-  emptyString epsi;
-  oneString c('c', &epsi);
-  oneString b('b', &c);
-  oneString a('a', &b);
-  myString* temp = &a;
-
-  while(temp != NULL) {
-  temp->print();
-  temp = temp->next();
-}
 
   return 0;
 }
