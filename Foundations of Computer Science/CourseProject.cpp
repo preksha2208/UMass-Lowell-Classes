@@ -8,11 +8,11 @@
 
 class myChar {
  public:
-  myChar(char c) {this->c = c;}  // initialize char variable
+  myChar(char c) { this->c = c; }  // initialize char variable
   myChar() {}
-  myChar(const myChar& charB) {c = charB.c;}
-  void print() {std::cout << c;}
-  char getVal() {return c;};
+  myChar(const myChar& charB) { c = charB.c; }
+  void print() { std::cout << c; }
+  char getVal() { return c; }
   myChar& operator=(const myChar& charB) {
   c = charB.c;
   return *this;
@@ -24,12 +24,12 @@ class myChar {
 
 class myString {
  public:
-  myString(char c, myString* nextString) : nextString(nextString) {this->c = myChar(c);}
+  myString(char c, myString* nextString) : nextString(nextString) { this->c = myChar(c); }
   myString() {}
-  virtual void print() {c.print();}
-  virtual myString* next() {return nextString;}
-  virtual void test() {std::cout << "myString function" << std::endl;}
-  virtual char charValue() {return c.getVal();}
+  virtual void print() { c.print(); }
+  virtual myString* next() { return nextString; }
+  virtual void test() { std::cout << "myString function" << std::endl; }
+  virtual char charValue() { return c.getVal(); }
 
  private:
   myChar c;
@@ -38,13 +38,13 @@ class myString {
 
 class oneString : public myString {
  public:
-  oneString(char c, myString* nextString) : nextString(nextString) {this->c = myChar(c);}
+  oneString(char c, myString* nextString) : nextString(nextString) { this->c = myChar(c); }
   oneString() {}
-  myString* next() {return nextString;}
-  bool isEmpty() {return false;}
-  void print() {c.print();}
-  void test() {std::cout << "oneString function" << std::endl;}
-  char charValue() {return c.getVal();}
+  myString* next() { return nextString; }
+  bool isEmpty() { return false; }
+  void print() { c.print(); }
+  void test() { std::cout << "oneString function" << std::endl; }
+  char charValue() { return c.getVal(); }
 
  private:
   myChar c;
@@ -74,8 +74,9 @@ class DFA {
     for (auto const& a : alphabet)
       a->print();
   }
+  void printName() { std::cout << name << std::endl; }
 
-  bool accepts(myString inputString) {      // returns whether the DFA accepts the input string
+  bool accepts(myString& inputString) {      // returns whether the DFA accepts the input string
     State qi = this->q0;
     myString* temp = &inputString;
 
@@ -89,13 +90,12 @@ class DFA {
 
  private:
   std::string name;
-  bool(*Q)(State);        // possible states for this DFA
+  bool(*Q)(State);        // list of possible states for this dfa
   std::list<myChar> alphabet;
   State q0;                             // start state
   State(*transFunc)(State, myChar);        // DFA transition function
   bool(*F)(State);                        // accept states
 };
-
 
 /*
 myString lexi(std::list<myString> alphabet){
@@ -104,6 +104,27 @@ myString lexi(std::list<myString> alphabet){
 */
 
 int main() {
+  oneString car = oneString('c', new oneString('a',
+      new oneString('r', new emptyString)));
+
+  DFA<myChar> evenLength("EvenLength", [](myChar& a) -> bool {
+             return (a.getVal()) == 'A' || (a.getVal() == 'B'); },
+        {new myChar('0'), new myChar('1')},
+        'A',
+        [](myChar a, myChar b) -> myChar {
+           if (a.getVal() == 'A')
+              return new myChar('B');
+           else
+              return new myChar('A');
+         },
+         [](myChar a) -> bool {
+           if (a.getVal() == 'B')
+              return true;
+           else
+              return false;
+          } );
+
+
 
   return 0;
 }
