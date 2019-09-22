@@ -50,7 +50,7 @@ class oneString : public myString {
 
 class emptyString : public myString {
  public:
-  emptyString() {this->c = myChar('E');}
+  emptyString() {this->c = myChar('E');}          // need to change the E to an actual epsilon somehow
   bool isEmpty() {return true;}
   myString* next() {return NULL;}
   void print() {c.print();}
@@ -60,20 +60,21 @@ class emptyString : public myString {
   myChar c;
 };
 
-/*
+template <class State>
 class DFA{
  public:
-  DFA(std::string name)
+  DFA(std::string name, bool(*Q)(State), std::list<myChar> alphabet, State q0, State(*transitionFunc)(State,Character), bool(*F)(State)) :
+    name(name),
 
  private:
   std::string name;
-  // need function object to represent states
+  bool(*Q)(State);        // possible states for this DFA
   std::list<myChar> alphabet;
-  // need function object to represent transition function
-  // need start state
-  // need accept states
+  State q0;                             // start state
+  State(*transitionFunc)(State, myChar);
+  bool(*F)(State);                        // accept states
 };
-*/
+
 
 /*
 myString lexi(std::list<myString> alphabet){
