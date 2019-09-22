@@ -12,7 +12,6 @@ class myChar {
   myChar() {}
   myChar(const myChar& charB) {c = charB.c;}
   void print() {std::cout << c;}
-  char getVal() {return c;};
   myChar& operator=(const myChar& charB) {
   c = charB.c;
   return *this;
@@ -29,7 +28,6 @@ class myString {
   virtual void print() {c.print();}
   virtual myString* next() {return nextString;}
   virtual void test() {std::cout << "myString function" << std::endl;}
-  virtual char charValue() {return c.getVal();}
 
  private:
   myChar c;
@@ -44,7 +42,6 @@ class oneString : public myString {
   bool isEmpty() {return false;}
   void print() {c.print();}
   void test() {std::cout << "oneString function" << std::endl;}
-  char charValue() {return c.getVal();}
 
  private:
   myChar c;
@@ -58,34 +55,17 @@ class emptyString : public myString {
   myString* next() {return NULL;}
   void print() {c.print();}
   void test() {std::cout << "emptyString function" << std::endl;}
-  char charValue() {return c.getVal();}
 
  private:
   myChar c;
 };
 
 template <class State>
-class DFA {
+class DFA{
  public:
   DFA(std::string name, bool(*Q)(State), std::list<myChar> alphabet, State q0, State(*transFunc)(State, myChar), bool(*F)(State)) :
-    name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc), F(F) {}
+    name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc), F(F) {}  
 
-  void printAlphabet() {
-    for (auto const& a : alphabet)
-      a->print();
-  }
-
-  bool accepts(myString inputString) {      // returns whether the DFA accepts the input string
-    State qi = this->q0;
-    myString* temp = &inputString;
-
-    while(temp->charValue() != 'E') {          // steps through DFA with each letter of inputted string
-     (*transFunc)(qi, temp->charValue());
-     temp = temp->next();
-    }
-
-    return (*F)(qi);            // checks whether arrived-at state is an accept state
-  }
 
  private:
   std::string name;
