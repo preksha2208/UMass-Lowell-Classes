@@ -1,5 +1,5 @@
 // Copyright Cameron Knopp 2019
-// This is my course project for Fall 2019 Foundations of Computer Science with Professor Jay McCarthy
+// Fall 2019 Foundations of Computer Science with Professor Jay McCarthy
 
 #include <iostream>
 #include <string>
@@ -8,7 +8,7 @@
 
 class myChar {
  public:
-  myChar(char c) { this->c = c; }  // initialize char variable
+  explicit myChar(char c) { this->c = c; }  // initialize char variable
   myChar() {}
   myChar(const myChar& charB) { c = charB.c; }
   void print() { std::cout << c; }
@@ -24,7 +24,9 @@ class myChar {
 
 class myString {
  public:
-  myString(char c, myString* nextString) : nextString(nextString) { this->c = myChar(c); }
+  myString(char c, myString* nextString) : nextString(nextString) {
+     this->c = myChar(c);
+  }
   myString() {}
   virtual void print() { c.print(); }
   virtual myString* next() { return nextString; }
@@ -38,7 +40,9 @@ class myString {
 
 class oneString : public myString {
  public:
-  oneString(char c, myString* nextString) : nextString(nextString) { this->c = myChar(c); }
+  oneString(char c, myString* nextString) : nextString(nextString) {
+     this->c = myChar(c);
+  }
   oneString() {}
   myString* next() { return nextString; }
   bool isEmpty() { return false; }
@@ -53,7 +57,7 @@ class oneString : public myString {
 
 class emptyString : public myString {
  public:
-  emptyString() {this->c = myChar('E');}          // need to change the E to an actual epsilon somehow
+  emptyString() {this->c = myChar('E');}  // needs to change E->actual epsilon
   bool isEmpty() {return true;}
   myString* next() {return NULL;}
   void print() {c.print();}
@@ -67,7 +71,8 @@ class emptyString : public myString {
 template <class State>
 class DFA {
  public:
-  DFA(std::string name, bool(*Q)(State), std::list<myChar> alphabet, State q0, State(*transFunc)(State, myChar), bool(*F)(State)) :
+  DFA(std::string name, bool(*Q)(State), std::list<myChar> alphabet,
+    State q0, State(*transFunc)(State, myChar), bool(*F)(State)) :
     name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc), F(F) {}
 
   void printAlphabet() {
@@ -76,16 +81,16 @@ class DFA {
   }
   void printName() { std::cout << name << std::endl; }
 
-  bool accepts(myString& inputString) {      // returns whether the DFA accepts the input string
+  bool accepts(myString& inputString) {  // does DFA accept inputString?
     State qi = this->q0;
     myString* temp = &inputString;
 
-    while(temp->charValue() != 'E') {          // steps through DFA with each letter of inputted string
+    while (temp->charValue() != 'E') {  // step through DFA w/ input string
      (*transFunc)(qi, temp->charValue());
      temp = temp->next();
     }
 
-    return (*F)(qi);            // checks whether arrived-at state is an accept state
+    return (*F)(qi);  // checks whether arrived-at state is an accept state
   }
 
  private:
@@ -106,23 +111,24 @@ myString lexi(std::list<myString> alphabet){
 int main() {
   oneString car = oneString('c', new oneString('a',
       new oneString('r', new emptyString)));
-
-  DFA<myChar> evenLength("EvenLength", [](myChar& a) -> bool {
-             return (a.getVal()) == 'A' || (a.getVal() == 'B'); },
-        {new myChar('0'), new myChar('1')},
-        'A',
-        [](myChar a, myChar b) -> myChar {
-           if (a.getVal() == 'A')
-              return new myChar('B');
-           else
-              return new myChar('A');
-         },
-         [](myChar a) -> bool {
-           if (a.getVal() == 'B')
-              return true;
-           else
-              return false;
-          } );
+  DFA<myChar> evenLength("EvenLength",    // name
+             [&](myChar a) -> bool {  // state function
+              return ((a.getVal() == 'A') || (a.getVal() == 'B'));
+             },
+             std::list<myChar> {myChar('0'), myChar('1')},  // alphabet
+             myChar('A'),    // start state
+             [&](myChar a, myChar b) -> myChar {  // transition function
+              if (a.getVal() == 'A')
+               return myChar('B');
+              else
+               return myChar('A');
+              },
+             [&](myChar a) -> bool {  // accept states
+              if (a.getVal() == 'B')
+               return true;
+              else
+               return false;
+              });
 
 
 
