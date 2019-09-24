@@ -90,8 +90,14 @@ class DFA {
     myString* temp = &inputString;
 
     // step through DFA with the input string
-    while (temp->next()->charValue() != 'E') {
+    while (temp->next() != NULL) {
      qi = (*transFunc)(qi, temp->charObject());
+
+     std::cout << "step w/ temp = " << temp->charValue();
+     std::cout << std::endl;
+     std::cout << "qi now equal to: " << qi.getVal();
+     std::cout << std::endl;
+
      temp = temp->next();
     }
 
@@ -100,7 +106,7 @@ class DFA {
 
   bool acceptStates(myChar b) {
     return (*F)(b);
-}
+}  // just used for testing
 
  private:
   std::string name;
@@ -139,8 +145,6 @@ DFA<myChar> evenLength("EvenLength",    // name
               else
                return false;
               });
-  std::cout << evenLength.acceptStates(myChar('S'));
-  std::cout << std::endl;
 
 
   oneString OZO('1', new oneString('0',
@@ -156,7 +160,7 @@ DFA<myChar> evenLength("EvenLength",    // name
     new oneString('0', new oneString('1', new oneString('1',
     new emptyString)))));
 
-
+  std::cout << std::boolalpha;
   std::cout << "evenLength accepts 101?: " << evenLength.accepts(OZO);
   std::cout << std::endl;
   std::cout << "evenLength accepts 1000?: " << evenLength.accepts(OZZZ);
