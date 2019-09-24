@@ -71,8 +71,11 @@ class emptyString : public myString {
 template <class State>
 class DFA {
  public:
-  DFA(std::string name, bool(*Q)(State), std::list<myChar> alphabet,
-    State q0, State(*transFunc)(State, myChar), bool(*F)(State)) :
+  DFA<State>(std::string name,
+      bool(*Q)(State),
+      std::list<myChar> alphabet,
+      State q0,
+      State(*transFunc)(State, myChar), bool(*F)(State)) :
     name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc), F(F) {}
 
   void printAlphabet() {
@@ -107,11 +110,8 @@ myString lexi(std::list<myString> alphabet){
 
 }
 */
-
 int main() {
-  oneString car = oneString('c', new oneString('a',
-      new oneString('r', new emptyString)));
-  DFA<myChar> evenLength("EvenLength",    // name
+DFA<myChar> evenLength("EvenLength",    // name
              [&](myChar a) -> bool {  // state function
               return ((a.getVal() == 'A') || (a.getVal() == 'B'));
              },
