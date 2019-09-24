@@ -32,6 +32,7 @@ class myString {
   virtual myString* next() { return nextString; }
   virtual void test() { std::cout << "myString function" << std::endl; }
   virtual char charValue() { return c.getVal(); }
+  virtual myChar charObject() { return c; }
 
  private:
   myChar c;
@@ -78,23 +79,28 @@ class DFA {
       State(*transFunc)(State, myChar), bool(*F)(State)) :
     name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc), F(F) {}
 
-  void printAlphabet() {
-    for (auto const& a : alphabet)
-      a->print();
-  }
   void printName() { std::cout << name << std::endl; }
+  void printAlphabet() {
+    for (auto a : alphabet)
+      a.print();
+  }
 
   bool accepts(myString& inputString) {  // does DFA accept inputString?
     State qi = this->q0;
     myString* temp = &inputString;
 
-    while (temp->charValue() != 'E') {  // step through DFA w/ input string
-     (*transFunc)(qi, temp->charValue());
+    // step through DFA with the input string
+    while (temp->next()->charValue() != 'E') {
+     qi = (*transFunc)(qi, temp->charObject());
      temp = temp->next();
     }
 
     return (*F)(qi);  // checks whether arrived-at state is an accept state
   }
+
+  bool acceptStates(myChar b) {
+    return (*F)(b);
+}
 
  private:
   std::string name;
@@ -112,25 +118,53 @@ myString lexi(std::list<myString> alphabet){
 */
 int main() {
 DFA<myChar> evenLength("EvenLength",    // name
-             [&](myChar a) -> bool {  // state function
+             [](myChar a) -> bool {  // state function
               return ((a.getVal() == 'A') || (a.getVal() == 'B'));
              },
              std::list<myChar> {myChar('0'), myChar('1')},  // alphabet
              myChar('A'),    // start state
-             [&](myChar a, myChar b) -> myChar {  // transition function
-              if (a.getVal() == 'A')
+             [](myChar a, myChar b) -> myChar {  // transition function
+              if (a.getVal() == 'A' &&
+                 ((b.getVal() == '0') || (b.getVal() == '1')))
                return myChar('B');
-              else
+              else if (a.getVal() == 'B' &&
+                      ((b.getVal() == '0') || (b.getVal() == '1')))
                return myChar('A');
+              else
+               return a;
               },
-             [&](myChar a) -> bool {  // accept states
+             [](myChar a) -> bool {  // accept states
               if (a.getVal() == 'B')
                return true;
               else
                return false;
               });
+  std::cout << evenLength.acceptStates(myChar('S'));
+  std::cout << std::endl;
 
 
+  oneString OZO('1', new oneString('0',
+    new oneString('1', new emptyString)));
+
+  oneString OZZZ('1', new oneString('0',
+    new oneString('0', new oneString('0', new emptyString))));
+
+  oneString CARS ('C', new oneString('A',
+    new oneString('R', new oneString('S', new emptyString))));
+
+  oneString ZOZOO('0', new oneString('1',
+    new oneString('0', new oneString('1', new oneString('1',
+    new emptyString)))));
+
+
+  std::cout << "evenLength accepts 101?: " << evenLength.accepts(OZO);
+  std::cout << std::endl;
+  std::cout << "evenLength accepts 1000?: " << evenLength.accepts(OZZZ);
+  std::cout << std::endl;
+  std::cout << "evenLength accepts CARS?: " << evenLength.accepts(CARS);
+  std::cout << std::endl;
+  std::cout << "evenLength accepts 01011: " << evenLength.accepts(ZOZOO);
+  std::cout << std::endl;
 
   return 0;
 }
