@@ -100,7 +100,6 @@ class DFA {
 
      temp = temp->next();
     }
-
     return (*F)(qi);  // checks whether arrived-at state is an accept state
   }
 
@@ -130,14 +129,17 @@ DFA<myChar> evenLength("EvenLength",    // name
              std::list<myChar> {myChar('0'), myChar('1')},  // alphabet
              myChar('A'),    // start state
              [](myChar a, myChar b) -> myChar {  // transition function
-              if (a.getVal() == 'A' &&
-                 ((b.getVal() == '0') || (b.getVal() == '1')))
+              if ((a.getVal() == 'A') &&
+                 ((b.getVal() == '0') || (b.getVal() == '1'))) {
                return myChar('B');
-              else if (a.getVal() == 'B' &&
-                      ((b.getVal() == '0') || (b.getVal() == '1')))
+              } else if ((a.getVal() == 'B') &&
+                      ((b.getVal() == '0') || (b.getVal() == '1'))) {
+               std::cout << "returning A through else if" << std::endl;
                return myChar('A');
-              else
+              } else {
+               std::cout << "returning A through else" << std::endl;
                return a;
+                }
               },
              [](myChar a) -> bool {  // accept states
               if (a.getVal() == 'B')
