@@ -6,6 +6,7 @@
 #include <list>
 #include <iterator>
 
+
 class myChar {
  public:
   explicit myChar(char c) { this->c = c; }  // initialize char variable
@@ -14,8 +15,8 @@ class myChar {
   void print() { std::cout << c; }
   char getVal() { return c; }
   myChar& operator=(const myChar& charB) {
-  c = charB.c;
-  return *this;
+    c = charB.c;
+    return *this;
   }
 
  private:
@@ -50,6 +51,7 @@ class oneString : public myString {
   void print() { c.print(); }
   void test() { std::cout << "oneString function" << std::endl; }
   char charValue() { return c.getVal(); }
+  myChar charObject() { return c; }
 
  private:
   myChar c;
@@ -64,6 +66,7 @@ class emptyString : public myString {
   void print() {c.print();}
   void test() {std::cout << "emptyString function" << std::endl;}
   char charValue() {return c.getVal();}
+  myChar charObject() { return c; }
 
  private:
   myChar c;
@@ -90,22 +93,20 @@ class DFA {
     myString* temp = &inputString;
 
     // step through DFA with the input string
-    while (temp->next() != NULL) {
+    while (temp->next()->charValue() != 'E') {
      qi = (*transFunc)(qi, temp->charObject());
-
-     std::cout << "step w/ temp = " << temp->charValue();
-     std::cout << std::endl;
-     std::cout << "qi now equal to: " << qi.getVal();
-     std::cout << std::endl;
-
      temp = temp->next();
     }
+
     return (*F)(qi);  // checks whether arrived-at state is an accept state
   }
 
   bool acceptStates(myChar b) {
     return (*F)(b);
 }  // just used for testing
+  State transitionFunction(State a, myChar b) {
+    return (*transFunc)(a, b);
+  }  // used for testing
 
  private:
   std::string name;
@@ -121,6 +122,14 @@ myString lexi(std::list<myString> alphabet){
 
 }
 */
+
+/*
+  want to be able to create a set an object that takes in any given DFA any tests it with a bunch of values
+  which it prints out the results of 
+*/
+
+class DFAtest {
+};
 int main() {
 DFA<myChar> evenLength("EvenLength",    // name
              [](myChar a) -> bool {  // state function
@@ -130,16 +139,13 @@ DFA<myChar> evenLength("EvenLength",    // name
              myChar('A'),    // start state
              [](myChar a, myChar b) -> myChar {  // transition function
               if ((a.getVal() == 'A') &&
-                 ((b.getVal() == '0') || (b.getVal() == '1'))) {
-               return myChar('B');
-              } else if ((a.getVal() == 'B') &&
-                      ((b.getVal() == '0') || (b.getVal() == '1'))) {
-               std::cout << "returning A through else if" << std::endl;
-               return myChar('A');
-              } else {
-               std::cout << "returning A through else" << std::endl;
-               return a;
-                }
+                 ((b.getVal() == '0') || (b.getVal() == '1')))
+                 return myChar('B');
+              else if ((a.getVal() == 'B') &&
+                      ((b.getVal() == '0') || (b.getVal() == '1')))
+                 return myChar('A');
+              else
+                 return a;
               },
              [](myChar a) -> bool {  // accept states
               if (a.getVal() == 'B')
@@ -164,13 +170,14 @@ DFA<myChar> evenLength("EvenLength",    // name
 
   std::cout << std::boolalpha;
   std::cout << "evenLength accepts 101?: " << evenLength.accepts(OZO);
-  std::cout << std::endl;
+  std::cout << std::endl << std::endl;
   std::cout << "evenLength accepts 1000?: " << evenLength.accepts(OZZZ);
-  std::cout << std::endl;
+  std::cout << std::endl << std::endl;
   std::cout << "evenLength accepts CARS?: " << evenLength.accepts(CARS);
-  std::cout << std::endl;
+  std::cout << std::endl << std::endl;
   std::cout << "evenLength accepts 01011: " << evenLength.accepts(ZOZOO);
   std::cout << std::endl;
+
 
   return 0;
 }
