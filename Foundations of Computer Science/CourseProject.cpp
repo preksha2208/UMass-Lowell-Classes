@@ -5,6 +5,7 @@
 #include <string>
 #include <list>
 #include <iterator>
+#include <vector>
 
 
 class myChar {
@@ -125,11 +126,44 @@ myString lexi(std::list<myString> alphabet){
 
 /*
   want to be able to create a set an object that takes in any given DFA any tests it with a bunch of values
-  which it prints out the results of 
+  which it prints out the results of
 */
-
+template <class State>
 class DFAtest {
+ public:
+  DFAtest<State>(DFA<State>& dfa) {
+  this->dfa = &dfa;
+  testCases[0] = oneString('1', new oneString('0',
+     new oneString('1', new emptyString)));
+
+  testCases[1] = oneString('1', new oneString('0',
+     new oneString('0', new oneString('0', new emptyString))));
+
+  testCases[2] = oneString ('C', new oneString('A',
+     new oneString('R', new oneString('S', new emptyString))));
+
+  testCases[3] = oneString('0', new oneString('1',
+     new oneString('0', new oneString('1', new oneString('1',
+     new emptyString)))));
+}
+
+  void testCaseNames() {
+    myString* temp = NULL;
+    for (myString test : testCases) {
+      temp = &test;
+      while (temp->charValue() != 'E') {
+        std::cout << temp;
+        temp = temp->next();
+      }
+      std::cout << std::endl;
+    }
+  }
+
+ private:
+  DFA<State>* dfa;
+  std::vector<myString> testCases;  // list of test strings
 };
+
 int main() {
 DFA<myChar> evenLength("EvenLength",    // name
              [](myChar a) -> bool {  // state function
@@ -154,20 +188,10 @@ DFA<myChar> evenLength("EvenLength",    // name
                return false;
               });
 
+DFAtest<myChar> evenTests(evenLength);
+evenTests.testCaseNames();
 
-  oneString OZO('1', new oneString('0',
-    new oneString('1', new emptyString)));
-
-  oneString OZZZ('1', new oneString('0',
-    new oneString('0', new oneString('0', new emptyString))));
-
-  oneString CARS ('C', new oneString('A',
-    new oneString('R', new oneString('S', new emptyString))));
-
-  oneString ZOZOO('0', new oneString('1',
-    new oneString('0', new oneString('1', new oneString('1',
-    new emptyString)))));
-
+/*
   std::cout << std::boolalpha;
   std::cout << "evenLength accepts 101?: " << evenLength.accepts(OZO);
   std::cout << std::endl << std::endl;
@@ -178,6 +202,6 @@ DFA<myChar> evenLength("EvenLength",    // name
   std::cout << "evenLength accepts 01011: " << evenLength.accepts(ZOZOO);
   std::cout << std::endl;
 
-
+*/
   return 0;
 }
