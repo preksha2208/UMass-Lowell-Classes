@@ -133,10 +133,11 @@ class DFAtest {
  public:
   DFAtest<State>(DFA<State>& dfa) {
   this->dfa = &dfa;
-  testCases[0] = oneString('1', new oneString('0',
-     new oneString('1', new emptyString)));
+  oneString OZO ('1', new oneString('0',
+  new oneString('1', new emptyString)));
+    testCases.push_back(&OZO);
 
-  testCases[1] = oneString('1', new oneString('0',
+/*  testCases[1] = oneString('1', new oneString('0',
      new oneString('0', new oneString('0', new emptyString))));
 
   testCases[2] = oneString ('C', new oneString('A',
@@ -145,10 +146,13 @@ class DFAtest {
   testCases[3] = oneString('0', new oneString('1',
      new oneString('0', new oneString('1', new oneString('1',
      new emptyString)))));
+*/
 }
 
   void testCaseNames() {
-    myString* temp = NULL;
+  //  myString* temp = NULL;
+  std::cout << testCases.front()->charValue();
+/*
     for (myString test : testCases) {
       temp = &test;
       while (temp->charValue() != 'E') {
@@ -157,11 +161,12 @@ class DFAtest {
       }
       std::cout << std::endl;
     }
+*/
   }
 
  private:
   DFA<State>* dfa;
-  std::vector<myString> testCases;  // list of test strings
+  std::list<myString*> testCases;  // list of test strings
 };
 
 int main() {
