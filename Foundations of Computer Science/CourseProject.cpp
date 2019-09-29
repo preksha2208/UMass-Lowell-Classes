@@ -158,7 +158,7 @@ myString lexi(std::list<myString> alphabet){
 }
 */
 
-/*
+
 // makes a DFA that only excepts a string of just one of the inputted Char
 DFA<myChar> oneCharDFA(myChar inputChar) {
   auto tFunc = [=](myChar a, myChar b) -> myChar {
@@ -180,7 +180,7 @@ DFA<myChar> oneCharDFA(myChar inputChar) {
          }
 );
 }
-*/
+
 
 void makeAndTestDFAs()
 {
@@ -236,6 +236,9 @@ void makeAndTestDFAs()
                                      [](myChar a) -> bool {
                                        return (a == myChar('E'));
                                      });
+
+
+
 }
 
 int main()
