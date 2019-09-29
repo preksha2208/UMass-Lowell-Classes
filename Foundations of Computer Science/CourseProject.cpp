@@ -144,52 +144,6 @@ myString lexi(std::list<myString> alphabet){
 }
 */
 
-/*
-  want to be able to create a set an object that takes in any given DFA any tests it with a bunch of values
-  which it prints out the results of
-*/
-/*
-template <class State>
-class DFAtest {
- public:
-  DFAtest<State>(DFA<State>& dfa) {
-  this->dfa = &dfa;
-  oneString OZO ('1', new oneString('0',
-  new oneString('1', new emptyString)));
-    testCases.push_back(&OZO);
-
-  testCases[1] = oneString('1', new oneString('0',
-     new oneString('0', new oneString('0', new emptyString))));
-
-  testCases[2] = oneString ('C', new oneString('A',
-     new oneString('R', new oneString('S', new emptyString))));
-
-  testCases[3] = oneString('0', new oneString('1',
-     new oneString('0', new oneString('1', new oneString('1',
-     new emptyString)))));
-
-}
-
-  void testCaseNames() {
-  //  myString* temp = NULL;
-  std::cout << testCases.front()->charValue();
-
-    for (myString test : testCases) {
-      temp = &test;
-      while (temp->charValue() != 'E') {
-        std::cout << temp;
-        temp = temp->next();
-      }
-      std::cout << std::endl;
-    }
-
-  }
-
- private:
-  DFA<State>* dfa;
-  std::list<myString*> testCases;  // list of test strings
-};
-*/
 
 /*
 // makes a DFA that only excepts a string of just one of the inputted Char
@@ -215,73 +169,66 @@ DFA<myChar> oneCharDFA(myChar inputChar) {
 }
 */
 
-int main() {
+void makeAndTestDFAs() {
 DFA<myChar> evenLength("EvenLength",    // name
-             [](myChar a) -> bool {  // state function
+            [](myChar a) -> bool {  // state function
               return ((a.getVal() == 'A') || (a.getVal() == 'B'));
-             },
-             std::list<myChar> {myChar('0'), myChar('1')},  // alphabet
-             myChar('A'),    // start state
-             [](myChar a, myChar b) -> myChar {  // transition function
+            },
+            std::list<myChar> {myChar('0'), myChar('1')},  // alphabet
+            myChar('A'),    // start state
+            [](myChar a, myChar b) -> myChar {  // transition function
               if ((a.getVal() == 'A') &&
                  ((b.getVal() == '0') || (b.getVal() == '1')))
-                 return myChar('B');
+                   return myChar('B');
               else if ((a.getVal() == 'B') &&
                       ((b.getVal() == '0') || (b.getVal() == '1')))
-                 return myChar('A');
+                   return myChar('A');
               else
-                 return a;
+                   return a;
               },
-             [](myChar a) -> bool {  // accept states
+            [](myChar a) -> bool {  // accept states
               if (a.getVal() == 'B')
-               return true;
+                return true;
               else
-               return false;
+                return false;
               }
 );
 
 DFA<myChar> acceptsNothing("AcceptsNothing",
-             [](myChar a) -> bool {
-              return false;
-              },
-              std::list<myChar> {},
-              myChar('A'),
-              [](myChar a, myChar b) -> myChar {
-              return a;
-              },
-              [](myChar a) -> bool {
-               return false;
-              }
+            [](myChar a) -> bool {
+             return false;
+            },
+            std::list<myChar> {},
+            myChar('A'),
+            [](myChar a, myChar b) -> myChar {
+             return a;
+            },
+            [](myChar a) -> bool {
+             return false;
+            }
 );
 
 DFA<myChar> onlyAcceptsEmptyString("OnlyAcceptsEmptyString",
-             [](myChar a) -> bool {
-              return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
-                      (a.getVal() == 'C'));
-              },
-              std::list<myChar> {'E'},
-              myChar('A'),
-              [](myChar a, myChar b) -> myChar {
-               if (a.getVal() == 'A' && b.getVal() == 'E')
-                  return myChar('B');
-               else
-                  return myChar('C');
+           [](myChar a) -> bool {
+            return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
+                    (a.getVal() == 'C'));
+            },
+            std::list<myChar> {'E'},
+            myChar('A'),
+            [](myChar a, myChar b) -> myChar {
+              if (a.getVal() == 'A' && b.getVal() == 'E')
+                return myChar('B');
+              else
+                return myChar('C');
               },
               [](myChar a) -> bool {
                return (a == myChar('E'));
               }
 );
-/*
-  std::cout << std::boolalpha;
-  std::cout << "evenLength accepts 101?: " << evenLength.accepts(OZO);
-  std::cout << std::endl << std::endl;
-  std::cout << "evenLength accepts 1000?: " << evenLength.accepts(OZZZ);
-  std::cout << std::endl << std::endl;
-  std::cout << "evenLength accepts CARS?: " << evenLength.accepts(CARS);
-  std::cout << std::endl << std::endl;
-  std::cout << "evenLength accepts 01011: " << evenLength.accepts(ZOZOO);
-  std::cout << std::endl;
+}
 
-*/
+int main() {
+  makeAndTestDFAs();
+
   return 0;
 }
