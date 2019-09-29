@@ -158,8 +158,8 @@ myString lexi(std::list<myString> alphabet){
 }
 */
 
-
 // makes a DFA that only excepts a string of just one of the inputted Char
+/*
 DFA<myChar> oneCharDFA(myChar inputChar) {
   auto tFunc = [=](myChar a, myChar b) -> myChar {
     if (a.getVal() == 'A' && (b.getVal() == inputChar.getVal()))
@@ -180,7 +180,7 @@ DFA<myChar> oneCharDFA(myChar inputChar) {
          }
 );
 }
-
+*/
 
 void makeAndTestDFAs()
 {
@@ -225,7 +225,7 @@ void makeAndTestDFAs()
                                        return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
                                                (a.getVal() == 'C'));
                                      },
-                                     std::list<myChar>{'E'},
+                                     std::list<myChar>{myChar('E')},
                                      myChar('A'),
                                      [](myChar a, myChar b) -> myChar {
                                        if (a.getVal() == 'A' && b.getVal() == 'E')
@@ -236,8 +236,194 @@ void makeAndTestDFAs()
                                      [](myChar a) -> bool {
                                        return (a == myChar('E'));
                                      });
+  DFA<myChar> evenBinaryNumber("EvenBinaryNumber",
+                               [](myChar a) -> bool {
+                                 return ((a.getVal() == 'A') || (a.getVal() == 'B'));
+                               },
+                               std::list<myChar>{myChar('1'), myChar('0')},
+                               myChar('A'),
+                               [](myChar a, myChar b) -> myChar {
+                                 if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '0')
+                                   return myChar('B');
+                                 else
+                                   return myChar('A');
+                               },
+                               [](myChar a) -> bool {
+                                 return (a == myChar('B'));
+                               });
 
+  DFA<myChar> oddBinaryNumber("OddBinaryNumber",
+                              [](myChar a) -> bool {
+                                return ((a.getVal() == 'A') || (a.getVal() == 'B'));
+                              },
+                              std::list<myChar>{myChar('1'), myChar('0')},
+                              myChar('A'),
+                              [](myChar a, myChar b) -> myChar {
+                                if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '1')
+                                  return myChar('B');
+                                else
+                                  return myChar('A');
+                              },
+                              [](myChar a) -> bool {
+                                return (a == myChar('B'));
+                              });
 
+  DFA<myChar> containsCAM("ContainsCAM",
+                          [](myChar a) -> bool {
+                            return ((a.getVal() == 'A') || (a.getVal() == 'B') || (a.getVal() == 'C') || (a.getVal() == 'D'));
+                          },
+                          std::list<myChar>{myChar('C'), myChar('A'), myChar('M')},
+                          myChar('A'),
+                          [](myChar a, myChar b) -> myChar {
+                            if (a.getVal() == 'A' && b.getVal() == 'C')
+                              return myChar('B');
+                            else if (a.getVal() == 'B' && b.getVal() == 'A')
+                              return myChar('C');
+                            else if (a.getVal() == 'C' && b.getVal() == 'M')
+                              return myChar('D');
+                            else if (a.getVal() == 'D')
+                              return myChar('D'); // contains CAM, so we will remain in accept state
+                            else
+                              return myChar('A');
+                          },
+                          [](myChar a) -> bool {
+                            return (a == myChar('D'));
+                          });
+
+  DFA<myChar> containsLineComment("ContainsLineComment",
+                                  [](myChar a) -> bool {
+                                    return ((a.getVal() == 'A') || (a.getVal() == 'B') || (a.getVal() == 'C'));
+                                  },
+                                  std::list<myChar>{myChar('/')},
+                                  myChar('A'),
+                                  [](myChar a, myChar b) -> myChar {
+                                    if (a.getVal() == 'A' && b.getVal() == '/')
+                                      return myChar('B');
+                                    else if (a.getVal() == 'B' && b.getVal() == '/')
+                                      return myChar('C');
+                                    else if (a.getVal() == 'C')
+                                      return myChar('C');
+                                    else
+                                      return myChar('A');
+                                  },
+                                  [](myChar a) -> bool {
+                                    return (a == myChar('C'));
+                                  });
+
+  DFA<myChar> threeConsecutiveZerosBinary("ThreeConsecutiveZerosBinary",
+                                          [](myChar a) -> bool {
+                                            return ((a.getVal() == 'A') || (a.getVal() == 'B') || (a.getVal() == 'C') || (a.getVal() == 'D'));
+                                          },
+                                          std::list<myChar>{myChar('1'), myChar('0')},
+                                          myChar('A'),
+                                          [](myChar a, myChar b) -> myChar {
+                                            if (a.getVal() == 'A' && b.getVal() == '1')
+                                              return myChar('A');
+                                            else if (a.getVal() == 'A' && b.getVal() == '0')
+                                              return myChar('B');
+                                            else if (a.getVal() == 'B' && b.getVal() == '0')
+                                              return myChar('C');
+                                            else if (a.getVal() == 'C' && b.getVal() == '0')
+                                              return myChar('D');
+                                            else if (a.getVal() == 'D' && b.getVal() == '0')
+                                              return myChar('B');
+                                            else if (a.getVal() == 'D' && b.getVal() == '1')
+                                              return myChar('D');
+                                            else
+                                              return myChar('A');
+                                          },
+                                          [](myChar a) -> bool {
+                                            return (a == myChar('D'));
+                                          });
+
+  DFA<myChar> threeConsecutiveOnesBinary("ThreeConsecutiveOnesBinary",
+                                         [](myChar a) -> bool {
+                                           return ((a.getVal() == 'A') || (a.getVal() == 'B') || (a.getVal() == 'C') || (a.getVal() == 'D'));
+                                         },
+                                         std::list<myChar>{myChar('1'), myChar('0')},
+                                         myChar('A'),
+                                         [](myChar a, myChar b) -> myChar {
+                                           if (a.getVal() == 'A' && b.getVal() == '0')
+                                             return myChar('A');
+                                           else if (a.getVal() == 'A' && b.getVal() == '1')
+                                             return myChar('B');
+                                           else if (a.getVal() == 'B' && b.getVal() == '1')
+                                             return myChar('C');
+                                           else if (a.getVal() == 'C' && b.getVal() == '1')
+                                             return myChar('D');
+                                           else if (a.getVal() == 'D' && b.getVal() == '1')
+                                             return myChar('B');
+                                           else if (a.getVal() == 'D' && b.getVal() == '0')
+                                             return myChar('D');
+                                           else
+                                             return myChar('A');
+                                         },
+                                         [](myChar a) -> bool {
+                                           return (a == myChar('D'));
+                                         });
+
+  DFA<myChar> oddNumberOfOnesBinary("OddNumberOfOnesBinary",
+                                    [](myChar a) -> bool {
+                                      return ((a.getVal() == 'A') || (a.getVal() == 'B'));
+                                    },
+                                    std::list<myChar>{myChar('1'), myChar('0')},
+                                    myChar('A'),
+                                    [](myChar a, myChar b) -> myChar {
+                                      if (a.getVal() == 'A' && b.getVal() == '0')
+                                        return myChar('A');
+                                      else if (a.getVal() == 'A' && b.getVal() == '1')
+                                        return myChar('B');
+                                      else if (a.getVal() == 'B' && b.getVal() == '0')
+                                        return myChar('B');
+                                      else if (a.getVal() == 'B' && b.getVal() == '1')
+                                        return myChar('A');
+                                      else
+                                        return myChar('A');
+                                    },
+                                    [](myChar a) -> bool {
+                                      return (a == myChar('B'));
+                                    });
+  DFA<myChar> evenNumberOfOnesBinary("NumberOfOnesBinary",
+                                     [](myChar a) -> bool {
+                                       return ((a.getVal() == 'A') || (a.getVal() == 'B'));
+                                     },
+                                     std::list<myChar>{myChar('1'), myChar('0')},
+                                     myChar('A'),
+                                     [](myChar a, myChar b) -> myChar {
+                                       if (a.getVal() == 'A' && b.getVal() == '0')
+                                         return myChar('A');
+                                       else if (a.getVal() == 'A' && b.getVal() == '1')
+                                         return myChar('B');
+                                       else if (a.getVal() == 'B' && b.getVal() == '0')
+                                         return myChar('B');
+                                       else if (a.getVal() == 'B' && b.getVal() == '1')
+                                         return myChar('A');
+                                       else
+                                         return myChar('A');
+                                     },
+                                     [](myChar a) -> bool {
+                                       return (a == myChar('A'));
+                                     });
+
+  DFA<myChar> evenNumberOfZerosAndSingleOne("EvenNumberOfZerosAndSingleOne",
+                                            [](myChar a) -> bool {
+                                              return ((a.getVal() == 'A') || (a.getVal() == 'B') || (a.getVal() == 'C'));
+                                            },
+                                            std::list<myChar>{myChar('1'), myChar('0')},
+                                            myChar('A'),
+                                            [](myChar a, myChar b) -> myChar {
+                                              if (a.getVal() == 'A' && b.getVal() == '0')
+                                                return myChar('B');
+                                              else if (a.getVal() == 'B' && b.getVal() == '0')
+                                                return myChar('A');
+                                              else if (a.getVal() == 'A' && b.getVal() == '1')
+                                                return myChar('C');
+                                              else
+                                                return myChar('A');
+                                            },
+                                            [](myChar a) -> bool {
+                                              return (a == myChar('C'));
+                                            });
 
 }
 
