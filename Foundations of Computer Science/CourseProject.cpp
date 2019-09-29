@@ -19,6 +19,9 @@ class myChar {
     c = charB.c;
     return *this;
   }
+  friend bool operator==(const myChar& a, const myChar& b) {
+    return (a.c == b.c);
+  }
 
  private:
   char c;
@@ -113,15 +116,15 @@ class DFA {
      temp = temp->next();
     }
   }
-
+/*
   myString* acceptedString() {
     // need to check that accept states function is not empty by passing it possible
 
   }
-
+*/
   bool acceptStates(myChar b) {
     return (*F)(b);
-}  // just used for testing
+}  // used for testing
   State transitionFunction(State a, myChar b) {
     return (*transFunc)(a, b);
   }  // used for testing
@@ -188,6 +191,29 @@ class DFAtest {
 };
 */
 
+/*
+// makes a DFA that only excepts a string of just one of the inputted Char
+DFA<myChar> oneCharDFA(myChar inputChar) {
+  auto tFunc = [=](myChar a, myChar b) -> myChar {
+    if (a.getVal() == 'A' && (b.getVal() == inputChar.getVal()))
+      return myChar('B');
+    else
+      return myChar('C');
+  };
+
+  return DFA<myChar>("onlyAccepts" + std::string(1, inputChar.getVal()),
+         [](myChar a) -> bool {
+          return (a == myChar('A') || a == myChar('B'));
+         },
+         std::list<myChar>{inputChar},
+         myChar('A'),
+         &tFunc,
+         [](myChar a) -> bool {
+         return (a == myChar('B'));
+         }
+);
+}
+*/
 
 int main() {
 DFA<myChar> evenLength("EvenLength",    // name
@@ -228,9 +254,23 @@ DFA<myChar> acceptsNothing("AcceptsNothing",
               }
 );
 
-
-
-
+DFA<myChar> onlyAcceptsEmptyString("OnlyAcceptsEmptyString",
+             [](myChar a) -> bool {
+              return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
+                      (a.getVal() == 'C'));
+              },
+              std::list<myChar> {'E'},
+              myChar('A'),
+              [](myChar a, myChar b) -> myChar {
+               if (a.getVal() == 'A' && b.getVal() == 'E')
+                  return myChar('B');
+               else
+                  return myChar('C');
+              },
+              [](myChar a) -> bool {
+               return (a == myChar('E'));
+              }
+);
 /*
   std::cout << std::boolalpha;
   std::cout << "evenLength accepts 101?: " << evenLength.accepts(OZO);
