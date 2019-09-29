@@ -102,6 +102,23 @@ class DFA {
     return (*F)(qi);  // checks whether arrived-at state is an accept state
   }
 
+  void trace(myString& inputString) {  // does DFA accept inputString?
+    State qi = this->q0;
+    myString* temp = &inputString;
+
+    // step through DFA with the input string
+    while (temp->next()->charValue() != 'E') {
+     std::cout << qi;
+     qi = (*transFunc)(qi, temp->charObject());
+     temp = temp->next();
+    }
+  }
+
+  myString* acceptedString() {
+    // need to check that accept states function is not empty by passing it possible
+
+  }
+
   bool acceptStates(myChar b) {
     return (*F)(b);
 }  // just used for testing
@@ -128,6 +145,7 @@ myString lexi(std::list<myString> alphabet){
   want to be able to create a set an object that takes in any given DFA any tests it with a bunch of values
   which it prints out the results of
 */
+/*
 template <class State>
 class DFAtest {
  public:
@@ -137,7 +155,7 @@ class DFAtest {
   new oneString('1', new emptyString)));
     testCases.push_back(&OZO);
 
-/*  testCases[1] = oneString('1', new oneString('0',
+  testCases[1] = oneString('1', new oneString('0',
      new oneString('0', new oneString('0', new emptyString))));
 
   testCases[2] = oneString ('C', new oneString('A',
@@ -146,13 +164,13 @@ class DFAtest {
   testCases[3] = oneString('0', new oneString('1',
      new oneString('0', new oneString('1', new oneString('1',
      new emptyString)))));
-*/
+
 }
 
   void testCaseNames() {
   //  myString* temp = NULL;
   std::cout << testCases.front()->charValue();
-/*
+
     for (myString test : testCases) {
       temp = &test;
       while (temp->charValue() != 'E') {
@@ -161,13 +179,15 @@ class DFAtest {
       }
       std::cout << std::endl;
     }
-*/
+
   }
 
  private:
   DFA<State>* dfa;
   std::list<myString*> testCases;  // list of test strings
 };
+*/
+
 
 int main() {
 DFA<myChar> evenLength("EvenLength",    // name
@@ -191,10 +211,25 @@ DFA<myChar> evenLength("EvenLength",    // name
                return true;
               else
                return false;
-              });
+              }
+);
 
-DFAtest<myChar> evenTests(evenLength);
-evenTests.testCaseNames();
+DFA<myChar> acceptsNothing("AcceptsNothing",
+             [](myChar a) -> bool {
+              return false;
+              },
+              std::list<myChar> {},
+              myChar('A'),
+              [](myChar a, myChar b) -> myChar {
+              return a;
+              },
+              [](myChar a) -> bool {
+               return false;
+              }
+);
+
+
+
 
 /*
   std::cout << std::boolalpha;
