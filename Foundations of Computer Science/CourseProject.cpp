@@ -44,6 +44,7 @@ public:
   myString() {}
   virtual void print() { c.print(); }
   virtual myString *next() { return nextString; }
+  virtual void setNext(myString *next) { nextString = next; }
   virtual void test() { std::cout << "myString function" << std::endl; }
   virtual char charValue() { return c.getVal(); }
   virtual myChar charObject() { return c; }
@@ -62,6 +63,7 @@ public:
   }
   oneString() {}
   myString *next() { return nextString; }
+  void setNext(myString *next) { nextString = next; }
   bool isEmpty() { return false; }
   void print() { c.print(); }
   void test() { std::cout << "oneString function" << std::endl; }
@@ -79,6 +81,7 @@ public:
   emptyString() { this->c = myChar('E'); } // needs to change E->actual epsilon
   bool isEmpty() { return true; }
   myString *next() { return NULL; }
+  void setNext(myString *next) {} // only doing this so that the parent function is not called
   void print() { c.print(); }
   void test() { std::cout << "emptyString function" << std::endl; }
   char charValue() { return c.getVal(); }
@@ -184,6 +187,22 @@ DFA<myChar> oneCharDFA(myChar inputChar) {
 );
 }
 */
+myString convertFromString(std::string inputString)
+{
+  if (inputString.size() == 0)
+  {
+    return emptyString();
+  }
+  oneString beginning = oneString(inputString[0], NULL);
+  myString *temp = &beginning;
+  for (int i = 1; i < inputString.size(); i++)
+  {
+    temp->setNext(new oneString(inputString[i], NULL));
+    temp = temp->next();
+  }
+  temp->setNext(new emptyString);
+  return beginning;
+}
 
 void makeAndTestDFAs()
 {
@@ -913,7 +932,6 @@ void makeAndTestDFAs()
   std::cout << std::endl;
   std::cout << "-----------------------" << std::endl;
 
-  
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing ThreeConsecutiveZerosBinary DFA" << std::endl;
   std::cout << "1: Does ThreeConsecutiveZerosBinary accept 0000 " << threeConsecutiveZerosBinary.accepts(ZZZZ)
@@ -977,7 +995,6 @@ void makeAndTestDFAs()
   threeConsecutiveZerosBinary.trace(ZOZOZ);
   std::cout << std::endl;
   std::cout << "-----------------------" << std::endl;
-
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing ThreeConsecutiveOnesBinary DFA" << std::endl;
@@ -1046,7 +1063,14 @@ void makeAndTestDFAs()
 
 int main()
 {
-  makeAndTestDFAs();
-
+  //  makeAndTestDFAs();
+  std::string helloworld = "helloworld";
+  myString hello = convertFromString(helloworld);
+  myString *temp = &hello;
+  while (temp->charValue() != 'E')
+  {
+    std::cout << temp->charValue();
+    temp = temp->next();
+  }
   return 0;
 }
