@@ -264,7 +264,7 @@ void makeAndTestDFAs()
       },
       std::list<myChar>{myChar('C'), myChar('A'), myChar('M')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
-        if (a.getVal() == 'A' && b.getVal() == 'C')
+        if (b.getVal() == 'C')
           return myChar('B');
         else if (a.getVal() == 'B' && b.getVal() == 'A')
           return myChar('C');
@@ -412,6 +412,10 @@ void makeAndTestDFAs()
   oneString ZZZZ = oneString(
       '0', new oneString(
                '0', new oneString('0', new oneString('0', new emptyString))));
+  oneString ZOZO = oneString('0', new oneString('1', new oneString('0', new oneString('1', new emptyString))));
+  oneString OO = oneString('1', new oneString('1', new emptyString));
+  oneString ZZZOO = oneString('0', new oneString('0', new oneString('0', new oneString('1', new oneString('1', new emptyString)))));
+  oneString ZOZOOO = oneString('0', new oneString('1', new oneString('0', new oneString('1', new oneString('1', new oneString('1', new emptyString))))));
   oneString OOOOOO = oneString(
       '1',
       new oneString(
@@ -420,6 +424,7 @@ void makeAndTestDFAs()
               '1', new oneString(
                        '1', new oneString(
                                 '1', new oneString('1', new emptyString))))));
+
   emptyString epsi;
   oneString O = oneString('1', new emptyString);
   oneString Z = oneString('0', new emptyString);
@@ -440,6 +445,22 @@ void makeAndTestDFAs()
           '1',
           new oneString(
               '0', new oneString('1', new oneString('0', new emptyString)))));
+  oneString CAMOO = oneString('C', new oneString('A', new oneString('M', new oneString('1', new oneString('1', new emptyString)))));
+  oneString OOCAM = oneString('1', new oneString('1', new oneString('C', new oneString('A', new oneString('M', new emptyString)))));
+  oneString OCAMO = oneString('1', new oneString('C', new oneString('A', new oneString('M', new oneString('1', new emptyString)))));
+  oneString CACAMM = oneString('C', new oneString('A', new oneString('C', new oneString('A', new oneString('M', new oneString('M', new emptyString))))));
+  oneString CACM = oneString('C', new oneString('A', new oneString('C', new oneString('M', new emptyString))));
+  oneString CAMCAM = oneString('C', new oneString('A', new oneString('M', new oneString('C', new oneString('A', new oneString('M', new emptyString))))));
+  oneString CAMERA = oneString('C', new oneString('A', new oneString('M', new oneString('E', new oneString('R', new oneString('A', new emptyString))))));
+  oneString MAC = oneString('M', new oneString('A', new oneString('C', new emptyString)));
+  oneString comment1 = oneString('/', new oneString('/', new oneString('H', new emptyString)));
+  oneString comment2 = oneString('H', new oneString('/', new oneString('/', new emptyString)));
+  oneString comment3 = oneString('/', new oneString('H', new oneString('/', new emptyString)));
+  oneString comment4 = oneString('/', new oneString('/', new oneString('/', new emptyString)));
+  oneString comment5 = oneString('/', new oneString('/', new oneString('/', new oneString('H', new emptyString))));
+  oneString comment6 = oneString('H', new oneString('/', new oneString('/', new oneString('/', new emptyString))));
+  oneString comment7 = oneString('/', new emptyString);
+
   std::cout << std::boolalpha;
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing EvenLengthBinary DFA" << std::endl;
@@ -749,37 +770,150 @@ void makeAndTestDFAs()
   std::cout << "Trace for 00000: ";
   oddBinaryNumber.trace(ZZZZZ);
   std::cout << std::endl;
-  std::cout << "11: Does EvenBinaryNumber accept 111? " << oddBinaryNumber.accepts(OOO)
+  std::cout << "11: Does OddBinaryNumber accept 111? " << oddBinaryNumber.accepts(OOO)
             << std::endl;
   std::cout << "Trace for 111: ";
   oddBinaryNumber.trace(OOO);
   std::cout << std::endl;
-  std::cout << "12: Does BinaryNumber accept 01010? " << oddBinaryNumber.accepts(ZOZOZ)
+  std::cout << "12: Does OddBinaryNumber accept 01010? " << oddBinaryNumber.accepts(ZOZOZ)
             << std::endl;
   std::cout << "Trace for 01010: ";
   oddBinaryNumber.trace(ZOZOZ);
+  std::cout << std::endl;
+  std::cout << "-----------------------" << std::endl;
+
+  std::cout << "-----------------------" << std::endl;
+  std::cout << "Testing ContainsCAM DFA" << std::endl;
+  std::cout << "1: Does ContainsCAM accept 10? " << containsCAM.accepts(OZ)
+            << std::endl;
+  std::cout << "Trace for 10: ";
+  containsCAM.trace(OZ);
+  std::cout << std::endl;
+  std::cout << "2: Does ContainsCAM accept 01? " << containsCAM.accepts(ZO)
+            << std::endl;
+  std::cout << "Trace for 01: ";
+  containsCAM.trace(ZO);
+  std::cout << std::endl;
+  std::cout << "3: Does ContainsCAM accept 1011? " << containsCAM.accepts(OZOO)
+            << std::endl;
+  std::cout << "Trace for 1011: ";
+  containsCAM.trace(OZOO);
+  std::cout << std::endl;
+  std::cout << "4: Does ContainsCAM accept 0000? " << containsCAM.accepts(ZZZZ)
+            << std::endl;
+  std::cout << "Trace for 0000: ";
+  containsCAM.trace(ZZZZ);
+  std::cout << std::endl;
+  std::cout << "5: Does ContainsCAM accept MAC? "
+            << containsCAM.accepts(MAC) << std::endl;
+  std::cout << "Trace for MAC: ";
+  containsCAM.trace(MAC);
+  std::cout << std::endl;
+  std::cout << "6: Does ContainsCAM accept the empty string? "
+            << containsCAM.accepts(epsi) << std::endl;
+  std::cout << "Trace for empty string: ";
+  containsCAM.trace(epsi);
+  std::cout << std::endl;
+  std::cout << "7: Does ContainsCAM accept CAM11? " << containsCAM.accepts(CAMOO)
+            << std::endl;
+  std::cout << "Trace for CAM11: ";
+  containsCAM.trace(CAMOO);
+  std::cout << std::endl;
+  std::cout << "8: Does ContainsCAM accept 11CAM? " << containsCAM.accepts(OOCAM)
+            << std::endl;
+  std::cout << "Trace for 11CAM: ";
+  containsCAM.trace(OOCAM);
+  std::cout << std::endl;
+  std::cout << "9: Does ContainsCAM accept 1CAM1? " << containsCAM.accepts(OCAMO)
+            << std::endl;
+  std::cout << "Trace for 1CAM1: ";
+  containsCAM.trace(OCAMO);
+  std::cout << std::endl;
+  std::cout << "10:Does ContainsCAM accept CACAMM? " << containsCAM.accepts(CACAMM)
+            << std::endl;
+  std::cout << "Trace for CACAMM: ";
+  containsCAM.trace(CACAMM);
+  std::cout << std::endl;
+  std::cout << "11: Does ContainsCAM accept CAMCAM? " << containsCAM.accepts(CAMCAM)
+            << std::endl;
+  std::cout << "Trace for CAMCAM: ";
+  containsCAM.trace(CAMCAM);
+  std::cout << std::endl;
+  std::cout << "12: Does ContainsCAM accept CAMERA? " << containsCAM.accepts(CAMERA)
+            << std::endl;
+  std::cout << "Trace for CAMERA: ";
+  containsCAM.trace(CAMERA);
+  std::cout << std::endl;
+  std::cout << "-----------------------" << std::endl;
+
+  std::cout << "-----------------------" << std::endl;
+  std::cout << "Testing ContainsLineComment DFA" << std::endl;
+  std::cout << "1: Does ContainsLineComment accept //H? " << containsLineComment.accepts(comment1)
+            << std::endl;
+  std::cout << "Trace for //H: ";
+  containsLineComment.trace(comment1);
+  std::cout << std::endl;
+  std::cout << "2: Does ContainsLineComment accept H//? " << containsLineComment.accepts(comment2)
+            << std::endl;
+  std::cout << "Trace for 01: ";
+  containsLineComment.trace(comment2);
+  std::cout << std::endl;
+  std::cout << "3: Does ContainsLineComment accept /H/? " << containsLineComment.accepts(comment3)
+            << std::endl;
+  std::cout << "Trace for /H/: ";
+  containsLineComment.trace(comment3);
+  std::cout << std::endl;
+  std::cout << "4: Does ContainsLineComment accept ///? " << containsLineComment.accepts(comment4)
+            << std::endl;
+  std::cout << "Trace for ///: ";
+  containsLineComment.trace(comment4);
+  std::cout << std::endl;
+  std::cout << "5: Does ContainsLineComment accept ///H? "
+            << containsLineComment.accepts(comment5) << std::endl;
+  std::cout << "Trace for ///H: ";
+  containsLineComment.trace(comment5);
+  std::cout << std::endl;
+  std::cout << "6: Does ContainsLineComment accept the empty string? "
+            << containsLineComment.accepts(epsi) << std::endl;
+  std::cout << "Trace for empty string: ";
+  containsLineComment.trace(epsi);
+  std::cout << std::endl;
+  std::cout << "7: Does ContainsLineComment accept H///? " << containsLineComment.accepts(comment6)
+            << std::endl;
+  std::cout << "Trace for H///: ";
+  containsLineComment.trace(comment6);
+  std::cout << std::endl;
+  std::cout << "8: Does ContainsLineComment accept /? " << containsLineComment.accepts(comment7)
+            << std::endl;
+  std::cout << "Trace for /: ";
+  containsLineComment.trace(comment7);
+  std::cout << std::endl;
+  std::cout << "9: Does ContainsLineComment accept 1CAM1? " << containsLineComment.accepts(OCAMO)
+            << std::endl;
+  std::cout << "Trace for 1CAM1: ";
+  containsLineComment.trace(OCAMO);
+  std::cout << std::endl;
+  std::cout << "10:Does ContainsLineComment accept CACAMM? " << containsLineComment.accepts(CACAMM)
+            << std::endl;
+  std::cout << "Trace for CACAMM: ";
+  containsLineComment.trace(CACAMM);
+  std::cout << std::endl;
+  std::cout << "11: Does ContainsLineComment accept CAMCAM? " << containsLineComment.accepts(CAMCAM)
+            << std::endl;
+  std::cout << "Trace for CAMCAM: ";
+  containsLineComment.trace(CAMCAM);
+  std::cout << std::endl;
+  std::cout << "12: Does ContainsLineComment accept CAMERA? " << containsLineComment.accepts(CAMERA)
+            << std::endl;
+  std::cout << "Trace for CAMERA: ";
+  containsLineComment.trace(CAMERA);
   std::cout << std::endl;
   std::cout << "-----------------------" << std::endl;
 }
 
 int main()
 {
-  int answer;
+  makeAndTestDFAs();
 
-  std::cout << "Please enter the number of the machine you wish to simulate" << std::endl;
-  std::cout << "1: DFA" << std::endl;
-  std::cout << "10: Exit simulator" << std::endl;
-
-  while (true)
-  {
-    std::cin >> answer;
-
-    if (answer == 1)
-      makeAndTestDFAs();
-    else if (answer == 10)
-      break;
-    else
-      std::cout << "Please enter a valid number between 1 and 10: " << std::endl;
-  }
   return 0;
 }
