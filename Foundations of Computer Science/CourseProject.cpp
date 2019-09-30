@@ -132,13 +132,14 @@ public:
       std::cout << qi;
     }
   }
-  /*
-  myString* acceptedString() {
-    // need to check that accept states function is not empty by passing it
-  possible
 
+  myString *acceptedString()
+  {
+    myString *acceptString = NULL;
+    // start at start state and try different letters of alphabet, each time check whether currently at accept state, and also add on to the current string
+    return acceptString;
   }
-*/
+
   bool acceptStates(myChar b) { return (*F)(b); } // used for testing
   State transitionFunction(State a, myChar b)
   {
@@ -312,9 +313,7 @@ void makeAndTestDFAs()
           return myChar('C');
         else if (a.getVal() == 'C' && b.getVal() == '0')
           return myChar('D');
-        else if (a.getVal() == 'D' && b.getVal() == '0')
-          return myChar('B');
-        else if (a.getVal() == 'D' && b.getVal() == '1')
+        else if (a.getVal() == 'D')
           return myChar('D');
         else
           return myChar('A');
@@ -415,7 +414,11 @@ void makeAndTestDFAs()
   oneString ZOZO = oneString('0', new oneString('1', new oneString('0', new oneString('1', new emptyString))));
   oneString OO = oneString('1', new oneString('1', new emptyString));
   oneString ZZZOO = oneString('0', new oneString('0', new oneString('0', new oneString('1', new oneString('1', new emptyString)))));
+  oneString OZZZO = oneString('1', new oneString('0', new oneString('0', new oneString('0', new oneString('1', new emptyString)))));
+  oneString OOZZZ = oneString('1', new oneString('1', new oneString('0', new oneString('0', new oneString('0', new emptyString)))));
   oneString ZOZOOO = oneString('0', new oneString('1', new oneString('0', new oneString('1', new oneString('1', new oneString('1', new emptyString))))));
+  oneString ZOZZZ = oneString('0', new oneString('1', new oneString('0', new oneString('0', new oneString('0', new emptyString)))));
+  oneString ZZ = oneString('0', new oneString('0', new emptyString));
   oneString OOOOOO = oneString(
       '1',
       new oneString(
@@ -907,6 +910,136 @@ void makeAndTestDFAs()
             << std::endl;
   std::cout << "Trace for CAMERA: ";
   containsLineComment.trace(CAMERA);
+  std::cout << std::endl;
+  std::cout << "-----------------------" << std::endl;
+
+  
+  std::cout << "-----------------------" << std::endl;
+  std::cout << "Testing ThreeConsecutiveZerosBinary DFA" << std::endl;
+  std::cout << "1: Does ThreeConsecutiveZerosBinary accept 0000 " << threeConsecutiveZerosBinary.accepts(ZZZZ)
+            << std::endl;
+  std::cout << "Trace for 0000: ";
+  threeConsecutiveZerosBinary.trace(ZZZZ);
+  std::cout << std::endl;
+  std::cout << "2: Does ThreeConsecutiveZerosBinary accept 00011? " << threeConsecutiveZerosBinary.accepts(ZZZOO)
+            << std::endl;
+  std::cout << "Trace for 00011: ";
+  threeConsecutiveZerosBinary.trace(ZZZOO);
+  std::cout << std::endl;
+  std::cout << "3: Does ThreeConsecutiveZerosBinary accept 01000? " << threeConsecutiveZerosBinary.accepts(ZOZZZ)
+            << std::endl;
+  std::cout << "Trace for 01000: ";
+  threeConsecutiveZerosBinary.trace(ZOZZZ);
+  std::cout << std::endl;
+  std::cout << "4: Does ThreeConsecutiveZerosBinary accept 00000? " << threeConsecutiveZerosBinary.accepts(ZZZZZ)
+            << std::endl;
+  std::cout << "Trace for 00000: ";
+  threeConsecutiveZerosBinary.trace(ZZZZZ);
+  std::cout << std::endl;
+  std::cout << "5: Does ThreeConsecutiveZerosBinary accept 11000? "
+            << threeConsecutiveZerosBinary.accepts(OOZZZ) << std::endl;
+  std::cout << "Trace for 11000: ";
+  threeConsecutiveZerosBinary.trace(OOZZZ);
+  std::cout << std::endl;
+  std::cout << "6: Does ThreeConsecutiveZerosBinary accept the empty string? "
+            << threeConsecutiveZerosBinary.accepts(epsi) << std::endl;
+  std::cout << "Trace for empty string: ";
+  threeConsecutiveZerosBinary.trace(epsi);
+  std::cout << std::endl;
+  std::cout << "7: Does ThreeConsecutiveZerosBinary accept 10001? " << threeConsecutiveZerosBinary.accepts(OZZZO)
+            << std::endl;
+  std::cout << "Trace for 10001: ";
+  threeConsecutiveZerosBinary.trace(OZZZO);
+  std::cout << std::endl;
+  std::cout << "8: Does ThreeConsecutiveZerosBinary accept 0? " << threeConsecutiveZerosBinary.accepts(Z)
+            << std::endl;
+  std::cout << "Trace for 0: ";
+  threeConsecutiveZerosBinary.trace(Z);
+  std::cout << std::endl;
+  std::cout << "9: Does ThreeConsecutiveZerosBinary accept MAC? " << threeConsecutiveZerosBinary.accepts(MAC)
+            << std::endl;
+  std::cout << "Trace for MAC: ";
+  threeConsecutiveZerosBinary.trace(MAC);
+  std::cout << std::endl;
+  std::cout << "10:Does ThreeConsecutiveZerosBinary accept 10? " << threeConsecutiveZerosBinary.accepts(OZ)
+            << std::endl;
+  std::cout << "Trace for 10: ";
+  threeConsecutiveZerosBinary.trace(OZ);
+  std::cout << std::endl;
+  std::cout << "11: Does ThreeConsecutiveZerosBinary accept 111? " << threeConsecutiveZerosBinary.accepts(OOO)
+            << std::endl;
+  std::cout << "Trace for 111: ";
+  threeConsecutiveZerosBinary.trace(OOO);
+  std::cout << std::endl;
+  std::cout << "12: Does ThreeConsecutiveZerosBinary accept 01010? " << threeConsecutiveZerosBinary.accepts(ZOZOZ)
+            << std::endl;
+  std::cout << "Trace for 01010: ";
+  threeConsecutiveZerosBinary.trace(ZOZOZ);
+  std::cout << std::endl;
+  std::cout << "-----------------------" << std::endl;
+
+
+  std::cout << "-----------------------" << std::endl;
+  std::cout << "Testing ThreeConsecutiveOnesBinary DFA" << std::endl;
+  std::cout << "1: Does ThreeConsecutiveOnesBinary accept 0000 " << threeConsecutiveOnesBinary.accepts(ZZZZ)
+            << std::endl;
+  std::cout << "Trace for 0000: ";
+  threeConsecutiveOnesBinary.trace(ZZZZ);
+  std::cout << std::endl;
+  std::cout << "2: Does ThreeConsecutiveOnesBinary accept 00011? " << threeConsecutiveOnesBinary.accepts(ZZZOO)
+            << std::endl;
+  std::cout << "Trace for 00011: ";
+  threeConsecutiveOnesBinary.trace(ZZZOO);
+  std::cout << std::endl;
+  std::cout << "3: Does ThreeConsecutiveOnesBinary accept 01000? " << threeConsecutiveOnesBinary.accepts(ZOZZZ)
+            << std::endl;
+  std::cout << "Trace for 01000: ";
+  threeConsecutiveOnesBinary.trace(ZOZZZ);
+  std::cout << std::endl;
+  std::cout << "4: Does ThreeConsecutiveOnesBinary accept 00000? " << threeConsecutiveOnesBinary.accepts(ZZZZZ)
+            << std::endl;
+  std::cout << "Trace for 00000: ";
+  threeConsecutiveOnesBinary.trace(ZZZZZ);
+  std::cout << std::endl;
+  std::cout << "5: Does ThreeConsecutiveOnesBinary accept 11000? "
+            << threeConsecutiveOnesBinary.accepts(OOZZZ) << std::endl;
+  std::cout << "Trace for 11000: ";
+  threeConsecutiveOnesBinary.trace(OOZZZ);
+  std::cout << std::endl;
+  std::cout << "6: Does ThreeConsecutiveOnesBinary accept the empty string? "
+            << threeConsecutiveOnesBinary.accepts(epsi) << std::endl;
+  std::cout << "Trace for empty string: ";
+  threeConsecutiveOnesBinary.trace(epsi);
+  std::cout << std::endl;
+  std::cout << "7: Does ThreeConsecutiveOnesBinary accept 10001? " << threeConsecutiveOnesBinary.accepts(OZZZO)
+            << std::endl;
+  std::cout << "Trace for 10001: ";
+  threeConsecutiveOnesBinary.trace(OZZZO);
+  std::cout << std::endl;
+  std::cout << "8: Does ThreeConsecutiveOnesBinary accept 0? " << threeConsecutiveOnesBinary.accepts(Z)
+            << std::endl;
+  std::cout << "Trace for 0: ";
+  threeConsecutiveOnesBinary.trace(Z);
+  std::cout << std::endl;
+  std::cout << "9: Does ThreeConsecutiveOnesBinary accept MAC? " << threeConsecutiveOnesBinary.accepts(MAC)
+            << std::endl;
+  std::cout << "Trace for MAC: ";
+  threeConsecutiveOnesBinary.trace(MAC);
+  std::cout << std::endl;
+  std::cout << "10:Does ThreeConsecutiveOnesBinary accept 10? " << threeConsecutiveOnesBinary.accepts(OZ)
+            << std::endl;
+  std::cout << "Trace for 10: ";
+  threeConsecutiveOnesBinary.trace(OZ);
+  std::cout << std::endl;
+  std::cout << "11: Does ThreeConsecutiveOnesBinary accept 111? " << threeConsecutiveOnesBinary.accepts(OOO)
+            << std::endl;
+  std::cout << "Trace for 111: ";
+  threeConsecutiveOnesBinary.trace(OOO);
+  std::cout << std::endl;
+  std::cout << "12: Does ThreeConsecutiveOnesBinary accept 01010? " << threeConsecutiveOnesBinary.accepts(ZOZOZ)
+            << std::endl;
+  std::cout << "Trace for 01010: ";
+  threeConsecutiveOnesBinary.trace(ZOZOZ);
   std::cout << std::endl;
   std::cout << "-----------------------" << std::endl;
 }
