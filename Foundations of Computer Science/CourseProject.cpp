@@ -133,10 +133,12 @@ public:
     }
   }
 
-  myString *acceptedString()
+  myString *acceptedString()  // returns a string that would be accepted by this DFA
   {
-    myString *acceptString = NULL;
-    // start at start state and try different letters of alphabet, each time check whether currently at accept state, and also add on to the current string
+    if (alphabet.size() == 0)
+      return new emptyString;
+    
+    
     return acceptString;
   }
 
