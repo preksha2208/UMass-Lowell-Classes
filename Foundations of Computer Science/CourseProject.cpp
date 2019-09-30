@@ -110,7 +110,7 @@ public:
     myString *temp = &inputString;
 
     // step through DFA with the input string
-    while (temp->next()->charValue() != 'E')
+    while (temp->charValue() != 'E')
     {
       qi = (*transFunc)(qi, temp->charObject());
       temp = temp->next();
@@ -123,13 +123,13 @@ public:
   { // does DFA accept inputString?
     State qi = this->q0;
     myString *temp = &inputString;
-
+    std::cout << qi;
     // step through DFA with the input string
-    while (temp->charValue() != 'E')
+    while (temp->next()->charValue() != 'E')
     {
-      std::cout << qi;
       qi = (*transFunc)(qi, temp->charObject());
       temp = temp->next();
+      std::cout << qi;
     }
   }
   /*
@@ -187,8 +187,8 @@ DFA<myChar> oneCharDFA(myChar inputChar) {
 void makeAndTestDFAs()
 {
 
-  DFA<myChar> evenLength(
-      "EvenLength",          // name
+  DFA<myChar> evenLengthBinary(
+      "EvenLengthBinary",    // name
       [](myChar a) -> bool { // state function
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
@@ -204,10 +204,7 @@ void makeAndTestDFAs()
           return a;
       },
       [](myChar a) -> bool { // accept states
-        if (a.getVal() == 'B')
-          return true;
-        else
-          return false;
+        return (a.getVal() == 'A');
       });
 
   DFA<myChar> acceptsNothing(
@@ -444,66 +441,66 @@ void makeAndTestDFAs()
 
   std::cout << std::boolalpha;
   std::cout << "-----------------------" << std::endl;
-  std::cout << "Testing EvenLength DFA" << std::endl;
-  std::cout << "1: Does EvenLength accept 10? " << evenLength.accepts(OZ)
+  std::cout << "Testing EvenLengthBinary DFA" << std::endl;
+  std::cout << "1: Does EvenLengthBinary accept 10? " << evenLengthBinary.accepts(OZ)
             << std::endl;
   std::cout << "Trace for 10: ";
-  evenLength.trace(OZ);
+  evenLengthBinary.trace(OZ);
   std::cout << std::endl;
-  std::cout << "2: Does EvenLength accept 01? " << evenLength.accepts(ZO)
+  std::cout << "2: Does EvenLengthBinary accept 01? " << evenLengthBinary.accepts(ZO)
             << std::endl;
   std::cout << "Trace for 01: ";
-  evenLength.trace(ZO);
+  evenLengthBinary.trace(ZO);
   std::cout << std::endl;
-  std::cout << "3: Does EvenLength accept 1011? " << evenLength.accepts(OZOO)
+  std::cout << "3: Does EvenLengthBinary accept 1011? " << evenLengthBinary.accepts(OZOO)
             << std::endl;
   std::cout << "Trace for 1011: ";
-  evenLength.trace(OZOO);
+  evenLengthBinary.trace(OZOO);
   std::cout << std::endl;
-  std::cout << "4: Does EvenLength accept 0000? " << evenLength.accepts(ZZZZ)
+  std::cout << "4: Does EvenLengthBinary accept 0000? " << evenLengthBinary.accepts(ZZZZ)
             << std::endl;
   std::cout << "Trace for 0000: ";
-  evenLength.trace(ZZZZ);
+  evenLengthBinary.trace(ZZZZ);
   std::cout << std::endl;
-  std::cout << "5: Does EvenLength accept 111111? "
-            << evenLength.accepts(OOOOOO) << std::endl;
+  std::cout << "5: Does EvenLengthBinary accept 111111? "
+            << evenLengthBinary.accepts(OOOOOO) << std::endl;
   std::cout << "Trace for 111111: ";
-  evenLength.trace(OOOOOO);
+  evenLengthBinary.trace(OOOOOO);
   std::cout << std::endl;
-  std::cout << "6: Does EvenLength accept the empty string? "
-            << evenLength.accepts(mtString) << std::endl;
+  std::cout << "6: Does EvenLengthBinary accept the empty string? "
+            << evenLengthBinary.accepts(mtString) << std::endl;
   std::cout << "Trace for empty string: ";
-  evenLength.trace(mtString);
+  evenLengthBinary.trace(mtString);
   std::cout << std::endl;
-  std::cout << "7: Does EvenLength accept 1? " << evenLength.accepts(O)
+  std::cout << "7: Does EvenLengthBinary accept 1? " << evenLengthBinary.accepts(O)
             << std::endl;
   std::cout << "Trace for 1: ";
-  evenLength.trace(O);
+  evenLengthBinary.trace(O);
   std::cout << std::endl;
-  std::cout << "8: Does EvenLength accept 0? " << evenLength.accepts(Z)
+  std::cout << "8: Does EvenLengthBinary accept 0? " << evenLengthBinary.accepts(Z)
             << std::endl;
   std::cout << "Trace for 0: ";
-  evenLength.trace(Z);
+  evenLengthBinary.trace(Z);
   std::cout << std::endl;
-  std::cout << "9: Does EvenLength accept 010? " << evenLength.accepts(ZOZ)
+  std::cout << "9: Does EvenLengthBinary accept 010? " << evenLengthBinary.accepts(ZOZ)
             << std::endl;
   std::cout << "Trace for 0: ";
-  evenLength.trace(Z);
+  evenLengthBinary.trace(Z);
   std::cout << std::endl;
-  std::cout << "10:Does EvenLength accept 00000? " << evenLength.accepts(ZZZZZ)
+  std::cout << "10:Does EvenLengthBinary accept 00000? " << evenLengthBinary.accepts(ZZZZZ)
             << std::endl;
   std::cout << "Trace for 00000: ";
-  evenLength.trace(ZZZZZ);
+  evenLengthBinary.trace(ZZZZZ);
   std::cout << std::endl;
-  std::cout << "11: Does EvenLength accept 111? " << evenLength.accepts(OOO)
+  std::cout << "11: Does EvenLengthBinary accept 111? " << evenLengthBinary.accepts(OOO)
             << std::endl;
   std::cout << "Trace for 111: ";
-  evenLength.trace(OOO);
+  evenLengthBinary.trace(OOO);
   std::cout << std::endl;
-  std::cout << "12: Does EvenLength accept 01010? " << evenLength.accepts(ZOZOZ)
+  std::cout << "12: Does EvenLengthBinary accept 01010? " << evenLengthBinary.accepts(ZOZOZ)
             << std::endl;
   std::cout << "Trace for 01010: ";
-  evenLength.trace(ZOZOZ);
+  evenLengthBinary.trace(ZOZOZ);
   std::cout << std::endl;
   std::cout << "-----------------------" << std::endl;
 }
