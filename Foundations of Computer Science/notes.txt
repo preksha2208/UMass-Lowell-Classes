@@ -1,0 +1,14 @@
+TASK 1: Alphabet is represented as a list of myChar objects.
+TASK 2: Strings are represented in linked list form with each node being a oneString (meaning that it contains a single myChar) or emptyString object (which contains epsilon). Each linked list ends with an emptyString object.
+TASK 3: TODO
+TASK 4: DFAs are represented as described in the project description. The set of states and set of accept states are represented as membership functions (which are function pointers in C++). When creating a DFA object, I use lambdas to create these functions.
+TASK 5: I have created a DFA called acceptsNothing. It is located within the makeAndTestDFAs() function and there are 12 inputs it is tested with.
+TASK 6: I have created a DFA called onlyAcceptsEmptyString. It is located within the makeAndTestDFAs() function and there are 12 inputs it is tested with.
+TASK 7: TODO
+TASK 8: I have created 12 example DFAs (including acceptsNothing and onlyAcceptsEmptyString). They are all created and tested within makeAndTestsDFAs(). They do practical things, such as testing whether a binary number is even or odd.
+TASK 9: I have created 12 tests for each of my 12 DFAs within my very lengthy function, makeAndTestsDFA(). I wasn't sure of how to make this function smaller, since there are unique input strings for each of the 12 DFAs.
+TASK 10: I created the accepts function within my DFA class
+TASK 11: I created the trace function within my DFA class. At the moment it prints the trace to the console, but I may change this if in the future I need to return the values in some data type.
+TASK 12: TODO
+TASK 13: TODO
+TASK 14:
