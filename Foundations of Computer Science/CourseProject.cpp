@@ -125,7 +125,7 @@ public:
     myString *temp = &inputString;
     std::cout << qi;
     // step through DFA with the input string
-    while (temp->next()->charValue() != 'E')
+    while (temp->charValue() != 'E')
     {
       qi = (*transFunc)(qi, temp->charObject());
       temp = temp->next();
@@ -160,7 +160,7 @@ myString lexi(std::list<myString> alphabet){
 }
 */
 
-// makes a DFA that only excepts a string of just one of the inputted Char
+// makes a DFA that only accepts a string of just one of the inputted Char
 /*
 DFA<myChar> oneCharDFA(myChar inputChar) {
   auto tFunc = [=](myChar a, myChar b) -> myChar {
@@ -216,17 +216,18 @@ void makeAndTestDFAs()
   DFA<myChar> onlyAcceptsEmptyString(
       "OnlyAcceptsEmptyString",
       [](myChar a) -> bool {
-        return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
-                (a.getVal() == 'C'));
+        return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
       std::list<myChar>{myChar('E')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
-        if (a.getVal() == 'A' && b.getVal() == 'E')
+        if (a.getVal() == 'A' && b.getVal() != 'E')
+          return myChar('B');
+        else if (a.getVal() == 'B')
           return myChar('B');
         else
-          return myChar('C');
+          return a;
       },
-      [](myChar a) -> bool { return (a == myChar('E')); });
+      [](myChar a) -> bool { return (a == myChar('A')); });
   DFA<myChar> evenBinaryNumber(
       "EvenBinaryNumber",
       [](myChar a) -> bool {
@@ -419,7 +420,7 @@ void makeAndTestDFAs()
               '1', new oneString(
                        '1', new oneString(
                                 '1', new oneString('1', new emptyString))))));
-  oneString mtString = oneString('E', new emptyString);
+  emptyString epsi;
   oneString O = oneString('1', new emptyString);
   oneString Z = oneString('0', new emptyString);
   oneString OOO =
@@ -433,12 +434,12 @@ void makeAndTestDFAs()
           new oneString(
               '0', new oneString('0', new oneString('0', new emptyString)))));
   oneString ZOZOZ = oneString(
+
       '0',
       new oneString(
           '1',
           new oneString(
               '0', new oneString('1', new oneString('0', new emptyString)))));
-
   std::cout << std::boolalpha;
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing EvenLengthBinary DFA" << std::endl;
@@ -468,9 +469,9 @@ void makeAndTestDFAs()
   evenLengthBinary.trace(OOOOOO);
   std::cout << std::endl;
   std::cout << "6: Does EvenLengthBinary accept the empty string? "
-            << evenLengthBinary.accepts(mtString) << std::endl;
+            << evenLengthBinary.accepts(epsi) << std::endl;
   std::cout << "Trace for empty string: ";
-  evenLengthBinary.trace(mtString);
+  evenLengthBinary.trace(epsi);
   std::cout << std::endl;
   std::cout << "7: Does EvenLengthBinary accept 1? " << evenLengthBinary.accepts(O)
             << std::endl;
@@ -503,11 +504,282 @@ void makeAndTestDFAs()
   evenLengthBinary.trace(ZOZOZ);
   std::cout << std::endl;
   std::cout << "-----------------------" << std::endl;
+
+  std::cout << "-----------------------" << std::endl;
+  std::cout << "Testing AcceptsNothing DFA" << std::endl;
+  std::cout << "1: Does AcceptsNothing accept 10? " << acceptsNothing.accepts(OZ)
+            << std::endl;
+  std::cout << "Trace for 10: ";
+  acceptsNothing.trace(OZ);
+  std::cout << std::endl;
+  std::cout << "2: Does AcceptsNothing accept 01? " << acceptsNothing.accepts(ZO)
+            << std::endl;
+  std::cout << "Trace for 01: ";
+  acceptsNothing.trace(ZO);
+  std::cout << std::endl;
+  std::cout << "3: Does AcceptsNothing accept 1011? " << acceptsNothing.accepts(OZOO)
+            << std::endl;
+  std::cout << "Trace for 1011: ";
+  acceptsNothing.trace(OZOO);
+  std::cout << std::endl;
+  std::cout << "4: Does AcceptsNothing accept 0000? " << acceptsNothing.accepts(ZZZZ)
+            << std::endl;
+  std::cout << "Trace for 0000: ";
+  acceptsNothing.trace(ZZZZ);
+  std::cout << std::endl;
+  std::cout << "5: Does AcceptsNothing accept 111111? "
+            << acceptsNothing.accepts(OOOOOO) << std::endl;
+  std::cout << "Trace for 111111: ";
+  acceptsNothing.trace(OOOOOO);
+  std::cout << std::endl;
+  std::cout << "6: Does AcceptsNothing accept the empty string? "
+            << acceptsNothing.accepts(epsi) << std::endl;
+  std::cout << "Trace for empty string: ";
+  acceptsNothing.trace(epsi);
+  std::cout << std::endl;
+  std::cout << "7: Does AcceptsNothing accept 1? " << acceptsNothing.accepts(O)
+            << std::endl;
+  std::cout << "Trace for 1: ";
+  acceptsNothing.trace(O);
+  std::cout << std::endl;
+  std::cout << "8: Does AcceptsNothing accept 0? " << acceptsNothing.accepts(Z)
+            << std::endl;
+  std::cout << "Trace for 0: ";
+  acceptsNothing.trace(Z);
+  std::cout << std::endl;
+  std::cout << "9: Does AcceptsNothing accept 010? " << acceptsNothing.accepts(ZOZ)
+            << std::endl;
+  std::cout << "Trace for 0: ";
+  acceptsNothing.trace(Z);
+  std::cout << std::endl;
+  std::cout << "10:Does AcceptsNothing accept 00000? " << acceptsNothing.accepts(ZZZZZ)
+            << std::endl;
+  std::cout << "Trace for 00000: ";
+  acceptsNothing.trace(ZZZZZ);
+  std::cout << std::endl;
+  std::cout << "11: Does AcceptsNothing accept 111? " << acceptsNothing.accepts(OOO)
+            << std::endl;
+  std::cout << "Trace for 111: ";
+  acceptsNothing.trace(OOO);
+  std::cout << std::endl;
+  std::cout << "12: Does AcceptsNothing accept 01010? " << acceptsNothing.accepts(ZOZOZ)
+            << std::endl;
+  std::cout << "Trace for 01010: ";
+  acceptsNothing.trace(ZOZOZ);
+  std::cout << std::endl;
+  std::cout << "-----------------------" << std::endl;
+
+  std::cout << "-----------------------" << std::endl;
+  std::cout << "Testing OnlyAcceptsEmptyString DFA" << std::endl;
+  std::cout << "1: Does OnlyAcceptsEmptyString accept 10? " << onlyAcceptsEmptyString.accepts(OZ)
+            << std::endl;
+  std::cout << "Trace for 10: ";
+  onlyAcceptsEmptyString.trace(OZ);
+  std::cout << std::endl;
+  std::cout << "2: Does OnlyAcceptsEmptyString accept 01? " << onlyAcceptsEmptyString.accepts(ZO)
+            << std::endl;
+  std::cout << "Trace for 01: ";
+  onlyAcceptsEmptyString.trace(ZO);
+  std::cout << std::endl;
+  std::cout << "3: Does OnlyAcceptsEmptyString accept 1011? " << onlyAcceptsEmptyString.accepts(OZOO)
+            << std::endl;
+  std::cout << "Trace for 1011: ";
+  onlyAcceptsEmptyString.trace(OZOO);
+  std::cout << std::endl;
+  std::cout << "4: Does OnlyAcceptsEmptyString accept 0000? " << onlyAcceptsEmptyString.accepts(ZZZZ)
+            << std::endl;
+  std::cout << "Trace for 0000: ";
+  onlyAcceptsEmptyString.trace(ZZZZ);
+  std::cout << std::endl;
+  std::cout << "5: Does OnlyAcceptsEmptyString accept 111111? "
+            << onlyAcceptsEmptyString.accepts(OOOOOO) << std::endl;
+  std::cout << "Trace for 111111: ";
+  onlyAcceptsEmptyString.trace(OOOOOO);
+  std::cout << std::endl;
+  std::cout << "6: Does OnlyAcceptsEmptyString accept the empty string? "
+            << onlyAcceptsEmptyString.accepts(epsi) << std::endl;
+  std::cout << "Trace for empty string: ";
+  onlyAcceptsEmptyString.trace(epsi);
+  std::cout << std::endl;
+  std::cout << "7: Does OnlyAcceptsEmptyString accept 1? " << onlyAcceptsEmptyString.accepts(O)
+            << std::endl;
+  std::cout << "Trace for 1: ";
+  onlyAcceptsEmptyString.trace(O);
+  std::cout << std::endl;
+  std::cout << "8: Does OnlyAcceptsEmptyString accept 0? " << onlyAcceptsEmptyString.accepts(Z)
+            << std::endl;
+  std::cout << "Trace for 0: ";
+  onlyAcceptsEmptyString.trace(Z);
+  std::cout << std::endl;
+  std::cout << "9: Does OnlyAcceptsEmptyString accept 010? " << onlyAcceptsEmptyString.accepts(ZOZ)
+            << std::endl;
+  std::cout << "Trace for 0: ";
+  onlyAcceptsEmptyString.trace(Z);
+  std::cout << std::endl;
+  std::cout << "10:Does OnlyAcceptsEmptyString accept 00000? " << onlyAcceptsEmptyString.accepts(ZZZZZ)
+            << std::endl;
+  std::cout << "Trace for 00000: ";
+  acceptsNothing.trace(ZZZZZ);
+  std::cout << std::endl;
+  std::cout << "11: Does OnlyAcceptsEmptyString accept 111? " << acceptsNothing.accepts(OOO)
+            << std::endl;
+  std::cout << "Trace for 111: ";
+  onlyAcceptsEmptyString.trace(OOO);
+  std::cout << std::endl;
+  std::cout << "12: Does OnlyAcceptsEmptyString accept 01010? " << onlyAcceptsEmptyString.accepts(ZOZOZ)
+            << std::endl;
+  std::cout << "Trace for 01010: ";
+  onlyAcceptsEmptyString.trace(ZOZOZ);
+  std::cout << std::endl;
+  std::cout << "-----------------------" << std::endl;
+
+  std::cout << "-----------------------" << std::endl;
+  std::cout << "Testing EvenBinaryNumber DFA" << std::endl;
+  std::cout << "1: Does EvenBinaryNumber accept 10? " << evenBinaryNumber.accepts(OZ)
+            << std::endl;
+  std::cout << "Trace for 10: ";
+  evenBinaryNumber.trace(OZ);
+  std::cout << std::endl;
+  std::cout << "2: Does EvenBinaryNumber accept 01? " << evenBinaryNumber.accepts(ZO)
+            << std::endl;
+  std::cout << "Trace for 01: ";
+  evenBinaryNumber.trace(ZO);
+  std::cout << std::endl;
+  std::cout << "3: Does EvenBinaryNumber accept 1011? " << evenBinaryNumber.accepts(OZOO)
+            << std::endl;
+  std::cout << "Trace for 1011: ";
+  evenBinaryNumber.trace(OZOO);
+  std::cout << std::endl;
+  std::cout << "4: Does EvenBinaryNumber accept 0000? " << evenBinaryNumber.accepts(ZZZZ)
+            << std::endl;
+  std::cout << "Trace for 0000: ";
+  evenBinaryNumber.trace(ZZZZ);
+  std::cout << std::endl;
+  std::cout << "5: Does EvenBinaryNumber accept 111111? "
+            << evenBinaryNumber.accepts(OOOOOO) << std::endl;
+  std::cout << "Trace for 111111: ";
+  evenBinaryNumber.trace(OOOOOO);
+  std::cout << std::endl;
+  std::cout << "6: Does EvenBinaryNumber accept the empty string? "
+            << evenBinaryNumber.accepts(epsi) << std::endl;
+  std::cout << "Trace for empty string: ";
+  evenBinaryNumber.trace(epsi);
+  std::cout << std::endl;
+  std::cout << "7: Does EvenBinaryNumber accept 1? " << evenBinaryNumber.accepts(O)
+            << std::endl;
+  std::cout << "Trace for 1: ";
+  evenBinaryNumber.trace(O);
+  std::cout << std::endl;
+  std::cout << "8: Does EvenBinaryNumber accept 0? " << evenBinaryNumber.accepts(Z)
+            << std::endl;
+  std::cout << "Trace for 0: ";
+  evenBinaryNumber.trace(Z);
+  std::cout << std::endl;
+  std::cout << "9: Does EvenBinaryNumber accept 010? " << evenBinaryNumber.accepts(ZOZ)
+            << std::endl;
+  std::cout << "Trace for 0: ";
+  evenBinaryNumber.trace(Z);
+  std::cout << std::endl;
+  std::cout << "10:Does EvenBinaryNumber accept 00000? " << evenBinaryNumber.accepts(ZZZZZ)
+            << std::endl;
+  std::cout << "Trace for 00000: ";
+  evenBinaryNumber.trace(ZZZZZ);
+  std::cout << std::endl;
+  std::cout << "11: Does EvenBinaryNumber accept 111? " << evenBinaryNumber.accepts(OOO)
+            << std::endl;
+  std::cout << "Trace for 111: ";
+  evenBinaryNumber.trace(OOO);
+  std::cout << std::endl;
+  std::cout << "12: Does EvenBinaryNumber accept 01010? " << evenBinaryNumber.accepts(ZOZOZ)
+            << std::endl;
+  std::cout << "Trace for 01010: ";
+  evenBinaryNumber.trace(ZOZOZ);
+  std::cout << std::endl;
+  std::cout << "-----------------------" << std::endl;
+
+  std::cout << "-----------------------" << std::endl;
+  std::cout << "Testing OddBinaryNumber DFA" << std::endl;
+  std::cout << "1: Does OddBinaryNumber accept 10? " << oddBinaryNumber.accepts(OZ)
+            << std::endl;
+  std::cout << "Trace for 10: ";
+  oddBinaryNumber.trace(OZ);
+  std::cout << std::endl;
+  std::cout << "2: Does OddBinaryNumber accept 01? " << oddBinaryNumber.accepts(ZO)
+            << std::endl;
+  std::cout << "Trace for 01: ";
+  oddBinaryNumber.trace(ZO);
+  std::cout << std::endl;
+  std::cout << "3: Does OddBinaryNumber accept 1011? " << oddBinaryNumber.accepts(OZOO)
+            << std::endl;
+  std::cout << "Trace for 1011: ";
+  oddBinaryNumber.trace(OZOO);
+  std::cout << std::endl;
+  std::cout << "4: Does OddBinaryNumber accept 0000? " << oddBinaryNumber.accepts(ZZZZ)
+            << std::endl;
+  std::cout << "Trace for 0000: ";
+  oddBinaryNumber.trace(ZZZZ);
+  std::cout << std::endl;
+  std::cout << "5: Does OddBinaryNumber accept 111111? "
+            << oddBinaryNumber.accepts(OOOOOO) << std::endl;
+  std::cout << "Trace for 111111: ";
+  oddBinaryNumber.trace(OOOOOO);
+  std::cout << std::endl;
+  std::cout << "6: Does OddBinaryNumber accept the empty string? "
+            << oddBinaryNumber.accepts(epsi) << std::endl;
+  std::cout << "Trace for empty string: ";
+  oddBinaryNumber.trace(epsi);
+  std::cout << std::endl;
+  std::cout << "7: Does OddBinaryNumber accept 1? " << oddBinaryNumber.accepts(O)
+            << std::endl;
+  std::cout << "Trace for 1: ";
+  oddBinaryNumber.trace(O);
+  std::cout << std::endl;
+  std::cout << "8: Does OddBinaryNumber accept 0? " << oddBinaryNumber.accepts(Z)
+            << std::endl;
+  std::cout << "Trace for 0: ";
+  oddBinaryNumber.trace(Z);
+  std::cout << std::endl;
+  std::cout << "9: Does OddBinaryNumber accept 010? " << oddBinaryNumber.accepts(ZOZ)
+            << std::endl;
+  std::cout << "Trace for 0: ";
+  oddBinaryNumber.trace(Z);
+  std::cout << std::endl;
+  std::cout << "10:Does OddBinaryNumber accept 00000? " << oddBinaryNumber.accepts(ZZZZZ)
+            << std::endl;
+  std::cout << "Trace for 00000: ";
+  oddBinaryNumber.trace(ZZZZZ);
+  std::cout << std::endl;
+  std::cout << "11: Does EvenBinaryNumber accept 111? " << oddBinaryNumber.accepts(OOO)
+            << std::endl;
+  std::cout << "Trace for 111: ";
+  oddBinaryNumber.trace(OOO);
+  std::cout << std::endl;
+  std::cout << "12: Does BinaryNumber accept 01010? " << oddBinaryNumber.accepts(ZOZOZ)
+            << std::endl;
+  std::cout << "Trace for 01010: ";
+  oddBinaryNumber.trace(ZOZOZ);
+  std::cout << std::endl;
+  std::cout << "-----------------------" << std::endl;
 }
 
 int main()
 {
-  makeAndTestDFAs();
+  int answer;
 
+  std::cout << "Please enter the number of the machine you wish to simulate" << std::endl;
+  std::cout << "1: DFA" << std::endl;
+  std::cout << "10: Exit simulator" << std::endl;
+
+  while (true)
+  {
+    std::cin >> answer;
+
+    if (answer == 1)
+      makeAndTestDFAs();
+    else if (answer == 10)
+      break;
+    else
+      std::cout << "Please enter a valid number between 1 and 10: " << std::endl;
+  }
   return 0;
 }
