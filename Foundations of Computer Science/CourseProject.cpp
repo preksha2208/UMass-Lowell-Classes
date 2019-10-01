@@ -129,18 +129,12 @@ public:
     }
   }
 
-  myString *acceptedString() // returns a string that would be accepted by this DFA
-  {
-    if (alphabet.size() == 0)
-      return new emptyString;
-
-    return acceptString;
-  }
-
   bool acceptStates(myChar b) { return (*F)(b); }
   State transitionFunction(State a, myChar b) { return (*transFunc)(a, b); }
+  // auto acceptedString()
 
 private:
+  //auto acceptedString(myString* currentNode, std::unordered_map<int, myChar>);
   std::string name;
   bool (*Q)(State); // list of possible states for this dfa
   std::list<myChar> alphabet;
@@ -149,27 +143,28 @@ private:
   bool (*F)(State);                  // accept states
 };
 
+/*
 template <class State>
 DFA<State> UnionDFA(DFA<State> dfa1, DFA<State> dfa2)
 {
   std::list<myChar> a = dfa1.getAlphabet();
   std::list<myChar> b = dfa2.getAlphabet();
-  a.insert(a.end(), b.begin(), b.end());  // combine the alphabets of both DFAs
+  a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both DFAs
 
   return DFA("Union of " + dfa1.getName() + " and " + dfa2.getName(),
              [](State a) -> bool { // function for possible states
 
              },
-             a, // alphabet
-             myChar('A'),  // start state, need to figure this one out
+             a,                      // alphabet
+             myChar('A'),            // start state, need to figure this one out
              [](State a, myChar b) { // transition function; not correct as is
              },
-             [](State a) {  // accept states
+             [](State a) { // accept states
                return ((dfa1.acceptStates(a)) || (dfa2.acceptStates(a)));
              }
 
   );
-}
+} */
 
 /*
 myString lexi(std::list<myString> alphabet){
@@ -204,7 +199,6 @@ DFA<myChar> oneCharDFA(myChar inputChar) {
 void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints the results to the console
 {
   // Declarations of DFAs
-
   DFA<myChar> evenLengthBinary( // returns whether length of inputted binary number is even
       "EvenLengthBinary",       // name
       [](myChar a) -> bool {    // state function
@@ -495,9 +489,8 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
 
   std::cout << std::boolalpha;
   std::cout << "-----------------------" << std::endl;
-  std::cout << "Testing EvenLengthBinary DFA" << std::endl;                           // Tests for EvenLengthBinaryDFA
-  std::cout << "1: Does EvenLengthBinary accept 10? " << evenLengthBinary.accepts(OZ) // calls accept function
-            << std::endl;
+  std::cout << "Testing EvenLengthBinary DFA: " << std::endl; // Tests for EvenLengthBinaryDFA
+  std::cout << "2: Does EvenLengthBinary accept 10?" << evenLengthBinary.accepts(OZ);
   std::cout << "Trace for 10: ";
   evenLengthBinary.trace(OZ); // calls trace function
   std::cout << std::endl;
