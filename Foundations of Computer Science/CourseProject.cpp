@@ -96,7 +96,7 @@ public:
              State q0, State (*transFunc)(State, myChar), bool (*F)(State))
       : name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc),
         F(F) {}
-  string getName() { return name; }
+  std::string getName() { return name; }
   void printName() { std::cout << name << std::endl; }
   std::list<myChar> getAlphabet() { return alphabet; }
 
