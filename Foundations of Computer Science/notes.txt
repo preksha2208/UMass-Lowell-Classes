@@ -4,14 +4,14 @@ TASK 3: TODO
 TASK 4: DFAs are represented as described in the project description. The set of states and set of accept states are represented as membership functions (which are function pointers in C++). When creating a DFA object, I use lambdas to create these functions.
 TASK 5: I have created a DFA called acceptsNothing. It is located within the makeAndTestDFAs() function and there are 12 inputs it is tested with.
 TASK 6: I have created a DFA called onlyAcceptsEmptyString. It is located within the makeAndTestDFAs() function and there are 12 inputs it is tested with.
-TASK 7: TODO
+TASK 7: NEED TO TEST Accomplished this by changing the DFAs membership functions to std::function objects, instead of function pointers
 TASK 8: I have created 12 example DFAs (including acceptsNothing and onlyAcceptsEmptyString). They are all created and tested within makeAndTestsDFAs(). They do practical things, such as testing whether a binary number is even or odd.
 TASK 9: I have created 12 tests for each of my 12 DFAs within my very lengthy function, makeAndTestsDFA(). I wasn't sure of how to make this function smaller, since there are unique input strings for each of the 12 DFAs.
 TASK 10: I created the accepts function within my DFA class
 TASK 11: I created the trace function within my DFA class. At the moment it prints the trace to the console, but I may change this if in the future I need to return the values in some data type.
 TASK 12: TODO
-TASK 13: TODO
-TASK 14: TODO *should be pretty quick to do, but need to figure out how to pass a lambda w/ a capture clause to a function pointer
+TASK 13: STILL NEED TO TEST Finished. Just changed the accept states function to its opposite.
+TASK 14: TODO
 TASK 15: TODO should be quick once I get 14 done
 TASK 16: TODO I'm assuming this one is not too different than task 14, so if I can get that figured out, then this one shouldn't take too much longer
 TASK 17: TODO this will be easy once 16 is finished
