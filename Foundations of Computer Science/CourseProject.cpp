@@ -6,6 +6,7 @@
 #include <list>
 #include <string>
 #include <vector>
+#include <functional>
 
 class myChar // class to represent char values
 {
@@ -43,6 +44,7 @@ public:
   }
   myString() {}
   virtual void print() { c.print(); }             // prints the char value within this string
+  virtual bool isEmpty() { return false; }
   virtual myString *next() { return nextString; } // returns the next myString object; i.e. the next letter in the string
   virtual void setNext(myString *next) { nextString = next; }
   virtual char charValue() { return c.getVal(); } // returns the char value held by the myChar object
@@ -106,13 +108,13 @@ public:
     myString *temp = &inputString;
 
     // step through DFA with the input string
-    while (temp->charValue() != 'E')
+    while (temp->isEmpty() != true)
     {
-      qi = (*transFunc)(qi, temp->charObject());
+      qi = transFunc(qi, temp->charObject());
       temp = temp->next();
     }
 
-    return (*F)(qi); // checks whether arrived-at state is an accept state
+    return F(qi); // checks whether arrived-at state is an accept state
   }
 
   void trace(myString &inputString) // returns the trace for the inputString on this DFA
@@ -121,9 +123,9 @@ public:
     myString *temp = &inputString;
     std::cout << qi;
     // step through DFA with the input string
-    while (temp->charValue() != 'E')
+    while (temp->isEmpty() != true)
     {
-      qi = (*transFunc)(qi, temp->charObject());
+      qi = transFunc(qi, temp->charObject());
       temp = temp->next();
       std::cout << qi;
     }
@@ -136,11 +138,11 @@ public:
 private:
   //auto acceptedString(myString* currentNode, std::unordered_map<int, myChar>);
   std::string name;
-  bool (*Q)(State); // list of possible states for this dfa
+  std::function<bool(State)> Q; // list of possible states for this dfa
   std::list<myChar> alphabet;
   State q0;                          // start state
-  State (*transFunc)(State, myChar); // DFA transition function
-  bool (*F)(State);                  // accept states
+  std::function<State(State, myChar)> transFunc; // DFA transition function
+  std::function<bool(State)> F;                  // accept states
 };
 
 /*
@@ -173,29 +175,36 @@ myString lexi(std::list<myString> alphabet){
 */
 
 // makes a DFA that only accepts a string of just one of the inputted Char
-/*
-DFA<myChar> oneCharDFA(myChar inputChar) {
-  auto tFunc = [=](myChar a, myChar b) -> myChar {
+
+//DFA<myChar> oneCharDFA(myChar inputChar) {
+ 
+ /* auto tFunc = [=](myChar a, myChar b) -> myChar {
     if (a.getVal() == 'A' && (b.getVal() == inputChar.getVal()))
       return myChar('B');
     else
       return myChar('C');
-  };
+  };*/
+/*
 
   return DFA<myChar>("onlyAccepts" + std::string(1, inputChar.getVal()),
-         [](myChar a) -> bool {
+         [=](myChar a) -> bool {
           return (a == myChar('A') || a == myChar('B'));
          },
          std::list<myChar>{inputChar},
          myChar('A'),
-         &tFunc,
+         [&](myChar a, myChar b) -> myChar {
+    if (a.getVal() == 'A' && (b.getVal() == inputChar.getVal()))
+      return myChar('B');
+    else
+      return myChar('C');
+  },
          [](myChar a) -> bool {
          return (a == myChar('B'));
          }
 );
 }
-*/
 
+*/
 void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints the results to the console
 {
   // Declarations of DFAs
