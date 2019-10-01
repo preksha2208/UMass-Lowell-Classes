@@ -142,12 +142,12 @@ public:
       return true;
     };
 
-  return DFA<State>("complement of " + inputDFA.name,
-                  Q,
-                  alphabet,
-                  q0,
-                  transFunc,
-                  F2);
+    return DFA<State>("complement of " + inputDFA.name,
+                      Q,
+                      alphabet,
+                      q0,
+                      transFunc,
+                      F2);
   }
 
 private:
@@ -160,7 +160,6 @@ private:
   std::function<bool(State)> F;                  // accept states
 };
 
-/*
 template <class State>
 DFA<State> UnionDFA(DFA<State> dfa1, DFA<State> dfa2)
 {
@@ -181,38 +180,33 @@ DFA<State> UnionDFA(DFA<State> dfa1, DFA<State> dfa2)
              }
 
   );
-} 
-*/
-/*
+}
+
+
 myString lexi(std::list<myString> alphabet)
 {
+  
 }
-*/
+
 
 // makes a DFA that only accepts a string of just one of the inputted Char
 DFA<myChar> oneCharDFA(myChar inputChar)
 {
-  std::function<bool(myChar)> sFunc = [=](myChar a) -> bool {
-    return (a == myChar('A') || a == myChar('B'));
-  };
-
-  std::function<myChar(myChar, myChar)> tFunc = [&](myChar a, myChar b) -> myChar {
-    if (a.getVal() == 'A' && (b.getVal() == inputChar.getVal()))
-      return myChar('B');
-    else
-      return myChar('C');
-  };
-
-  std::function<bool(myChar)> fFunc = [](myChar a) -> bool {
-    return (a == myChar('B'));
-  };
-
   return DFA<myChar>("onlyAccepts" + std::string(1, inputChar.getVal()),
-                     sFunc,
+                     [=](myChar a) -> bool {
+                       return (a == myChar('A') || a == myChar('B'));
+                     },
                      std::list<myChar>{inputChar},
                      myChar('A'),
-                     tFunc,
-                     fFunc);
+                     [&](myChar a, myChar b) -> myChar {
+                       if (a.getVal() == 'A' && (b.getVal() == inputChar.getVal()))
+                         return myChar('B');
+                       else
+                         return myChar('C');
+                     },
+                     [](myChar a) -> bool {
+                       return (a == myChar('B'));
+                     });
 }
 
 void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints the results to the console
