@@ -136,18 +136,34 @@ public:
 
   DFA<State> complementDFA(DFA<State> inputDFA)
   {
-    std::function<bool(State)> F2 = [=](State a) -> bool {
-      if (F(a) == true)
-        return false;
-      return true;
-    };
-
     return DFA<State>("complement of " + inputDFA.name,
                       Q,
                       alphabet,
                       q0,
                       transFunc,
-                      F2);
+                      [=](State a) -> bool {
+      if (F(a) == true)
+        return false;
+      return true; });
+  }
+
+  DFA<State> UnionDFA(DFA<State> dfa2)
+  {
+    std::list<myChar> a = alphabet;
+    std::list<myChar> b = dfa2.getAlphabet();
+    a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both DFAs
+
+    return DFA<State>("Union of " + name + " and " + dfa2.getName(),
+                      [](State a) -> bool { // function for possible states
+
+                      },
+                      a,                      // alphabet
+                      myChar('A'),            // start state, need to figure this one out
+                      [](State a, myChar b) { // transition function; not correct as is
+                      },
+                      [=](State a) { // accept states
+                        return ((F(a)) || (dfa2.acceptStates(a)));
+                      });
   }
 
 private:
@@ -160,34 +176,9 @@ private:
   std::function<bool(State)> F;                  // accept states
 };
 
-template <class State>
-DFA<State> UnionDFA(DFA<State> dfa1, DFA<State> dfa2)
-{
-  std::list<myChar> a = dfa1.getAlphabet();
-  std::list<myChar> b = dfa2.getAlphabet();
-  a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both DFAs
-
-  return DFA("Union of " + dfa1.getName() + " and " + dfa2.getName(),
-             [](State a) -> bool { // function for possible states
-
-             },
-             a,                      // alphabet
-             myChar('A'),            // start state, need to figure this one out
-             [](State a, myChar b) { // transition function; not correct as is
-             },
-             [](State a) { // accept states
-               return ((dfa1.acceptStates(a)) || (dfa2.acceptStates(a)));
-             }
-
-  );
-}
-
-
 myString lexi(std::list<myString> alphabet)
 {
-  
 }
-
 
 // makes a DFA that only accepts a string of just one of the inputted Char
 DFA<myChar> oneCharDFA(myChar inputChar)
@@ -207,6 +198,19 @@ DFA<myChar> oneCharDFA(myChar inputChar)
                      [](myChar a) -> bool {
                        return (a == myChar('B'));
                      });
+}
+
+template <class State>
+void DFAtest(DFA<State> a, myString &inputString, bool expected)
+{
+  if (a.accepts(inputString) == expected)
+    std::cout << "Test Passed!";
+  else
+    std::cout << "Test Failed.";
+
+  std::cout << " --- Trace: ";
+  a.trace(inputString);
+  std::cout << std::endl;
 }
 
 void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints the results to the console
@@ -503,69 +507,38 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << std::boolalpha;
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing EvenLengthBinary DFA: " << std::endl; // Tests for EvenLengthBinaryDFA
-  std::cout << "2: Does EvenLengthBinary accept 10?" << evenLengthBinary.accepts(OZ);
-  std::cout << "Trace for 10: ";
-  evenLengthBinary.trace(OZ); // calls trace function
-  std::cout << std::endl;
-  std::cout << "2: Does EvenLengthBinary accept 01? " << evenLengthBinary.accepts(ZO)
-            << std::endl;
-  std::cout << "Trace for 01: ";
-  evenLengthBinary.trace(ZO);
-  std::cout << std::endl;
-  std::cout << "3: Does EvenLengthBinary accept 1011? " << evenLengthBinary.accepts(OZOO)
-            << std::endl;
-  std::cout << "Trace for 1011: ";
-  evenLengthBinary.trace(OZOO);
-  std::cout << std::endl;
-  std::cout << "4: Does EvenLengthBinary accept 0000? " << evenLengthBinary.accepts(ZZZZ)
-            << std::endl;
-  std::cout << "Trace for 0000: ";
-  evenLengthBinary.trace(ZZZZ);
-  std::cout << std::endl;
-  std::cout << "5: Does EvenLengthBinary accept 111111? "
-            << evenLengthBinary.accepts(OOOOOO) << std::endl;
-  std::cout << "Trace for 111111: ";
-  evenLengthBinary.trace(OOOOOO);
-  std::cout << std::endl;
-  std::cout << "6: Does EvenLengthBinary accept the empty string? "
-            << evenLengthBinary.accepts(epsi) << std::endl;
-  std::cout << "Trace for empty string: ";
-  evenLengthBinary.trace(epsi);
-  std::cout << std::endl;
-  std::cout << "7: Does EvenLengthBinary accept 1? " << evenLengthBinary.accepts(O)
-            << std::endl;
-  std::cout << "Trace for 1: ";
-  evenLengthBinary.trace(O);
-  std::cout << std::endl;
-  std::cout << "8: Does EvenLengthBinary accept 0? " << evenLengthBinary.accepts(Z)
-            << std::endl;
-  std::cout << "Trace for 0: ";
-  evenLengthBinary.trace(Z);
-  std::cout << std::endl;
-  std::cout << "9: Does EvenLengthBinary accept 010? " << evenLengthBinary.accepts(ZOZ)
-            << std::endl;
-  std::cout << "Trace for 0: ";
-  evenLengthBinary.trace(Z);
-  std::cout << std::endl;
-  std::cout << "10:Does EvenLengthBinary accept 00000? " << evenLengthBinary.accepts(ZZZZZ)
-            << std::endl;
-  std::cout << "Trace for 00000: ";
-  evenLengthBinary.trace(ZZZZZ);
-  std::cout << std::endl;
-  std::cout << "11: Does EvenLengthBinary accept 111? " << evenLengthBinary.accepts(OOO)
-            << std::endl;
-  std::cout << "Trace for 111: ";
-  evenLengthBinary.trace(OOO);
-  std::cout << std::endl;
-  std::cout << "12: Does EvenLengthBinary accept 01010? " << evenLengthBinary.accepts(ZOZOZ)
-            << std::endl;
-  std::cout << "Trace for 01010: ";
-  evenLengthBinary.trace(ZOZOZ);
-  std::cout << std::endl;
+  std::cout << "Input:" << std::endl;
+  std::cout << "10: ";
+  DFAtest(evenLengthBinary, OZ, true);
+  std::cout << "01: ";
+  DFAtest(evenLengthBinary, ZO, true);
+  std::cout << "1011: ";
+  DFAtest(evenLengthBinary, OZOO, true);
+  std::cout << "0000: ";
+  DFAtest(evenLengthBinary, ZZZZ, true);
+  std::cout << "111111: ";
+  DFAtest(evenLengthBinary, OOOOOO, true);
+  std::cout << "epsilon: ";
+  DFAtest(evenLengthBinary, epsi, true);
+  std::cout << "1: ";
+  DFAtest(evenLengthBinary, O, true);
+  std::cout << "0: ";
+  DFAtest(evenLengthBinary, Z, true);
+  std::cout << "010: ";
+  DFAtest(evenLengthBinary, ZOZ, true);
+  std::cout << "00000: ";
+  DFAtest(evenLengthBinary, ZZZZZ, true);
+  std::cout << "111: ";
+  DFAtest(evenLengthBinary, OOO, true);
+  std::cout << "01010: ";
+  DFAtest(evenLengthBinary, ZOZOZ, true);
   std::cout << "-----------------------" << std::endl;
-
+  
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing AcceptsNothing DFA" << std::endl; // tests for AcceptsNothing DFA
+  std::cout << "Input: " << std::endl;
+  std::cout << "1: ";
+  DFAtest(acceptsNothing, O, true);
   std::cout << "1: Does AcceptsNothing accept 10? " << acceptsNothing.accepts(OZ)
             << std::endl;
   std::cout << "Trace for 10: ";
@@ -627,7 +600,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   acceptsNothing.trace(ZOZOZ);
   std::cout << std::endl;
   std::cout << "-----------------------" << std::endl;
-
+/*
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing OnlyAcceptsEmptyString DFA" << std::endl; // tests for onlyAcceptsEmptyString DFA
   std::cout << "1: Does OnlyAcceptsEmptyString accept 10? " << onlyAcceptsEmptyString.accepts(OZ)
@@ -1266,12 +1239,11 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "Trace for 01010: ";
   evenNumberOfZerosAndSingleOne.trace(ZOZOZ);
   std::cout << std::endl;
-  std::cout << "-----------------------" << std::endl;
+  std::cout << "-----------------------" << std::endl; */
 }
 
 int main()
 {
   makeAndTestDFAs();
-
   return 0;
 }
