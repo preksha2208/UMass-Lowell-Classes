@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-class myChar  // class to represent char values
+class myChar // class to represent char values
 {
 public:
   explicit myChar(char c) { this->c = c; } // initialize char variable
@@ -34,7 +34,7 @@ private:
   char c;
 };
 
-class myString  // class to represent strings; the strings are implemented as a linked list, with each node being a letter
+class myString // class to represent strings; the strings are implemented as a linked list, with each node being a letter
 {
 public:
   myString(char c, myString *nextString) : nextString(nextString)
@@ -42,18 +42,18 @@ public:
     this->c = myChar(c);
   }
   myString() {}
-  virtual void print() { c.print(); }   // prints the char value within this string
-  virtual myString *next() { return nextString; }  // returns the next myString object; i.e. the next letter in the string
-  virtual void setNext(myString *next) { nextString = next; } 
-  virtual char charValue() { return c.getVal(); }  // returns the char value held by the myChar object
-  virtual myChar charObject() { return c; }  // returns the actual myChar object, rather than the char value held by the myChar object
+  virtual void print() { c.print(); }             // prints the char value within this string
+  virtual myString *next() { return nextString; } // returns the next myString object; i.e. the next letter in the string
+  virtual void setNext(myString *next) { nextString = next; }
+  virtual char charValue() { return c.getVal(); } // returns the char value held by the myChar object
+  virtual myChar charObject() { return c; }       // returns the actual myChar object, rather than the char value held by the myChar object
 
 private:
   myChar c;
   myString *nextString;
 };
 
-class oneString : public myString  // node of string that contains a myChar object (i.e. a letter)
+class oneString : public myString // node of string that contains a myChar object (i.e. a letter)
 {
 public:
   oneString(char c, myString *nextString) : nextString(nextString)
@@ -96,13 +96,9 @@ public:
              State q0, State (*transFunc)(State, myChar), bool (*F)(State))
       : name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc),
         F(F) {}
-
+  string getName() { return name; }
   void printName() { std::cout << name << std::endl; }
-  void printAlphabet()
-  {
-    for (auto a : alphabet)
-      a.print();
-  }
+  std::list<myChar> getAlphabet() { return alphabet; }
 
   bool accepts(myString &inputString) // returns true/false to indicate whether this DFA accepts the inputString
   {                                   // does DFA accept inputString?
@@ -133,20 +129,16 @@ public:
     }
   }
 
-  myString *acceptedString()  // returns a string that would be accepted by this DFA
+  myString *acceptedString() // returns a string that would be accepted by this DFA
   {
     if (alphabet.size() == 0)
       return new emptyString;
-    
-    
+
     return acceptString;
   }
 
-  bool acceptStates(myChar b) { return (*F)(b); } // used for testing
-  State transitionFunction(State a, myChar b)
-  {
-    return (*transFunc)(a, b);
-  } // used for testing
+  bool acceptStates(myChar b) { return (*F)(b); }
+  State transitionFunction(State a, myChar b) { return (*transFunc)(a, b); }
 
 private:
   std::string name;
@@ -156,6 +148,28 @@ private:
   State (*transFunc)(State, myChar); // DFA transition function
   bool (*F)(State);                  // accept states
 };
+
+template <class State>
+DFA<State> UnionDFA(DFA<State> dfa1, DFA<State> dfa2)
+{
+  std::list<myChar> a = dfa1.getAlphabet();
+  std::list<myChar> b = dfa2.getAlphabet();
+  a.insert(a.end(), b.begin(), b.end());  // combine the alphabets of both DFAs
+
+  return DFA("Union of " + dfa1.getName() + " and " + dfa2.getName(),
+             [](State a) -> bool { // function for possible states
+
+             },
+             a, // alphabet
+             myChar('A'),  // start state, need to figure this one out
+             [](State a, myChar b) { // transition function; not correct as is
+             },
+             [](State a) {  // accept states
+               return ((dfa1.acceptStates(a)) || (dfa2.acceptStates(a)));
+             }
+
+  );
+}
 
 /*
 myString lexi(std::list<myString> alphabet){
