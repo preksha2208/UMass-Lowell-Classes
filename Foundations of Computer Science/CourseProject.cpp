@@ -1,12 +1,13 @@
 // Copyright Cameron Knopp 2019
 // Fall 2019 Foundations of Computer Science with Professor Jay McCarthy
 
+#include <functional>
 #include <iostream>
 #include <iterator>
 #include <list>
 #include <string>
+#include <utility>
 #include <vector>
-#include <functional>
 
 class myChar // class to represent char values
 {
@@ -16,17 +17,14 @@ public:
   myChar(const myChar &charB) { c = charB.c; }
   void print() { std::cout << c; }
   char getVal() { return c; }
-  myChar &operator=(const myChar &charB)
-  {
+  myChar &operator=(const myChar &charB) {
     c = charB.c;
     return *this;
   }
-  friend bool operator==(const myChar &a, const myChar &b)
-  {
+  friend bool operator==(const myChar &a, const myChar &b) {
     return (a.c == b.c);
   }
-  friend std::ostream &operator<<(std::ostream &os, const myChar &dt)
-  {
+  friend std::ostream &operator<<(std::ostream &os, const myChar &dt) {
     os << dt.c;
     return os;
   }
@@ -35,31 +33,40 @@ private:
   char c;
 };
 
-class myString // class to represent strings; the strings are implemented as a linked list, with each node being a letter
+class myString // class to represent strings; the strings are implemented as a
+               // linked list, with each node being a letter
 {
 public:
-  myString(char c, myString *nextString) : nextString(nextString)
-  {
+  myString(char c, myString *nextString) : nextString(nextString) {
     this->c = myChar(c);
   }
   myString() {}
-  virtual void print() { c.print(); } // prints the char value within this string
+  virtual void print() {
+    c.print();
+  } // prints the char value within this string
   virtual bool isEmpty() { return false; }
-  virtual myString *next() { return nextString; } // returns the next myString object; i.e. the next letter in the string
+  virtual myString *next() {
+    return nextString;
+  } // returns the next myString object; i.e. the next letter in the string
   virtual void setNext(myString *next) { nextString = next; }
-  virtual char charValue() { return c.getVal(); } // returns the char value held by the myChar object
-  virtual myChar charObject() { return c; }       // returns the actual myChar object, rather than the char value held by the myChar object
+  virtual char charValue() {
+    return c.getVal();
+  } // returns the char value held by the myChar object
+  virtual myChar charObject() {
+    return c;
+  } // returns the actual myChar object, rather than the char value held by the
+    // myChar object
 
 private:
   myChar c;
   myString *nextString;
 };
 
-class oneString : public myString // node of string that contains a myChar object (i.e. a letter)
+class oneString : public myString // node of string that contains a myChar
+                                  // object (i.e. a letter)
 {
 public:
-  oneString(char c, myString *nextString) : nextString(nextString)
-  {
+  oneString(char c, myString *nextString) : nextString(nextString) {
     this->c = myChar(c);
   }
   oneString() {}
@@ -75,13 +82,13 @@ private:
   myString *nextString;
 };
 
-class emptyString : public myString
-{
+class emptyString : public myString {
 public:
   emptyString() { this->c = myChar('E'); } // needs to change E->actual epsilon
   bool isEmpty() { return true; }
   myString *next() { return NULL; }
-  void setNext(myString *next) {} // only doing this so that the parent function is not called
+  void setNext(myString *next) {
+  } // only doing this so that the parent function is not called
   void print() { c.print(); }
   char charValue() { return c.getVal(); }
   myChar charObject() { return c; }
@@ -90,26 +97,28 @@ private:
   myChar c;
 };
 
-template <class State>
-class DFA
-{
+template <class State> class DFA {
 public:
-  DFA<State>(std::string name, std::function<bool(State)> Q, std::list<myChar> alphabet,
-             State q0, std::function<State(State, myChar)> transFunc, std::function<bool(State)> F)
+  DFA<State>(
+      std::string name, std::function<bool(State)> Q,
+      std::list<myChar> alphabet, std::pair<State, State> q0,
+      std::function<std::pair<State, State>(std::pair<State, State>, myChar)>
+          transFunc,
+      std::function<bool(State)> F)
       : name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc),
         F(F) {}
   std::string getName() { return name; }
   void printName() { std::cout << name << std::endl; }
   std::list<myChar> getAlphabet() { return alphabet; }
 
-  bool accepts(myString &inputString) // returns true/false to indicate whether this DFA accepts the inputString
+  bool accepts(myString &inputString) // returns true/false to indicate whether
+                                      // this DFA accepts the inputString
   {                                   // does DFA accept inputString?
     State qi = this->q0;
     myString *temp = &inputString;
 
     // step through DFA with the input string
-    while (temp->isEmpty() != true)
-    {
+    while (temp->isEmpty() != true) {
       qi = transFunc(qi, temp->charObject());
       temp = temp->next();
     }
@@ -117,92 +126,98 @@ public:
     return F(qi); // checks whether arrived-at state is an accept state
   }
 
-  void trace(myString &inputString) // returns the trace for the inputString on this DFA
+  void trace(myString &inputString) // returns the trace for the inputString on
+                                    // this DFA
   {                                 // does DFA accept inputString?
-    State qi = this->q0;
+    std::pair<State, State> qi = this->q0;
     myString *temp = &inputString;
-    std::cout << qi;
-    // step through DFA with the input string
-    while (temp->isEmpty() != true)
-    {
-      qi = transFunc(qi, temp->charObject());
-      temp = temp->next();
-      std::cout << qi;
+
+    if (qi.second == myChar('x')) {
+      std::cout << qi.first << ", ";
+
+      while (temp->isEmpty() != true) {
+        qi = transFunc(qi, temp->charObject());
+        temp = temp->next();
+        std::cout << qi.first << ", ";
+      }
+    } else {
+      std::cout << qi.first << qi.second << ", ";
+
+      while (temp->isEmpty() != true) {
+        qi = transFunc(qi, temp->charObject());
+        temp = temp->next();
+        std::cout << qi.first << qi.second << ", ";
+      }
     }
   }
 
   bool acceptStates(myChar b) { return F(b); }
-  State transitionFunction(State a, myChar b) { return transFunc(a, b); }
-
-  DFA<State> complementDFA(DFA<State> inputDFA)
-  {
-    return DFA<State>("complement of " + inputDFA.name,
-                      Q,
-                      alphabet,
-                      q0,
-                      transFunc,
-                      [=](State a) -> bool {
-      if (F(a) == true)
-        return false;
-      return true; });
+  std::pair<State, State> transitionFunction(std::pair<State, State> a, myChar b) {
+    return transFunc(a, b);
   }
 
-  DFA<State> UnionDFA(DFA<State> dfa2)
-  {
+  DFA<State> complementDFA(DFA<State> inputDFA) {
+    return DFA<State>("complement of " + inputDFA.name, Q, alphabet, q0,
+                      transFunc, [=](State a) -> bool {
+                        if (F(a) == true)
+                          return false;
+                        return true;
+                      });
+  }
+
+  DFA<State> UnionDFA(DFA<State> dfa2) {
     std::list<myChar> a = alphabet;
     std::list<myChar> b = dfa2.getAlphabet();
     a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both DFAs
 
-    return DFA<State>("Union of " + name + " and " + dfa2.getName(),
-                      [](State a) -> bool { // function for possible states
+    return DFA<State>(
+        "Union of " + name + " and " + dfa2.getName(),
+        [](State a) -> bool { // function for possible states
 
-                      },
-                      a,                      // alphabet
-                      myChar('A'),            // start state, need to figure this one out
-                      [](State a, myChar b) { // transition function; not correct as is
-                      },
-                      [=](State a) { // accept states
-                        return ((F(a)) || (dfa2.acceptStates(a)));
-                      });
+        },
+        a,           // alphabet
+        myChar('A'), // start state, need to figure this one out
+        [](State a,
+           myChar b) -> std::pair<State, State> { // transition function; not
+                                                  // correct as is
+          return make_pair(transiti)
+        },
+        [=](State a) -> bool { // accept states
+          return ((F(a)) || (dfa2.acceptStates(a)));
+        });
   }
 
 private:
-  //auto acceptedString(myString* currentNode, std::unordered_map<int, myChar>);
+  // auto acceptedString(myString* currentNode, std::unordered_map<int,
+  // myChar>);
   std::string name;
   std::function<bool(State)> Q; // list of possible states for this dfa
   std::list<myChar> alphabet;
-  State q0;                                      // start state
-  std::function<State(State, myChar)> transFunc; // DFA transition function
-  std::function<bool(State)> F;                  // accept states
+  std::pair<State, State> q0; // start state
+  std::function<std::pair<State, State>(std::pair<State, State>, myChar)>
+      transFunc;                // DFA transition function
+  std::function<bool(State)> F; // accept states
 };
 
-myString lexi(std::list<myString> alphabet)
-{
-}
+myString lexi(std::list<myString> alphabet) {}
 
 // makes a DFA that only accepts a string of just one of the inputted Char
-DFA<myChar> oneCharDFA(myChar inputChar)
-{
-  return DFA<myChar>("onlyAccepts" + std::string(1, inputChar.getVal()),
-                     [=](myChar a) -> bool {
-                       return (a == myChar('A') || a == myChar('B'));
-                     },
-                     std::list<myChar>{inputChar},
-                     myChar('A'),
-                     [&](myChar a, myChar b) -> myChar {
-                       if (a.getVal() == 'A' && (b.getVal() == inputChar.getVal()))
-                         return myChar('B');
-                       else
-                         return myChar('C');
-                     },
-                     [](myChar a) -> bool {
-                       return (a == myChar('B'));
-                     });
+DFA<myChar> oneCharDFA(myChar inputChar) {
+  return DFA<myChar>(
+      "onlyAccepts" + std::string(1, inputChar.getVal()),
+      [=](myChar a) -> bool { return (a == myChar('A') || a == myChar('B')); },
+      std::list<myChar>{inputChar}, std::make_pair(myChar('A'), myChar('x')),
+      [&](myChar a, myChar b) -> std::pair<myChar, myChar> {
+        if (a.getVal() == 'A' && (b.getVal() == inputChar.getVal()))
+          return std::make_pair(myChar('B'), myChar('x'));
+        else
+          return std::make_pair(myChar('C'), myChar('x'));
+      },
+      [](myChar a) -> bool { return (a == myChar('B')); });
 }
 
 template <class State>
-void DFAtest(DFA<State> a, myString &inputString, bool expected)
-{
+void DFAtest(DFA<State> a, myString &inputString, bool expected) {
   if (a.accepts(inputString) == expected)
     std::cout << "Test Passed!";
   else
@@ -212,12 +227,13 @@ void DFAtest(DFA<State> a, myString &inputString, bool expected)
   a.trace(inputString);
   std::cout << std::endl;
 }
-
-void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints the results to the console
+/*
+void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
+the results to the console
 {
   // Declarations of DFAs
-  DFA<myChar> evenLengthBinary( // returns whether length of inputted binary number is even
-      "EvenLengthBinary",       // name
+  DFA<myChar> evenLengthBinary( // returns whether length of inputted binary
+number is even "EvenLengthBinary",       // name
       [](myChar a) -> bool {    // state function
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
@@ -257,8 +273,8 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
           return a;
       },
       [](myChar a) -> bool { return (a == myChar('A')); });
-  DFA<myChar> evenBinaryNumber( // returns whether the inputted binary number is even
-      "EvenBinaryNumber",
+  DFA<myChar> evenBinaryNumber( // returns whether the inputted binary number is
+even "EvenBinaryNumber",
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
@@ -271,8 +287,8 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
       },
       [](myChar a) -> bool { return (a == myChar('B')); });
 
-  DFA<myChar> oddBinaryNumber( // returns whether the inputted binary number is odd
-      "OddBinaryNumber",
+  DFA<myChar> oddBinaryNumber( // returns whether the inputted binary number is
+odd "OddBinaryNumber",
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
@@ -285,8 +301,8 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
       },
       [](myChar a) -> bool { return (a == myChar('B')); });
 
-  DFA<myChar> containsCAM( // returns whether the input contains my name somewhere in it
-      "ContainsCAM",
+  DFA<myChar> containsCAM( // returns whether the input contains my name
+somewhere in it "ContainsCAM",
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
                 (a.getVal() == 'C') || (a.getVal() == 'D'));
@@ -306,8 +322,8 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
       },
       [](myChar a) -> bool { return (a == myChar('D')); });
 
-  DFA<myChar> containsLineComment( // returns whether the input contains a double slash somewhere in it, indicating a comment
-      "ContainsLineComment",
+  DFA<myChar> containsLineComment( // returns whether the input contains a
+double slash somewhere in it, indicating a comment "ContainsLineComment",
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
                 (a.getVal() == 'C'));
@@ -325,8 +341,8 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
       },
       [](myChar a) -> bool { return (a == myChar('C')); });
 
-  DFA<myChar> threeConsecutiveZerosBinary( // returns whether the inputted binary number has three consecutive zeros in it
-      "ThreeConsecutiveZerosBinary",
+  DFA<myChar> threeConsecutiveZerosBinary( // returns whether the inputted
+binary number has three consecutive zeros in it "ThreeConsecutiveZerosBinary",
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
                 (a.getVal() == 'C') || (a.getVal() == 'D'));
@@ -348,8 +364,8 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
       },
       [](myChar a) -> bool { return (a == myChar('D')); });
 
-  DFA<myChar> threeConsecutiveOnesBinary( // returns whether the inputted binary number has three consecutive ones in it
-      "ThreeConsecutiveOnesBinary",
+  DFA<myChar> threeConsecutiveOnesBinary( // returns whether the inputted binary
+number has three consecutive ones in it "ThreeConsecutiveOnesBinary",
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
                 (a.getVal() == 'C') || (a.getVal() == 'D'));
@@ -373,8 +389,8 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
       },
       [](myChar a) -> bool { return (a == myChar('D')); });
 
-  DFA<myChar> oddNumberOfOnesBinary( // returns whether the inputted binary number has an odd number of ones in it
-      "OddNumberOfOnesBinary",
+  DFA<myChar> oddNumberOfOnesBinary( // returns whether the inputted binary
+number has an odd number of ones in it "OddNumberOfOnesBinary",
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
@@ -392,8 +408,8 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
           return myChar('A');
       },
       [](myChar a) -> bool { return (a == myChar('B')); });
-  DFA<myChar> evenNumberOfOnesBinary( // returns whether the inputted number has an even number of ones in it
-      "NumberOfOnesBinary",
+  DFA<myChar> evenNumberOfOnesBinary( // returns whether the inputted number has
+an even number of ones in it "NumberOfOnesBinary",
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
@@ -412,7 +428,8 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
       },
       [](myChar a) -> bool { return (a == myChar('A')); });
 
-  DFA<myChar> evenNumberOfZerosAndSingleOne( // returns whether the inputted number has an even number of zeroes followed by a single one in it
+  DFA<myChar> evenNumberOfZerosAndSingleOne( // returns whether the inputted
+number has an even number of zeroes followed by a single one in it
       "EvenNumberOfZerosAndSingleOne",
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
@@ -444,29 +461,33 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   oneString ZZZZ = oneString(
       '0', new oneString(
                '0', new oneString('0', new oneString('0', new emptyString))));
-  oneString ZOZO = oneString('0', new oneString('1', new oneString('0', new oneString('1', new emptyString))));
-  oneString OO = oneString('1', new oneString('1', new emptyString));
-  oneString ZZZOO = oneString('0', new oneString('0', new oneString('0', new oneString('1', new oneString('1', new emptyString)))));
-  oneString OZZZO = oneString('1', new oneString('0', new oneString('0', new oneString('0', new oneString('1', new emptyString)))));
-  oneString OOZZZ = oneString('1', new oneString('1', new oneString('0', new oneString('0', new oneString('0', new emptyString)))));
-  oneString ZOZOOO = oneString('0', new oneString('1', new oneString('0', new oneString('1', new oneString('1', new oneString('1', new emptyString))))));
-  oneString ZOZZZ = oneString('0', new oneString('1', new oneString('0', new oneString('0', new oneString('0', new emptyString)))));
-  oneString ZZ = oneString('0', new oneString('0', new emptyString));
-  oneString ZZZZO = oneString('0', new oneString('0', new oneString('0', new oneString('0', new oneString('1', new emptyString)))));
-  oneString OOOOOO = oneString(
-      '1',
-      new oneString(
-          '1',
-          new oneString(
-              '1', new oneString(
-                       '1', new oneString(
-                                '1', new oneString('1', new emptyString))))));
+  oneString ZOZO = oneString('0', new oneString('1', new oneString('0', new
+oneString('1', new emptyString)))); oneString OO = oneString('1', new
+oneString('1', new emptyString)); oneString ZZZOO = oneString('0', new
+oneString('0', new oneString('0', new oneString('1', new oneString('1', new
+emptyString))))); oneString OZZZO = oneString('1', new oneString('0', new
+oneString('0', new oneString('0', new oneString('1', new emptyString)))));
+  oneString OOZZZ = oneString('1', new oneString('1', new oneString('0', new
+oneString('0', new oneString('0', new emptyString))))); oneString ZOZOOO =
+oneString('0', new oneString('1', new oneString('0', new oneString('1', new
+oneString('1', new oneString('1', new emptyString)))))); oneString ZOZZZ =
+oneString('0', new oneString('1', new oneString('0', new oneString('0', new
+oneString('0', new emptyString))))); oneString ZZ = oneString('0', new
+oneString('0', new emptyString)); oneString ZZZZO = oneString('0', new
+oneString('0', new oneString('0', new oneString('0', new oneString('1', new
+emptyString))))); oneString OOOOOO = oneString( '1', new oneString( '1', new
+oneString( '1', new oneString( '1', new oneString( '1', new oneString('1', new
+emptyString))))));
 
   emptyString epsi;
-  oneString OOOZZZ = oneString('1', new oneString('1', new oneString('1', new oneString('0', new oneString('0', new oneString('0', new emptyString))))));
-  oneString ZOOOZZ = oneString('0', new oneString('1', new oneString('1', new oneString('1', new oneString('0', new oneString('0', new emptyString))))));
-  oneString ZZOOOZ = oneString('0', new oneString('0', new oneString('1', new oneString('1', new oneString('1', new oneString('0', new emptyString))))));
-  oneString ZZZOOO = oneString('0', new oneString('0', new oneString('0', new oneString('1', new oneString('1', new oneString('1', new emptyString))))));
+  oneString OOOZZZ = oneString('1', new oneString('1', new oneString('1', new
+oneString('0', new oneString('0', new oneString('0', new emptyString))))));
+  oneString ZOOOZZ = oneString('0', new oneString('1', new oneString('1', new
+oneString('1', new oneString('0', new oneString('0', new emptyString))))));
+  oneString ZZOOOZ = oneString('0', new oneString('0', new oneString('1', new
+oneString('1', new oneString('1', new oneString('0', new emptyString))))));
+  oneString ZZZOOO = oneString('0', new oneString('0', new oneString('0', new
+oneString('1', new oneString('1', new oneString('1', new emptyString))))));
   oneString O = oneString('1', new emptyString);
   oneString Z = oneString('0', new emptyString);
   oneString OOO =
@@ -486,29 +507,38 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
           '1',
           new oneString(
               '0', new oneString('1', new oneString('0', new emptyString)))));
-  oneString ZZO = oneString('0', new oneString('0', new oneString('1', new emptyString)));
-  oneString ZZZZZZO = oneString('0', new oneString('0', new oneString('0', new oneString('0', new oneString('0', new oneString('0', new oneString('1', new emptyString)))))));
-  oneString CAMOO = oneString('C', new oneString('A', new oneString('M', new oneString('1', new oneString('1', new emptyString)))));
-  oneString OOCAM = oneString('1', new oneString('1', new oneString('C', new oneString('A', new oneString('M', new emptyString)))));
-  oneString OCAMO = oneString('1', new oneString('C', new oneString('A', new oneString('M', new oneString('1', new emptyString)))));
-  oneString CACAMM = oneString('C', new oneString('A', new oneString('C', new oneString('A', new oneString('M', new oneString('M', new emptyString))))));
-  oneString CACM = oneString('C', new oneString('A', new oneString('C', new oneString('M', new emptyString))));
-  oneString CAMCAM = oneString('C', new oneString('A', new oneString('M', new oneString('C', new oneString('A', new oneString('M', new emptyString))))));
-  oneString CAMERA = oneString('C', new oneString('A', new oneString('M', new oneString('E', new oneString('R', new oneString('A', new emptyString))))));
-  oneString MAC = oneString('M', new oneString('A', new oneString('C', new emptyString)));
-  oneString comment1 = oneString('/', new oneString('/', new oneString('H', new emptyString)));
-  oneString comment2 = oneString('H', new oneString('/', new oneString('/', new emptyString)));
-  oneString comment3 = oneString('/', new oneString('H', new oneString('/', new emptyString)));
-  oneString comment4 = oneString('/', new oneString('/', new oneString('/', new emptyString)));
-  oneString comment5 = oneString('/', new oneString('/', new oneString('/', new oneString('H', new emptyString))));
-  oneString comment6 = oneString('H', new oneString('/', new oneString('/', new oneString('/', new emptyString))));
-  oneString comment7 = oneString('/', new emptyString);
+  oneString ZZO = oneString('0', new oneString('0', new oneString('1', new
+emptyString))); oneString ZZZZZZO = oneString('0', new oneString('0', new
+oneString('0', new oneString('0', new oneString('0', new oneString('0', new
+oneString('1', new emptyString))))))); oneString CAMOO = oneString('C', new
+oneString('A', new oneString('M', new oneString('1', new oneString('1', new
+emptyString))))); oneString OOCAM = oneString('1', new oneString('1', new
+oneString('C', new oneString('A', new oneString('M', new emptyString)))));
+  oneString OCAMO = oneString('1', new oneString('C', new oneString('A', new
+oneString('M', new oneString('1', new emptyString))))); oneString CACAMM =
+oneString('C', new oneString('A', new oneString('C', new oneString('A', new
+oneString('M', new oneString('M', new emptyString)))))); oneString CACM =
+oneString('C', new oneString('A', new oneString('C', new oneString('M', new
+emptyString)))); oneString CAMCAM = oneString('C', new oneString('A', new
+oneString('M', new oneString('C', new oneString('A', new oneString('M', new
+emptyString)))))); oneString CAMERA = oneString('C', new oneString('A', new
+oneString('M', new oneString('E', new oneString('R', new oneString('A', new
+emptyString)))))); oneString MAC = oneString('M', new oneString('A', new
+oneString('C', new emptyString))); oneString comment1 = oneString('/', new
+oneString('/', new oneString('H', new emptyString))); oneString comment2 =
+oneString('H', new oneString('/', new oneString('/', new emptyString)));
+  oneString comment3 = oneString('/', new oneString('H', new oneString('/', new
+emptyString))); oneString comment4 = oneString('/', new oneString('/', new
+oneString('/', new emptyString))); oneString comment5 = oneString('/', new
+oneString('/', new oneString('/', new oneString('H', new emptyString))));
+  oneString comment6 = oneString('H', new oneString('/', new oneString('/', new
+oneString('/', new emptyString)))); oneString comment7 = oneString('/', new
+emptyString);
 
   std::cout << std::boolalpha;
   std::cout << "-----------------------" << std::endl;
-  std::cout << "Testing EvenLengthBinary DFA: " << std::endl; // Tests for EvenLengthBinaryDFA
-  std::cout << "Input:" << std::endl;
-  std::cout << "10: ";
+  std::cout << "Testing EvenLengthBinary DFA: " << std::endl; // Tests for
+EvenLengthBinaryDFA std::cout << "Input:" << std::endl; std::cout << "10: ";
   DFAtest(evenLengthBinary, OZ, true);
   std::cout << "01: ";
   DFAtest(evenLengthBinary, ZO, true);
@@ -533,28 +563,31 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "01010: ";
   DFAtest(evenLengthBinary, ZOZOZ, true);
   std::cout << "-----------------------" << std::endl;
-  
+
   std::cout << "-----------------------" << std::endl;
-  std::cout << "Testing AcceptsNothing DFA" << std::endl; // tests for AcceptsNothing DFA
-  std::cout << "Input: " << std::endl;
-  std::cout << "1: ";
+  std::cout << "Testing AcceptsNothing DFA" << std::endl; // tests for
+AcceptsNothing DFA std::cout << "Input: " << std::endl; std::cout << "1: ";
   DFAtest(acceptsNothing, O, true);
-  std::cout << "1: Does AcceptsNothing accept 10? " << acceptsNothing.accepts(OZ)
+  std::cout << "1: Does AcceptsNothing accept 10? " <<
+acceptsNothing.accepts(OZ)
             << std::endl;
   std::cout << "Trace for 10: ";
   acceptsNothing.trace(OZ);
   std::cout << std::endl;
-  std::cout << "2: Does AcceptsNothing accept 01? " << acceptsNothing.accepts(ZO)
+  std::cout << "2: Does AcceptsNothing accept 01? " <<
+acceptsNothing.accepts(ZO)
             << std::endl;
   std::cout << "Trace for 01: ";
   acceptsNothing.trace(ZO);
   std::cout << std::endl;
-  std::cout << "3: Does AcceptsNothing accept 1011? " << acceptsNothing.accepts(OZOO)
+  std::cout << "3: Does AcceptsNothing accept 1011? " <<
+acceptsNothing.accepts(OZOO)
             << std::endl;
   std::cout << "Trace for 1011: ";
   acceptsNothing.trace(OZOO);
   std::cout << std::endl;
-  std::cout << "4: Does AcceptsNothing accept 0000? " << acceptsNothing.accepts(ZZZZ)
+  std::cout << "4: Does AcceptsNothing accept 0000? " <<
+acceptsNothing.accepts(ZZZZ)
             << std::endl;
   std::cout << "Trace for 0000: ";
   acceptsNothing.trace(ZZZZ);
@@ -579,46 +612,54 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "Trace for 0: ";
   acceptsNothing.trace(Z);
   std::cout << std::endl;
-  std::cout << "9: Does AcceptsNothing accept 010? " << acceptsNothing.accepts(ZOZ)
+  std::cout << "9: Does AcceptsNothing accept 010? " <<
+acceptsNothing.accepts(ZOZ)
             << std::endl;
   std::cout << "Trace for 0: ";
   acceptsNothing.trace(Z);
   std::cout << std::endl;
-  std::cout << "10:Does AcceptsNothing accept 00000? " << acceptsNothing.accepts(ZZZZZ)
+  std::cout << "10:Does AcceptsNothing accept 00000? " <<
+acceptsNothing.accepts(ZZZZZ)
             << std::endl;
   std::cout << "Trace for 00000: ";
   acceptsNothing.trace(ZZZZZ);
   std::cout << std::endl;
-  std::cout << "11: Does AcceptsNothing accept 111? " << acceptsNothing.accepts(OOO)
+  std::cout << "11: Does AcceptsNothing accept 111? " <<
+acceptsNothing.accepts(OOO)
             << std::endl;
   std::cout << "Trace for 111: ";
   acceptsNothing.trace(OOO);
   std::cout << std::endl;
-  std::cout << "12: Does AcceptsNothing accept 01010? " << acceptsNothing.accepts(ZOZOZ)
+  std::cout << "12: Does AcceptsNothing accept 01010? " <<
+acceptsNothing.accepts(ZOZOZ)
             << std::endl;
   std::cout << "Trace for 01010: ";
   acceptsNothing.trace(ZOZOZ);
   std::cout << std::endl;
   std::cout << "-----------------------" << std::endl;
-/*
+  /*
   std::cout << "-----------------------" << std::endl;
-  std::cout << "Testing OnlyAcceptsEmptyString DFA" << std::endl; // tests for onlyAcceptsEmptyString DFA
-  std::cout << "1: Does OnlyAcceptsEmptyString accept 10? " << onlyAcceptsEmptyString.accepts(OZ)
+  std::cout << "Testing OnlyAcceptsEmptyString DFA" << std::endl; // tests for
+onlyAcceptsEmptyString DFA std::cout << "1: Does OnlyAcceptsEmptyString accept
+10? " << onlyAcceptsEmptyString.accepts(OZ)
             << std::endl;
   std::cout << "Trace for 10: ";
   onlyAcceptsEmptyString.trace(OZ);
   std::cout << std::endl;
-  std::cout << "2: Does OnlyAcceptsEmptyString accept 01? " << onlyAcceptsEmptyString.accepts(ZO)
+  std::cout << "2: Does OnlyAcceptsEmptyString accept 01? " <<
+onlyAcceptsEmptyString.accepts(ZO)
             << std::endl;
   std::cout << "Trace for 01: ";
   onlyAcceptsEmptyString.trace(ZO);
   std::cout << std::endl;
-  std::cout << "3: Does OnlyAcceptsEmptyString accept 1011? " << onlyAcceptsEmptyString.accepts(OZOO)
+  std::cout << "3: Does OnlyAcceptsEmptyString accept 1011? " <<
+onlyAcceptsEmptyString.accepts(OZOO)
             << std::endl;
   std::cout << "Trace for 1011: ";
   onlyAcceptsEmptyString.trace(OZOO);
   std::cout << std::endl;
-  std::cout << "4: Does OnlyAcceptsEmptyString accept 0000? " << onlyAcceptsEmptyString.accepts(ZZZZ)
+  std::cout << "4: Does OnlyAcceptsEmptyString accept 0000? " <<
+onlyAcceptsEmptyString.accepts(ZZZZ)
             << std::endl;
   std::cout << "Trace for 0000: ";
   onlyAcceptsEmptyString.trace(ZZZZ);
@@ -633,32 +674,38 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "Trace for empty string: ";
   onlyAcceptsEmptyString.trace(epsi);
   std::cout << std::endl;
-  std::cout << "7: Does OnlyAcceptsEmptyString accept 1? " << onlyAcceptsEmptyString.accepts(O)
+  std::cout << "7: Does OnlyAcceptsEmptyString accept 1? " <<
+onlyAcceptsEmptyString.accepts(O)
             << std::endl;
   std::cout << "Trace for 1: ";
   onlyAcceptsEmptyString.trace(O);
   std::cout << std::endl;
-  std::cout << "8: Does OnlyAcceptsEmptyString accept 0? " << onlyAcceptsEmptyString.accepts(Z)
+  std::cout << "8: Does OnlyAcceptsEmptyString accept 0? " <<
+onlyAcceptsEmptyString.accepts(Z)
             << std::endl;
   std::cout << "Trace for 0: ";
   onlyAcceptsEmptyString.trace(Z);
   std::cout << std::endl;
-  std::cout << "9: Does OnlyAcceptsEmptyString accept 010? " << onlyAcceptsEmptyString.accepts(ZOZ)
+  std::cout << "9: Does OnlyAcceptsEmptyString accept 010? " <<
+onlyAcceptsEmptyString.accepts(ZOZ)
             << std::endl;
   std::cout << "Trace for 0: ";
   onlyAcceptsEmptyString.trace(Z);
   std::cout << std::endl;
-  std::cout << "10:Does OnlyAcceptsEmptyString accept 00000? " << onlyAcceptsEmptyString.accepts(ZZZZZ)
+  std::cout << "10:Does OnlyAcceptsEmptyString accept 00000? " <<
+onlyAcceptsEmptyString.accepts(ZZZZZ)
             << std::endl;
   std::cout << "Trace for 00000: ";
   acceptsNothing.trace(ZZZZZ);
   std::cout << std::endl;
-  std::cout << "11: Does OnlyAcceptsEmptyString accept 111? " << acceptsNothing.accepts(OOO)
+  std::cout << "11: Does OnlyAcceptsEmptyString accept 111? " <<
+acceptsNothing.accepts(OOO)
             << std::endl;
   std::cout << "Trace for 111: ";
   onlyAcceptsEmptyString.trace(OOO);
   std::cout << std::endl;
-  std::cout << "12: Does OnlyAcceptsEmptyString accept 01010? " << onlyAcceptsEmptyString.accepts(ZOZOZ)
+  std::cout << "12: Does OnlyAcceptsEmptyString accept 01010? " <<
+onlyAcceptsEmptyString.accepts(ZOZOZ)
             << std::endl;
   std::cout << "Trace for 01010: ";
   onlyAcceptsEmptyString.trace(ZOZOZ);
@@ -666,23 +713,27 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "-----------------------" << std::endl;
 
   std::cout << "-----------------------" << std::endl;
-  std::cout << "Testing EvenBinaryNumber DFA" << std::endl; // tests for evenBinaryNumber DFA
-  std::cout << "1: Does EvenBinaryNumber accept 10? " << evenBinaryNumber.accepts(OZ)
+  std::cout << "Testing EvenBinaryNumber DFA" << std::endl; // tests for
+evenBinaryNumber DFA std::cout << "1: Does EvenBinaryNumber accept 10? " <<
+evenBinaryNumber.accepts(OZ)
             << std::endl;
   std::cout << "Trace for 10: ";
   evenBinaryNumber.trace(OZ);
   std::cout << std::endl;
-  std::cout << "2: Does EvenBinaryNumber accept 01? " << evenBinaryNumber.accepts(ZO)
+  std::cout << "2: Does EvenBinaryNumber accept 01? " <<
+evenBinaryNumber.accepts(ZO)
             << std::endl;
   std::cout << "Trace for 01: ";
   evenBinaryNumber.trace(ZO);
   std::cout << std::endl;
-  std::cout << "3: Does EvenBinaryNumber accept 1011? " << evenBinaryNumber.accepts(OZOO)
+  std::cout << "3: Does EvenBinaryNumber accept 1011? " <<
+evenBinaryNumber.accepts(OZOO)
             << std::endl;
   std::cout << "Trace for 1011: ";
   evenBinaryNumber.trace(OZOO);
   std::cout << std::endl;
-  std::cout << "4: Does EvenBinaryNumber accept 0000? " << evenBinaryNumber.accepts(ZZZZ)
+  std::cout << "4: Does EvenBinaryNumber accept 0000? " <<
+evenBinaryNumber.accepts(ZZZZ)
             << std::endl;
   std::cout << "Trace for 0000: ";
   evenBinaryNumber.trace(ZZZZ);
@@ -697,32 +748,38 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "Trace for empty string: ";
   evenBinaryNumber.trace(epsi);
   std::cout << std::endl;
-  std::cout << "7: Does EvenBinaryNumber accept 1? " << evenBinaryNumber.accepts(O)
+  std::cout << "7: Does EvenBinaryNumber accept 1? " <<
+evenBinaryNumber.accepts(O)
             << std::endl;
   std::cout << "Trace for 1: ";
   evenBinaryNumber.trace(O);
   std::cout << std::endl;
-  std::cout << "8: Does EvenBinaryNumber accept 0? " << evenBinaryNumber.accepts(Z)
+  std::cout << "8: Does EvenBinaryNumber accept 0? " <<
+evenBinaryNumber.accepts(Z)
             << std::endl;
   std::cout << "Trace for 0: ";
   evenBinaryNumber.trace(Z);
   std::cout << std::endl;
-  std::cout << "9: Does EvenBinaryNumber accept 010? " << evenBinaryNumber.accepts(ZOZ)
+  std::cout << "9: Does EvenBinaryNumber accept 010? " <<
+evenBinaryNumber.accepts(ZOZ)
             << std::endl;
   std::cout << "Trace for 0: ";
   evenBinaryNumber.trace(Z);
   std::cout << std::endl;
-  std::cout << "10:Does EvenBinaryNumber accept 00000? " << evenBinaryNumber.accepts(ZZZZZ)
+  std::cout << "10:Does EvenBinaryNumber accept 00000? " <<
+evenBinaryNumber.accepts(ZZZZZ)
             << std::endl;
   std::cout << "Trace for 00000: ";
   evenBinaryNumber.trace(ZZZZZ);
   std::cout << std::endl;
-  std::cout << "11: Does EvenBinaryNumber accept 111? " << evenBinaryNumber.accepts(OOO)
+  std::cout << "11: Does EvenBinaryNumber accept 111? " <<
+evenBinaryNumber.accepts(OOO)
             << std::endl;
   std::cout << "Trace for 111: ";
   evenBinaryNumber.trace(OOO);
   std::cout << std::endl;
-  std::cout << "12: Does EvenBinaryNumber accept 01010? " << evenBinaryNumber.accepts(ZOZOZ)
+  std::cout << "12: Does EvenBinaryNumber accept 01010? " <<
+evenBinaryNumber.accepts(ZOZOZ)
             << std::endl;
   std::cout << "Trace for 01010: ";
   evenBinaryNumber.trace(ZOZOZ);
@@ -730,23 +787,27 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "-----------------------" << std::endl;
 
   std::cout << "-----------------------" << std::endl;
-  std::cout << "Testing OddBinaryNumber DFA" << std::endl; // tests for OddBinaryNumber DFA
-  std::cout << "1: Does OddBinaryNumber accept 10? " << oddBinaryNumber.accepts(OZ)
+  std::cout << "Testing OddBinaryNumber DFA" << std::endl; // tests for
+OddBinaryNumber DFA std::cout << "1: Does OddBinaryNumber accept 10? " <<
+oddBinaryNumber.accepts(OZ)
             << std::endl;
   std::cout << "Trace for 10: ";
   oddBinaryNumber.trace(OZ);
   std::cout << std::endl;
-  std::cout << "2: Does OddBinaryNumber accept 01? " << oddBinaryNumber.accepts(ZO)
+  std::cout << "2: Does OddBinaryNumber accept 01? " <<
+oddBinaryNumber.accepts(ZO)
             << std::endl;
   std::cout << "Trace for 01: ";
   oddBinaryNumber.trace(ZO);
   std::cout << std::endl;
-  std::cout << "3: Does OddBinaryNumber accept 1011? " << oddBinaryNumber.accepts(OZOO)
+  std::cout << "3: Does OddBinaryNumber accept 1011? " <<
+oddBinaryNumber.accepts(OZOO)
             << std::endl;
   std::cout << "Trace for 1011: ";
   oddBinaryNumber.trace(OZOO);
   std::cout << std::endl;
-  std::cout << "4: Does OddBinaryNumber accept 0000? " << oddBinaryNumber.accepts(ZZZZ)
+  std::cout << "4: Does OddBinaryNumber accept 0000? " <<
+oddBinaryNumber.accepts(ZZZZ)
             << std::endl;
   std::cout << "Trace for 0000: ";
   oddBinaryNumber.trace(ZZZZ);
@@ -761,32 +822,38 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "Trace for empty string: ";
   oddBinaryNumber.trace(epsi);
   std::cout << std::endl;
-  std::cout << "7: Does OddBinaryNumber accept 1? " << oddBinaryNumber.accepts(O)
+  std::cout << "7: Does OddBinaryNumber accept 1? " <<
+oddBinaryNumber.accepts(O)
             << std::endl;
   std::cout << "Trace for 1: ";
   oddBinaryNumber.trace(O);
   std::cout << std::endl;
-  std::cout << "8: Does OddBinaryNumber accept 0? " << oddBinaryNumber.accepts(Z)
+  std::cout << "8: Does OddBinaryNumber accept 0? " <<
+oddBinaryNumber.accepts(Z)
             << std::endl;
   std::cout << "Trace for 0: ";
   oddBinaryNumber.trace(Z);
   std::cout << std::endl;
-  std::cout << "9: Does OddBinaryNumber accept 010? " << oddBinaryNumber.accepts(ZOZ)
+  std::cout << "9: Does OddBinaryNumber accept 010? " <<
+oddBinaryNumber.accepts(ZOZ)
             << std::endl;
   std::cout << "Trace for 0: ";
   oddBinaryNumber.trace(Z);
   std::cout << std::endl;
-  std::cout << "10:Does OddBinaryNumber accept 00000? " << oddBinaryNumber.accepts(ZZZZZ)
+  std::cout << "10:Does OddBinaryNumber accept 00000? " <<
+oddBinaryNumber.accepts(ZZZZZ)
             << std::endl;
   std::cout << "Trace for 00000: ";
   oddBinaryNumber.trace(ZZZZZ);
   std::cout << std::endl;
-  std::cout << "11: Does OddBinaryNumber accept 111? " << oddBinaryNumber.accepts(OOO)
+  std::cout << "11: Does OddBinaryNumber accept 111? " <<
+oddBinaryNumber.accepts(OOO)
             << std::endl;
   std::cout << "Trace for 111: ";
   oddBinaryNumber.trace(OOO);
   std::cout << std::endl;
-  std::cout << "12: Does OddBinaryNumber accept 01010? " << oddBinaryNumber.accepts(ZOZOZ)
+  std::cout << "12: Does OddBinaryNumber accept 01010? " <<
+oddBinaryNumber.accepts(ZOZOZ)
             << std::endl;
   std::cout << "Trace for 01010: ";
   oddBinaryNumber.trace(ZOZOZ);
@@ -794,8 +861,8 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "-----------------------" << std::endl;
 
   std::cout << "-----------------------" << std::endl;
-  std::cout << "Testing ContainsCAM DFA" << std::endl; // tests for containsCAM DFA
-  std::cout << "1: Does ContainsCAM accept 10? " << containsCAM.accepts(OZ)
+  std::cout << "Testing ContainsCAM DFA" << std::endl; // tests for containsCAM
+DFA std::cout << "1: Does ContainsCAM accept 10? " << containsCAM.accepts(OZ)
             << std::endl;
   std::cout << "Trace for 10: ";
   containsCAM.trace(OZ);
@@ -825,32 +892,38 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "Trace for empty string: ";
   containsCAM.trace(epsi);
   std::cout << std::endl;
-  std::cout << "7: Does ContainsCAM accept CAM11? " << containsCAM.accepts(CAMOO)
+  std::cout << "7: Does ContainsCAM accept CAM11? " <<
+containsCAM.accepts(CAMOO)
             << std::endl;
   std::cout << "Trace for CAM11: ";
   containsCAM.trace(CAMOO);
   std::cout << std::endl;
-  std::cout << "8: Does ContainsCAM accept 11CAM? " << containsCAM.accepts(OOCAM)
+  std::cout << "8: Does ContainsCAM accept 11CAM? " <<
+containsCAM.accepts(OOCAM)
             << std::endl;
   std::cout << "Trace for 11CAM: ";
   containsCAM.trace(OOCAM);
   std::cout << std::endl;
-  std::cout << "9: Does ContainsCAM accept 1CAM1? " << containsCAM.accepts(OCAMO)
+  std::cout << "9: Does ContainsCAM accept 1CAM1? " <<
+containsCAM.accepts(OCAMO)
             << std::endl;
   std::cout << "Trace for 1CAM1: ";
   containsCAM.trace(OCAMO);
   std::cout << std::endl;
-  std::cout << "10:Does ContainsCAM accept CACAMM? " << containsCAM.accepts(CACAMM)
+  std::cout << "10:Does ContainsCAM accept CACAMM? " <<
+containsCAM.accepts(CACAMM)
             << std::endl;
   std::cout << "Trace for CACAMM: ";
   containsCAM.trace(CACAMM);
   std::cout << std::endl;
-  std::cout << "11: Does ContainsCAM accept CAMCAM? " << containsCAM.accepts(CAMCAM)
+  std::cout << "11: Does ContainsCAM accept CAMCAM? " <<
+containsCAM.accepts(CAMCAM)
             << std::endl;
   std::cout << "Trace for CAMCAM: ";
   containsCAM.trace(CAMCAM);
   std::cout << std::endl;
-  std::cout << "12: Does ContainsCAM accept CAMERA? " << containsCAM.accepts(CAMERA)
+  std::cout << "12: Does ContainsCAM accept CAMERA? " <<
+containsCAM.accepts(CAMERA)
             << std::endl;
   std::cout << "Trace for CAMERA: ";
   containsCAM.trace(CAMERA);
@@ -858,23 +931,27 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "-----------------------" << std::endl;
 
   std::cout << "-----------------------" << std::endl;
-  std::cout << "Testing ContainsLineComment DFA" << std::endl; // tests for containsLineComment DFA
-  std::cout << "1: Does ContainsLineComment accept //H? " << containsLineComment.accepts(comment1)
+  std::cout << "Testing ContainsLineComment DFA" << std::endl; // tests for
+containsLineComment DFA std::cout << "1: Does ContainsLineComment accept //H? "
+<< containsLineComment.accepts(comment1)
             << std::endl;
   std::cout << "Trace for //H: ";
   containsLineComment.trace(comment1);
   std::cout << std::endl;
-  std::cout << "2: Does ContainsLineComment accept H//? " << containsLineComment.accepts(comment2)
+  std::cout << "2: Does ContainsLineComment accept H//? " <<
+containsLineComment.accepts(comment2)
             << std::endl;
   std::cout << "Trace for 01: ";
   containsLineComment.trace(comment2);
   std::cout << std::endl;
-  std::cout << "3: Does ContainsLineComment accept /H/? " << containsLineComment.accepts(comment3)
+  std::cout << "3: Does ContainsLineComment accept /H/? " <<
+containsLineComment.accepts(comment3)
             << std::endl;
   std::cout << "Trace for /H/: ";
   containsLineComment.trace(comment3);
   std::cout << std::endl;
-  std::cout << "4: Does ContainsLineComment accept ///? " << containsLineComment.accepts(comment4)
+  std::cout << "4: Does ContainsLineComment accept ///? " <<
+containsLineComment.accepts(comment4)
             << std::endl;
   std::cout << "Trace for ///: ";
   containsLineComment.trace(comment4);
@@ -889,32 +966,38 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "Trace for empty string: ";
   containsLineComment.trace(epsi);
   std::cout << std::endl;
-  std::cout << "7: Does ContainsLineComment accept H///? " << containsLineComment.accepts(comment6)
+  std::cout << "7: Does ContainsLineComment accept H///? " <<
+containsLineComment.accepts(comment6)
             << std::endl;
   std::cout << "Trace for H///: ";
   containsLineComment.trace(comment6);
   std::cout << std::endl;
-  std::cout << "8: Does ContainsLineComment accept /? " << containsLineComment.accepts(comment7)
+  std::cout << "8: Does ContainsLineComment accept /? " <<
+containsLineComment.accepts(comment7)
             << std::endl;
   std::cout << "Trace for /: ";
   containsLineComment.trace(comment7);
   std::cout << std::endl;
-  std::cout << "9: Does ContainsLineComment accept 1CAM1? " << containsLineComment.accepts(OCAMO)
+  std::cout << "9: Does ContainsLineComment accept 1CAM1? " <<
+containsLineComment.accepts(OCAMO)
             << std::endl;
   std::cout << "Trace for 1CAM1: ";
   containsLineComment.trace(OCAMO);
   std::cout << std::endl;
-  std::cout << "10:Does ContainsLineComment accept CACAMM? " << containsLineComment.accepts(CACAMM)
+  std::cout << "10:Does ContainsLineComment accept CACAMM? " <<
+containsLineComment.accepts(CACAMM)
             << std::endl;
   std::cout << "Trace for CACAMM: ";
   containsLineComment.trace(CACAMM);
   std::cout << std::endl;
-  std::cout << "11: Does ContainsLineComment accept CAMCAM? " << containsLineComment.accepts(CAMCAM)
+  std::cout << "11: Does ContainsLineComment accept CAMCAM? " <<
+containsLineComment.accepts(CAMCAM)
             << std::endl;
   std::cout << "Trace for CAMCAM: ";
   containsLineComment.trace(CAMCAM);
   std::cout << std::endl;
-  std::cout << "12: Does ContainsLineComment accept CAMERA? " << containsLineComment.accepts(CAMERA)
+  std::cout << "12: Does ContainsLineComment accept CAMERA? " <<
+containsLineComment.accepts(CAMERA)
             << std::endl;
   std::cout << "Trace for CAMERA: ";
   containsLineComment.trace(CAMERA);
@@ -922,23 +1005,28 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "-----------------------" << std::endl;
 
   std::cout << "-----------------------" << std::endl;
-  std::cout << "Testing ThreeConsecutiveZerosBinary DFA" << std::endl; // tests for threeConsecutiveZerosBinary DFA
-  std::cout << "1: Does ThreeConsecutiveZerosBinary accept 0000 " << threeConsecutiveZerosBinary.accepts(ZZZZ)
+  std::cout << "Testing ThreeConsecutiveZerosBinary DFA" << std::endl; // tests
+for threeConsecutiveZerosBinary DFA std::cout << "1: Does
+ThreeConsecutiveZerosBinary accept 0000 " <<
+threeConsecutiveZerosBinary.accepts(ZZZZ)
             << std::endl;
   std::cout << "Trace for 0000: ";
   threeConsecutiveZerosBinary.trace(ZZZZ);
   std::cout << std::endl;
-  std::cout << "2: Does ThreeConsecutiveZerosBinary accept 00011? " << threeConsecutiveZerosBinary.accepts(ZZZOO)
+  std::cout << "2: Does ThreeConsecutiveZerosBinary accept 00011? " <<
+threeConsecutiveZerosBinary.accepts(ZZZOO)
             << std::endl;
   std::cout << "Trace for 00011: ";
   threeConsecutiveZerosBinary.trace(ZZZOO);
   std::cout << std::endl;
-  std::cout << "3: Does ThreeConsecutiveZerosBinary accept 01000? " << threeConsecutiveZerosBinary.accepts(ZOZZZ)
+  std::cout << "3: Does ThreeConsecutiveZerosBinary accept 01000? " <<
+threeConsecutiveZerosBinary.accepts(ZOZZZ)
             << std::endl;
   std::cout << "Trace for 01000: ";
   threeConsecutiveZerosBinary.trace(ZOZZZ);
   std::cout << std::endl;
-  std::cout << "4: Does ThreeConsecutiveZerosBinary accept 00000? " << threeConsecutiveZerosBinary.accepts(ZZZZZ)
+  std::cout << "4: Does ThreeConsecutiveZerosBinary accept 00000? " <<
+threeConsecutiveZerosBinary.accepts(ZZZZZ)
             << std::endl;
   std::cout << "Trace for 00000: ";
   threeConsecutiveZerosBinary.trace(ZZZZZ);
@@ -953,32 +1041,38 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "Trace for empty string: ";
   threeConsecutiveZerosBinary.trace(epsi);
   std::cout << std::endl;
-  std::cout << "7: Does ThreeConsecutiveZerosBinary accept 10001? " << threeConsecutiveZerosBinary.accepts(OZZZO)
+  std::cout << "7: Does ThreeConsecutiveZerosBinary accept 10001? " <<
+threeConsecutiveZerosBinary.accepts(OZZZO)
             << std::endl;
   std::cout << "Trace for 10001: ";
   threeConsecutiveZerosBinary.trace(OZZZO);
   std::cout << std::endl;
-  std::cout << "8: Does ThreeConsecutiveZerosBinary accept 0? " << threeConsecutiveZerosBinary.accepts(Z)
+  std::cout << "8: Does ThreeConsecutiveZerosBinary accept 0? " <<
+threeConsecutiveZerosBinary.accepts(Z)
             << std::endl;
   std::cout << "Trace for 0: ";
   threeConsecutiveZerosBinary.trace(Z);
   std::cout << std::endl;
-  std::cout << "9: Does ThreeConsecutiveZerosBinary accept MAC? " << threeConsecutiveZerosBinary.accepts(MAC)
+  std::cout << "9: Does ThreeConsecutiveZerosBinary accept MAC? " <<
+threeConsecutiveZerosBinary.accepts(MAC)
             << std::endl;
   std::cout << "Trace for MAC: ";
   threeConsecutiveZerosBinary.trace(MAC);
   std::cout << std::endl;
-  std::cout << "10:Does ThreeConsecutiveZerosBinary accept 10? " << threeConsecutiveZerosBinary.accepts(OZ)
+  std::cout << "10:Does ThreeConsecutiveZerosBinary accept 10? " <<
+threeConsecutiveZerosBinary.accepts(OZ)
             << std::endl;
   std::cout << "Trace for 10: ";
   threeConsecutiveZerosBinary.trace(OZ);
   std::cout << std::endl;
-  std::cout << "11: Does ThreeConsecutiveZerosBinary accept 111? " << threeConsecutiveZerosBinary.accepts(OOO)
+  std::cout << "11: Does ThreeConsecutiveZerosBinary accept 111? " <<
+threeConsecutiveZerosBinary.accepts(OOO)
             << std::endl;
   std::cout << "Trace for 111: ";
   threeConsecutiveZerosBinary.trace(OOO);
   std::cout << std::endl;
-  std::cout << "12: Does ThreeConsecutiveZerosBinary accept 01010? " << threeConsecutiveZerosBinary.accepts(ZOZOZ)
+  std::cout << "12: Does ThreeConsecutiveZerosBinary accept 01010? " <<
+threeConsecutiveZerosBinary.accepts(ZOZOZ)
             << std::endl;
   std::cout << "Trace for 01010: ";
   threeConsecutiveZerosBinary.trace(ZOZOZ);
@@ -986,23 +1080,28 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "-----------------------" << std::endl;
 
   std::cout << "-----------------------" << std::endl;
-  std::cout << "Testing ThreeConsecutiveOnesBinary DFA" << std::endl; // tests for threeConsecutiveOnesBinary DFA
-  std::cout << "1: Does ThreeConsecutiveOnesBinary accept 0000 " << threeConsecutiveOnesBinary.accepts(ZZZZ)
+  std::cout << "Testing ThreeConsecutiveOnesBinary DFA" << std::endl; // tests
+for threeConsecutiveOnesBinary DFA std::cout << "1: Does
+ThreeConsecutiveOnesBinary accept 0000 " <<
+threeConsecutiveOnesBinary.accepts(ZZZZ)
             << std::endl;
   std::cout << "Trace for 0000: ";
   threeConsecutiveOnesBinary.trace(ZZZZ);
   std::cout << std::endl;
-  std::cout << "2: Does ThreeConsecutiveOnesBinary accept 00011? " << threeConsecutiveOnesBinary.accepts(ZZZOO)
+  std::cout << "2: Does ThreeConsecutiveOnesBinary accept 00011? " <<
+threeConsecutiveOnesBinary.accepts(ZZZOO)
             << std::endl;
   std::cout << "Trace for 00011: ";
   threeConsecutiveOnesBinary.trace(ZZZOO);
   std::cout << std::endl;
-  std::cout << "3: Does ThreeConsecutiveOnesBinary accept 01000? " << threeConsecutiveOnesBinary.accepts(ZOZZZ)
+  std::cout << "3: Does ThreeConsecutiveOnesBinary accept 01000? " <<
+threeConsecutiveOnesBinary.accepts(ZOZZZ)
             << std::endl;
   std::cout << "Trace for 01000: ";
   threeConsecutiveOnesBinary.trace(ZOZZZ);
   std::cout << std::endl;
-  std::cout << "4: Does ThreeConsecutiveOnesBinary accept 00000? " << threeConsecutiveOnesBinary.accepts(ZZZZZ)
+  std::cout << "4: Does ThreeConsecutiveOnesBinary accept 00000? " <<
+threeConsecutiveOnesBinary.accepts(ZZZZZ)
             << std::endl;
   std::cout << "Trace for 00000: ";
   threeConsecutiveOnesBinary.trace(ZZZZZ);
@@ -1017,32 +1116,38 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "Trace for empty string: ";
   threeConsecutiveOnesBinary.trace(epsi);
   std::cout << std::endl;
-  std::cout << "7: Does ThreeConsecutiveOnesBinary accept 111111? " << threeConsecutiveOnesBinary.accepts(OOOOOO)
+  std::cout << "7: Does ThreeConsecutiveOnesBinary accept 111111? " <<
+threeConsecutiveOnesBinary.accepts(OOOOOO)
             << std::endl;
   std::cout << "Trace for 111111: ";
   threeConsecutiveOnesBinary.trace(OOOOOO);
   std::cout << std::endl;
-  std::cout << "8: Does ThreeConsecutiveOnesBinary accept 111000? " << threeConsecutiveOnesBinary.accepts(OOOZZZ)
+  std::cout << "8: Does ThreeConsecutiveOnesBinary accept 111000? " <<
+threeConsecutiveOnesBinary.accepts(OOOZZZ)
             << std::endl;
   std::cout << "Trace for 111000: ";
   threeConsecutiveOnesBinary.trace(OOOZZZ);
   std::cout << std::endl;
-  std::cout << "9: Does ThreeConsecutiveOnesBinary accept 011100? " << threeConsecutiveOnesBinary.accepts(ZOOOZZ)
+  std::cout << "9: Does ThreeConsecutiveOnesBinary accept 011100? " <<
+threeConsecutiveOnesBinary.accepts(ZOOOZZ)
             << std::endl;
   std::cout << "Trace for 011100: ";
   threeConsecutiveOnesBinary.trace(ZOOOZZ);
   std::cout << std::endl;
-  std::cout << "10:Does ThreeConsecutiveOnesBinary accept 001110? " << threeConsecutiveOnesBinary.accepts(ZZOOOZ)
+  std::cout << "10:Does ThreeConsecutiveOnesBinary accept 001110? " <<
+threeConsecutiveOnesBinary.accepts(ZZOOOZ)
             << std::endl;
   std::cout << "Trace for 001110: ";
   threeConsecutiveOnesBinary.trace(ZZOOOZ);
   std::cout << std::endl;
-  std::cout << "11: Does ThreeConsecutiveOnesBinary accept 111? " << threeConsecutiveOnesBinary.accepts(OOO)
+  std::cout << "11: Does ThreeConsecutiveOnesBinary accept 111? " <<
+threeConsecutiveOnesBinary.accepts(OOO)
             << std::endl;
   std::cout << "Trace for 111: ";
   threeConsecutiveOnesBinary.trace(OOO);
   std::cout << std::endl;
-  std::cout << "12: Does ThreeConsecutiveOnesBinary accept 000111? " << threeConsecutiveOnesBinary.accepts(ZZZOOO)
+  std::cout << "12: Does ThreeConsecutiveOnesBinary accept 000111? " <<
+threeConsecutiveOnesBinary.accepts(ZZZOOO)
             << std::endl;
   std::cout << "Trace for 000111: ";
   threeConsecutiveOnesBinary.trace(ZZZOOO);
@@ -1050,23 +1155,27 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "-----------------------" << std::endl;
 
   std::cout << "-----------------------" << std::endl;
-  std::cout << "Testing OddNumberOfOnesBinary DFA" << std::endl; // tests for oddNumberOfOnesBinary DFA
-  std::cout << "1: Does OddNumberOfOnesBinary accept 10? " << oddNumberOfOnesBinary.accepts(OZ)
+  std::cout << "Testing OddNumberOfOnesBinary DFA" << std::endl; // tests for
+oddNumberOfOnesBinary DFA std::cout << "1: Does OddNumberOfOnesBinary accept 10?
+" << oddNumberOfOnesBinary.accepts(OZ)
             << std::endl;
   std::cout << "Trace for 10: ";
   oddNumberOfOnesBinary.trace(OZ);
   std::cout << std::endl;
-  std::cout << "2: Does OddNumberOfOnesBinary accept 01? " << oddNumberOfOnesBinary.accepts(ZO)
+  std::cout << "2: Does OddNumberOfOnesBinary accept 01? " <<
+oddNumberOfOnesBinary.accepts(ZO)
             << std::endl;
   std::cout << "Trace for 01: ";
   oddNumberOfOnesBinary.trace(ZO);
   std::cout << std::endl;
-  std::cout << "3: Does OddNumberOfOnesBinary accept 1011? " << oddNumberOfOnesBinary.accepts(OZOO)
+  std::cout << "3: Does OddNumberOfOnesBinary accept 1011? " <<
+oddNumberOfOnesBinary.accepts(OZOO)
             << std::endl;
   std::cout << "Trace for 1011: ";
   oddNumberOfOnesBinary.trace(OZOO);
   std::cout << std::endl;
-  std::cout << "4: Does OddNumberOfOnesBinary accept 0000? " << oddNumberOfOnesBinary.accepts(ZZZZ)
+  std::cout << "4: Does OddNumberOfOnesBinary accept 0000? " <<
+oddNumberOfOnesBinary.accepts(ZZZZ)
             << std::endl;
   std::cout << "Trace for 0000: ";
   oddNumberOfOnesBinary.trace(ZZZZ);
@@ -1081,32 +1190,38 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "Trace for empty string: ";
   oddNumberOfOnesBinary.trace(epsi);
   std::cout << std::endl;
-  std::cout << "7: Does OddNumberOfOnesBinary accept 1? " << oddNumberOfOnesBinary.accepts(O)
+  std::cout << "7: Does OddNumberOfOnesBinary accept 1? " <<
+oddNumberOfOnesBinary.accepts(O)
             << std::endl;
   std::cout << "Trace for 1: ";
   oddNumberOfOnesBinary.trace(O);
   std::cout << std::endl;
-  std::cout << "8: Does OddNumberOfOnesBinary accept 0? " << oddNumberOfOnesBinary.accepts(Z)
+  std::cout << "8: Does OddNumberOfOnesBinary accept 0? " <<
+oddNumberOfOnesBinary.accepts(Z)
             << std::endl;
   std::cout << "Trace for 0: ";
   oddNumberOfOnesBinary.trace(Z);
   std::cout << std::endl;
-  std::cout << "9: Does OddNumberOfOnesBinary accept 010? " << oddNumberOfOnesBinary.accepts(ZOZ)
+  std::cout << "9: Does OddNumberOfOnesBinary accept 010? " <<
+oddNumberOfOnesBinary.accepts(ZOZ)
             << std::endl;
   std::cout << "Trace for 0: ";
   oddNumberOfOnesBinary.trace(Z);
   std::cout << std::endl;
-  std::cout << "10:Does OddNumberOfOnesBinary accept 00000? " << oddNumberOfOnesBinary.accepts(ZZZZZ)
+  std::cout << "10:Does OddNumberOfOnesBinary accept 00000? " <<
+oddNumberOfOnesBinary.accepts(ZZZZZ)
             << std::endl;
   std::cout << "Trace for 00000: ";
   oddNumberOfOnesBinary.trace(ZZZZZ);
   std::cout << std::endl;
-  std::cout << "11: Does OddNumberOfOnesBinary accept 111? " << oddNumberOfOnesBinary.accepts(OOO)
+  std::cout << "11: Does OddNumberOfOnesBinary accept 111? " <<
+oddNumberOfOnesBinary.accepts(OOO)
             << std::endl;
   std::cout << "Trace for 111: ";
   oddNumberOfOnesBinary.trace(OOO);
   std::cout << std::endl;
-  std::cout << "12: Does OddNumberOfOnesBinary accept 01010? " << oddNumberOfOnesBinary.accepts(ZOZOZ)
+  std::cout << "12: Does OddNumberOfOnesBinary accept 01010? " <<
+oddNumberOfOnesBinary.accepts(ZOZOZ)
             << std::endl;
   std::cout << "Trace for 01010: ";
   oddNumberOfOnesBinary.trace(ZOZOZ);
@@ -1114,23 +1229,27 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "-----------------------" << std::endl;
 
   std::cout << "-----------------------" << std::endl;
-  std::cout << "Testing EvenNumberOfOnesBinary DFA" << std::endl; // tests for EvenNumberOfOnesBinary DFA
-  std::cout << "1: Does EvenNumberOfOnesBinary accept 10? " << evenNumberOfOnesBinary.accepts(OZ)
+  std::cout << "Testing EvenNumberOfOnesBinary DFA" << std::endl; // tests for
+EvenNumberOfOnesBinary DFA std::cout << "1: Does EvenNumberOfOnesBinary accept
+10? " << evenNumberOfOnesBinary.accepts(OZ)
             << std::endl;
   std::cout << "Trace for 10: ";
   evenNumberOfOnesBinary.trace(OZ);
   std::cout << std::endl;
-  std::cout << "2: Does EvenNumberOfOnesBinary accept 01? " << evenNumberOfOnesBinary.accepts(ZO)
+  std::cout << "2: Does EvenNumberOfOnesBinary accept 01? " <<
+evenNumberOfOnesBinary.accepts(ZO)
             << std::endl;
   std::cout << "Trace for 01: ";
   evenNumberOfOnesBinary.trace(ZO);
   std::cout << std::endl;
-  std::cout << "3: Does EvenNumberOfOnesBinary accept 1011? " << evenNumberOfOnesBinary.accepts(OZOO)
+  std::cout << "3: Does EvenNumberOfOnesBinary accept 1011? " <<
+evenNumberOfOnesBinary.accepts(OZOO)
             << std::endl;
   std::cout << "Trace for 1011: ";
   evenNumberOfOnesBinary.trace(OZOO);
   std::cout << std::endl;
-  std::cout << "4: Does EvenNumberOfOnesBinary accept 0000? " << evenNumberOfOnesBinary.accepts(ZZZZ)
+  std::cout << "4: Does EvenNumberOfOnesBinary accept 0000? " <<
+evenNumberOfOnesBinary.accepts(ZZZZ)
             << std::endl;
   std::cout << "Trace for 0000: ";
   evenNumberOfOnesBinary.trace(ZZZZ);
@@ -1145,32 +1264,38 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "Trace for empty string: ";
   evenNumberOfOnesBinary.trace(epsi);
   std::cout << std::endl;
-  std::cout << "7: Does EvenNumberOfOnesBinary accept 1? " << evenNumberOfOnesBinary.accepts(O)
+  std::cout << "7: Does EvenNumberOfOnesBinary accept 1? " <<
+evenNumberOfOnesBinary.accepts(O)
             << std::endl;
   std::cout << "Trace for 1: ";
   evenNumberOfOnesBinary.trace(O);
   std::cout << std::endl;
-  std::cout << "8: Does EvenNumberOfOnesBinary accept 0? " << evenNumberOfOnesBinary.accepts(Z)
+  std::cout << "8: Does EvenNumberOfOnesBinary accept 0? " <<
+evenNumberOfOnesBinary.accepts(Z)
             << std::endl;
   std::cout << "Trace for 0: ";
   evenNumberOfOnesBinary.trace(Z);
   std::cout << std::endl;
-  std::cout << "9: Does EvenNumberOfOnesBinary accept 010? " << evenNumberOfOnesBinary.accepts(ZOZ)
+  std::cout << "9: Does EvenNumberOfOnesBinary accept 010? " <<
+evenNumberOfOnesBinary.accepts(ZOZ)
             << std::endl;
   std::cout << "Trace for 0: ";
   evenNumberOfOnesBinary.trace(Z);
   std::cout << std::endl;
-  std::cout << "10:Does EvenNumberOfOnesBinary accept 00000? " << evenNumberOfOnesBinary.accepts(ZZZZZ)
+  std::cout << "10:Does EvenNumberOfOnesBinary accept 00000? " <<
+evenNumberOfOnesBinary.accepts(ZZZZZ)
             << std::endl;
   std::cout << "Trace for 00000: ";
   evenNumberOfOnesBinary.trace(ZZZZZ);
   std::cout << std::endl;
-  std::cout << "11: Does EvenNumberOfOnesBinary accept 00011? " << evenNumberOfOnesBinary.accepts(ZZZOO)
+  std::cout << "11: Does EvenNumberOfOnesBinary accept 00011? " <<
+evenNumberOfOnesBinary.accepts(ZZZOO)
             << std::endl;
   std::cout << "Trace for 00011: ";
   evenNumberOfOnesBinary.trace(ZZZOO);
   std::cout << std::endl;
-  std::cout << "12: Does EvenNumberOfOnesBinary accept 01010? " << evenNumberOfOnesBinary.accepts(ZOZOZ)
+  std::cout << "12: Does EvenNumberOfOnesBinary accept 01010? " <<
+evenNumberOfOnesBinary.accepts(ZOZOZ)
             << std::endl;
   std::cout << "Trace for 01010: ";
   evenNumberOfOnesBinary.trace(ZOZOZ);
@@ -1178,23 +1303,28 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "-----------------------" << std::endl;
 
   std::cout << "-----------------------" << std::endl;
-  std::cout << "Testing EvenNumberOfZerosAndSingleOne DFA" << std::endl; // tests for EvenNumberOfZerosAndSingleOne DFA
-  std::cout << "1: Does EvenNumberOfZerosAndSingleOne accept 10? " << evenNumberOfZerosAndSingleOne.accepts(OZ)
+  std::cout << "Testing EvenNumberOfZerosAndSingleOne DFA" << std::endl; //
+tests for EvenNumberOfZerosAndSingleOne DFA std::cout << "1: Does
+EvenNumberOfZerosAndSingleOne accept 10? " <<
+evenNumberOfZerosAndSingleOne.accepts(OZ)
             << std::endl;
   std::cout << "Trace for 10: ";
   evenNumberOfZerosAndSingleOne.trace(OZ);
   std::cout << std::endl;
-  std::cout << "2: Does EvenNumberOfZerosAndSingleOne accept 0101? " << evenNumberOfZerosAndSingleOne.accepts(ZOZO)
+  std::cout << "2: Does EvenNumberOfZerosAndSingleOne accept 0101? " <<
+evenNumberOfZerosAndSingleOne.accepts(ZOZO)
             << std::endl;
   std::cout << "Trace for 0101: ";
   evenNumberOfZerosAndSingleOne.trace(ZOZO);
   std::cout << std::endl;
-  std::cout << "3: Does EvenNumberOfZerosAndSingleOne accept 0000001? " << evenNumberOfZerosAndSingleOne.accepts(ZZZZZZO)
+  std::cout << "3: Does EvenNumberOfZerosAndSingleOne accept 0000001? " <<
+evenNumberOfZerosAndSingleOne.accepts(ZZZZZZO)
             << std::endl;
   std::cout << "Trace for 0000001: ";
   evenNumberOfZerosAndSingleOne.trace(ZZZZZZO);
   std::cout << std::endl;
-  std::cout << "4: Does EvenNumberOfZerosAndSingleOne accept 001 " << evenNumberOfZerosAndSingleOne.accepts(ZZO)
+  std::cout << "4: Does EvenNumberOfZerosAndSingleOne accept 001 " <<
+evenNumberOfZerosAndSingleOne.accepts(ZZO)
             << std::endl;
   std::cout << "Trace for 001: ";
   evenNumberOfZerosAndSingleOne.trace(ZZO);
@@ -1209,41 +1339,45 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::cout << "Trace for empty string: ";
   evenNumberOfZerosAndSingleOne.trace(epsi);
   std::cout << std::endl;
-  std::cout << "7: Does EvenNumberOfZerosAndSingleOne accept 1? " << evenNumberOfZerosAndSingleOne.accepts(O)
+  std::cout << "7: Does EvenNumberOfZerosAndSingleOne accept 1? " <<
+evenNumberOfZerosAndSingleOne.accepts(O)
             << std::endl;
   std::cout << "Trace for 1: ";
   evenNumberOfZerosAndSingleOne.trace(O);
   std::cout << std::endl;
-  std::cout << "8: Does EvenNumberOfZerosAndSingleOne accept 0? " << evenNumberOfZerosAndSingleOne.accepts(Z)
+  std::cout << "8: Does EvenNumberOfZerosAndSingleOne accept 0? " <<
+evenNumberOfZerosAndSingleOne.accepts(Z)
             << std::endl;
   std::cout << "Trace for 0: ";
   evenNumberOfZerosAndSingleOne.trace(Z);
   std::cout << std::endl;
-  std::cout << "9: Does EvenNumberOfZerosAndSingleOne accept 010? " << evenNumberOfZerosAndSingleOne.accepts(ZOZ)
+  std::cout << "9: Does EvenNumberOfZerosAndSingleOne accept 010? " <<
+evenNumberOfZerosAndSingleOne.accepts(ZOZ)
             << std::endl;
   std::cout << "Trace for 0: ";
   evenNumberOfZerosAndSingleOne.trace(Z);
   std::cout << std::endl;
-  std::cout << "10:Does EvenNumberOfZerosAndSingleOne accept 00001? " << evenNumberOfZerosAndSingleOne.accepts(ZZZZO)
+  std::cout << "10:Does EvenNumberOfZerosAndSingleOne accept 00001? " <<
+evenNumberOfZerosAndSingleOne.accepts(ZZZZO)
             << std::endl;
   std::cout << "Trace for 00001: ";
   evenNumberOfZerosAndSingleOne.trace(ZZZZO);
   std::cout << std::endl;
-  std::cout << "11: Does EvenNumberOfZerosAndSingleOne accept 111? " << evenNumberOfZerosAndSingleOne.accepts(OOO)
+  std::cout << "11: Does EvenNumberOfZerosAndSingleOne accept 111? " <<
+evenNumberOfZerosAndSingleOne.accepts(OOO)
             << std::endl;
   std::cout << "Trace for 111: ";
   evenNumberOfZerosAndSingleOne.trace(OOO);
   std::cout << std::endl;
-  std::cout << "12: Does EvenNumberOfZerosAndSingleOne accept 01010? " << evenNumberOfZerosAndSingleOne.accepts(ZOZOZ)
+  std::cout << "12: Does EvenNumberOfZerosAndSingleOne accept 01010? " <<
+evenNumberOfZerosAndSingleOne.accepts(ZOZOZ)
             << std::endl;
   std::cout << "Trace for 01010: ";
   evenNumberOfZerosAndSingleOne.trace(ZOZOZ);
   std::cout << std::endl;
   std::cout << "-----------------------" << std::endl; */
 }
-
-int main()
-{
+* / int main() {
   makeAndTestDFAs();
   return 0;
 }
