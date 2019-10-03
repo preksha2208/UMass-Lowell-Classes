@@ -155,7 +155,8 @@ public:
   std::function<bool(State)> F;                  // accept states
 };
 
-//myString lexi(std::list<myString> alphabet) {}
+
+// creates a DFA that is the union of dfa1 and dfa2
 template <class State>
 DFA<std::pair<State, State>> unionDFA(DFA<State> dfa1, DFA<State> dfa2)
 {
@@ -178,6 +179,7 @@ DFA<std::pair<State, State>> unionDFA(DFA<State> dfa1, DFA<State> dfa2)
       });
 }
 
+// creates a DFA that is the intersection of dfa1 and dfa2
 template <class State>
 DFA<std::pair<State, State>> intersectionDFA(DFA<State> dfa1, DFA<State> dfa2)
 {
@@ -198,6 +200,14 @@ DFA<std::pair<State, State>> intersectionDFA(DFA<State> dfa1, DFA<State> dfa2)
       [=](std::pair<State, State> a) { // accept states
         return ((dfa1.F(a.first)) && (dfa2.F(a.second)));
       });
+}
+
+// returns true/false to indicate whether dfa1 is a subset of dfa2
+template<class State>
+bool subsetDFA(DFA<State> dfa1, DFA<State> dfa2) 
+{
+  DFA<State> dfa3 = intersectionDFA(dfa1, complementDFA(dfa2));
+  // now need to call accepted string funciton on dfa3 to determine whether any acceptedStirngs are possible with this dfa
 }
 
 template <class State>
