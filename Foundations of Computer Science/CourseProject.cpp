@@ -155,6 +155,35 @@ public:
   std::function<bool(State)> F;                  // accept states
 };
 
+// returns a DFA that only accepts a string of length one that only contains inputChar
+DFA<myChar> oneCharDFA(myChar inputChar)
+{
+  return DFA<myChar>(
+      "onlyAccepts" + std::string(1, inputChar.getVal()),
+      [=](myChar a) -> bool { return (a == myChar('A') || a == myChar('B')); },
+      std::list<myChar>{inputChar}, myChar('A'),
+      [&](myChar a, myChar b) -> myChar {
+        if (a.getVal() == 'A' && (b.getVal() == inputChar.getVal()))
+          return myChar('B');
+        else
+          return myChar('C');
+      },
+      [](myChar a) -> bool { return (a == myChar('B')); });
+}
+
+// returns a DFA that is the complement of the inputDFA
+template <class State>
+DFA<State> complementDFA(DFA<State> inputDFA)
+{
+  return DFA<State>("complement of " + inputDFA.name, inputDFA.Q, inputDFA.alphabet, inputDFA.q0,
+                    inputDFA.transFunc, [=](State a) -> bool {
+                      if (inputDFA.F(a) == true)
+                        return false;
+                      return true;
+                    });
+}
+
+
 // creates a DFA that is the union of dfa1 and dfa2
 template <class State>
 DFA<std::pair<State, State>> unionDFA(DFA<State> dfa1, DFA<State> dfa2)
@@ -193,11 +222,11 @@ DFA<std::pair<State, State>> intersectionDFA(DFA<State> dfa1, DFA<State> dfa2)
       },
       a,                                                                    // alphabet
       std::make_pair(dfa1.q0, dfa2.q0),                                     // start state, need to figure this one out
-      [=](std::pair<State, State> a, myChar b) -> std::pair<State, State> { // transition function; not correct as is
+      [=](std::pair<State, State> a, myChar b) -> std::pair<State, State> {
         return (std::make_pair(dfa1.transFunc(a.first, b), dfa2.transFunc(a.second, b)));
       },
       [=](std::pair<State, State> a) { // accept states
-        return ((dfa1.F(a.first)) && (dfa2.F(a.second)));
+        return ((dfa1.F(a.first)) && (dfa2.F(a.second)));  // only difference from unionDFA function
       });
 }
 
@@ -210,41 +239,23 @@ bool subsetDFA(DFA<State> dfa1, DFA<State> dfa2)
 }
 
 template <class State>
-DFA<State> complementDFA(DFA<State> inputDFA)
+bool equalityDFA(DFA<State> dfa1, DFA<State> dfa2)
 {
-  return DFA<State>("complement of " + inputDFA.name, inputDFA.Q, inputDFA.alphabet, inputDFA.q0,
-                    inputDFA.transFunc, [=](State a) -> bool {
-                      if (inputDFA.F(a) == true)
-                        return false;
-                      return true;
-                    });
+  DFA<State> dfa3 = unionDFA(intersectionDFA(dfa1, complementDFA(dfa2)), intersectionDFA(complementDFA(dfa1), dfa2));
+  // now need to call acceptedStirng function on dfa3 to determine whether it is empty
 }
 
-// makes a DFA that only accepts a string of just one of the inputted Char
-DFA<myChar> oneCharDFA(myChar inputChar)
-{
-  return DFA<myChar>(
-      "onlyAccepts" + std::string(1, inputChar.getVal()),
-      [=](myChar a) -> bool { return (a == myChar('A') || a == myChar('B')); },
-      std::list<myChar>{inputChar}, myChar('A'),
-      [&](myChar a, myChar b) -> myChar {
-        if (a.getVal() == 'A' && (b.getVal() == inputChar.getVal()))
-          return myChar('B');
-        else
-          return myChar('C');
-      },
-      [](myChar a) -> bool { return (a == myChar('B')); });
-}
-
+// takes in dfa, vector of test strings and expected values for the test strings on the given dfa
+// bool values are at same index in bool vector as their corresponding test string in the other vector
 template <class State>
-void DFAtester(DFA<State> a, std::vector<myString *> inputStrings, std::vector<bool> expected)
+void DFAtester(DFA<State> a, std::vector<myString *> testStrings, std::vector<bool> expected)
 {
   int passed = 0;  // keep track of tests passed or failed
   int failed = 0;
 
-  for (int i = 0; i < inputStrings.size(); i++)
+  for (int i = 0; i < testStrings.size(); i++)
   {
-    if (a.accepts(*inputStrings[i]) == expected[i])
+    if (a.accepts(*testStrings[i]) == expected[i])
     {
       std::cout << "Test Passed!";
       passed++;
@@ -255,7 +266,7 @@ void DFAtester(DFA<State> a, std::vector<myString *> inputStrings, std::vector<b
       failed++;
     }
     std::cout << " --- Trace: ";
-    a.trace(*inputStrings[i]);
+    a.trace(*testStrings[i]);
     std::cout << std::endl;
   }
 
