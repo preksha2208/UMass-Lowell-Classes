@@ -11,9 +11,9 @@ TASK 10: I created the accepts function within my DFA class
 TASK 11: I created the trace function within my DFA class. At the moment it prints the trace to the console, but I may change this if in the future I need to return the values in some data type.
 TASK 12: TODO
 TASK 13: STILL NEED TO TEST Finished. Just changed the accept states function to its opposite.
-TASK 14: TODO
+TASK 14: STILL NEED TO TEST  ( task 15)
 TASK 15: TODO should be quick once I get 14 done
-TASK 16: TODO I'm assuming this one is not too different than task 14, so if I can get that figured out, then this one shouldn't take too much longer
+TASK 16: STILL NEED TO TEST (task 17) I believe this should work correctly  
 TASK 17: TODO this will be easy once 16 is finished
 TASK 18: TODO this seems to be related to 14-17, so maybe once I get those done this will be easy to do. Also, I remember this being in the book.
 TASK 19: TODO maybe need to compare the functions to check whether they have they return the same values for all values in alphabet
