@@ -155,7 +155,6 @@ public:
   std::function<bool(State)> F;                  // accept states
 };
 
-
 // creates a DFA that is the union of dfa1 and dfa2
 template <class State>
 DFA<std::pair<State, State>> unionDFA(DFA<State> dfa1, DFA<State> dfa2)
@@ -203,8 +202,8 @@ DFA<std::pair<State, State>> intersectionDFA(DFA<State> dfa1, DFA<State> dfa2)
 }
 
 // returns true/false to indicate whether dfa1 is a subset of dfa2
-template<class State>
-bool subsetDFA(DFA<State> dfa1, DFA<State> dfa2) 
+template <class State>
+bool subsetDFA(DFA<State> dfa1, DFA<State> dfa2)
 {
   DFA<State> dfa3 = intersectionDFA(dfa1, complementDFA(dfa2));
   // now need to call accepted string funciton on dfa3 to determine whether any acceptedStirngs are possible with this dfa
@@ -238,21 +237,30 @@ DFA<myChar> oneCharDFA(myChar inputChar)
 }
 
 template <class State>
-void DFAtester(DFA<State> a, std::vector<myString> inputStrings, std::vector<bool> expected)
+void DFAtester(DFA<State> a, std::vector<myString *> inputStrings, std::vector<bool> expected)
 {
-  std::cout << "starting DFA test";
+  int passed = 0;  // keep track of tests passed or failed
+  int failed = 0;
 
   for (int i = 0; i < inputStrings.size(); i++)
   {
-    if (a.accepts(inputStrings[i]) == expected[i])
+    if (a.accepts(*inputStrings[i]) == expected[i])
+    {
       std::cout << "Test Passed!";
+      passed++;
+    }
     else
+    {
       std::cout << "Test Failed.";
-
+      failed++;
+    }
     std::cout << " --- Trace: ";
-    a.trace(inputStrings[i]);
+    a.trace(*inputStrings[i]);
     std::cout << std::endl;
   }
+
+  std::cout << "TESTS PASSED: " << passed << std::endl;  // print out results
+  std::cout << "TESTS FAILED: " << failed << std::endl;
 }
 
 void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
@@ -683,70 +691,81 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing EvenLengthBinary DFA: " << std::endl; // Tests for EvenLengthBinaryDFA
-  std::vector<myString> evenLengthStrings{OZ, ZO, OZOO, ZZZZ, OOOOOO, epsi, O, Z, ZOZ, ZZZZZ, OOO, ZOZOZ};
+  std::vector<myString *> evenLengthStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
   std::vector<bool> expectedEvenLength{true, true, true, true, true, true, false, false, false, false, false, false};
-  //DFAtester(evenLengthBinary, evenLengthStrings, expectedEvenLength);
+  DFAtester(evenLengthBinary, evenLengthStrings, expectedEvenLength);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing AcceptsNothing DFA" << std::endl; // tests for AcceptsNothing DFA
-  std::vector<myString> acceptsNothingStrings{OZ, ZO, OZOO, ZZZZ, OOOOOO, epsi, O, Z, ZOZ, ZZZZZ, OOO, ZOZOZ};
+  std::vector<myString *> acceptsNothingStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
   std::vector<bool> expectedAcceptsNothing{false, false, false, false, false, false, false, false, false, false, false, false};
+  DFAtester(acceptsNothing, acceptsNothingStrings, expectedAcceptsNothing);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing OnlyAcceptsEmptyString DFA" << std::endl; // tests for onlyAcceptsEmptyString DFA
-  std::vector<myString> onlyAcceptsEmptyStringStrings{OZ, ZO, OZOO, ZZZZ, OOOOOO, epsi, O, Z, ZOZ, ZZZZZ, OOO, ZOZOZ};
+  std::vector<myString *> onlyAcceptsEmptyStringStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
   std::vector<bool> expectedOnlyAcceptsEmptyString{false, false, false, false, false, true, false, false, false, false, false, false};
+  DFAtester(onlyAcceptsEmptyString, onlyAcceptsEmptyStringStrings, expectedOnlyAcceptsEmptyString);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing EvenBinaryNumber DFA"
             << std::endl; // tests for evenBinaryNumber DFA
-  std::vector<myString> evenBinaryNumberStrings{OZ, ZO, OZOO, ZZZZ, OOOOOO, epsi, O, Z, ZOZ, ZZZZZ, OOO, ZOZOZ};
+  std::vector<myString *> evenBinaryNumberStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
   std::vector<bool> expectedEvenBinaryNumber{true, false, false, true, false, false, false, true, true, true, false, true};
+  DFAtester(evenBinaryNumber, evenBinaryNumberStrings, expectedEvenBinaryNumber);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing OddBinaryNumber DFA" << std::endl; // tests for OddBinaryNumber DF
-  std::vector<myString> oddBinaryNumberStrings{OZ, ZO, OZOO, ZZZZ, OOOOOO, epsi, O, Z, ZOZ, ZZZZZ, OOO, ZOZOZ};
+  std::vector<myString *> oddBinaryNumberStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
   std::vector<bool> expectedOddBinaryNumber{false, true, true, false, true, true, true, false, false, false, true, false};
+  DFAtester(oddBinaryNumber, oddBinaryNumberStrings, expectedOddBinaryNumber);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing ContainsCAM DFA"
             << std::endl; // tests for containsCAM DFA
-  std::vector<myString> ContainsCAMStrings{OZ, ZO, OZOO, ZZZZ, MAC, epsi, CAMOO, OOCAM, OCAMO, CACAMM, CAMCAM, CAMERA};
+  std::vector<myString *> ContainsCAMStrings{&OZ, &ZO, &OZOO, &ZZZZ, &MAC, &epsi, &CAMOO, &OOCAM, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
   std::vector<bool> expectedContainsCAM{false, false, false, false, false, false, true, true, true, true, true, true};
+  DFAtester(containsCAM, ContainsCAMStrings, expectedContainsCAM);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing ContainsLineComment DFA" << std::endl; // tests for containsLineComment DFA
-  std::vector<myString> containsLineCommentStrings{comment1, comment2, comment3, comment4, comment5, epsi, comment6, comment7, OCAMO, CACAMM, CAMCAM, CAMERA};
+  std::vector<myString *> containsLineCommentStrings{&comment1, &comment2, &comment3, &comment4, &comment5, &epsi, &comment6, &comment7, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
   std::vector<bool> expectedContainsLineComment{true, true, false, true, true, false, true, false, false, false, false, false};
+  DFAtester(containsLineComment, containsLineCommentStrings, expectedContainsLineComment);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing ThreeConsecutiveZerosBinary DFA" << std::endl; // tests for threeConsecutiveZerosBinary DFA
-  std::vector<myString> threeConsecutiveZerosStrings{ZZZZ, ZZZOO, ZOZZZ, ZZZZZ, OOZZZ, epsi, OZZZO, Z, MAC, OZ, OOO, ZOZOZ};
+  std::vector<myString *> threeConsecutiveZerosStrings{&ZZZZ, &ZZZOO, &ZOZZZ, &ZZZZZ, &OOZZZ, &epsi, &OZZZO, &Z, &MAC, &OZ, &OOO, &ZOZOZ};
   std::vector<bool> expectedThreeConsecutiveZeros{true, true, true, true, true, false, true, false, false, false, false, false};
+  DFAtester(threeConsecutiveZerosBinary, threeConsecutiveZerosStrings, expectedThreeConsecutiveZeros);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing ThreeConsecutiveOnesBinary DFA"
             << std::endl; // tests for threeConsecutiveOnesBinary DFA
-  std::vector<myString> threeConsecutiveOnesStrings{ZZZZ, ZZZOO, ZOZZZ, ZZZZZ, OOZZZ, epsi, ZZZZZ, OOOZZZ, ZOOOZZ, ZZOOOZ, OOO, ZZZOOO};
+  std::vector<myString *> threeConsecutiveOnesStrings{&ZZZZ, &ZZZOO, &ZOZZZ, &ZZZZZ, &OOZZZ, &epsi, &ZZZZZ, &OOOZZZ, &ZOOOZZ, &ZZOOOZ, &OOO, &ZZZOOO};
   std::vector<bool> expectedConsecutiveOnes{false, false, false, false, false, false, false, true, true, true, true, true};
+  DFAtester(threeConsecutiveOnesBinary, threeConsecutiveOnesStrings, expectedConsecutiveOnes);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing OddNumberOfOnesBinary DFA"
             << std::endl; // tests for oddNumberOfOnesBinary DFA
-  std::vector<myString> oddNumberOfOnesStrings{OZ, ZO, OZOO, ZZZZ, OOOOOO, epsi, O, Z, ZOZ, ZZZZZ, OOO, ZOZOZ};
+  std::vector<myString *> oddNumberOfOnesStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
   std::vector<bool> expectedOddNumberOfOnes{true, true, true, false, false, false, true, false, true, false, true, false};
+  DFAtester(oddNumberOfOnesBinary, oddNumberOfOnesStrings, expectedOddNumberOfOnes);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing EvenNumberOfOnesBinary DFA"
             << std::endl; // tests for EvenNumberOfOnesBinary DFA
-  std::vector<myString> evenNumberOfOnesStrings{OZ, ZO, OZOO, ZZZZ, OOOOOO, epsi, O, Z, ZOZ, ZZZZZ, OOO, ZOZOZ};
+  std::vector<myString *> evenNumberOfOnesStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
   std::vector<bool> expectedEvenNumberOfOnes{false, false, false, true, true, true, false, true, false, true, false, true};
+  DFAtester(evenNumberOfOnesBinary, evenNumberOfOnesStrings, expectedEvenNumberOfOnes);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing EvenNumberOfZerosAndSingleOne DFA"
             << std::endl; // tests for EvenNumberOfZerosAndSingleOne DFA
-  std::vector<myString> evenNumberOfZerosAndSingleOneStrings{OZ, ZOZO, ZZZZZZO, ZZO, OOOOOO, epsi, O, Z, ZOZ, ZZZZO, OOO, ZOZOZ};
+  std::vector<myString *> evenNumberOfZerosAndSingleOneStrings{&OZ, &ZOZO, &ZZZZZZO, &ZZO, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZO, &OOO, &ZOZOZ};
   std::vector<bool> expectedEvenNumberZerosAndSingleOne{false, false, true, true, false, false, false, false, false, true, false, false};
+  DFAtester(evenNumberOfZerosAndSingleOne, evenNumberOfZerosAndSingleOneStrings, expectedEvenNumberZerosAndSingleOne);
 }
 
 int main()
