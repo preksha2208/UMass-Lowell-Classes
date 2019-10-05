@@ -1,12 +1,13 @@
 // Copyright Cameron Knopp 2019
 // Fall 2019 Foundations of Computer Science with Professor Jay McCarthy
 
-#include <functional>
+#include <functional>  // for std::function
 #include <iostream>
 #include <iterator>
 #include <list>
 #include <string>
 #include <vector>
+#include <utility>
 
 class myChar // class to represent char values
 {
@@ -147,12 +148,50 @@ public:
     }
   }
 
+  auto acceptedString()
+  {
+    State qi = q0;
+    // if(F(qi) == true)
+    //  return new emptyString;   // return epsilon, since it is accepted by this DFA
+    std::list<State> visitedStates;
+    return acceptedStringRecursive(qi, visitedStates);
+  }
+
+
   std::string name;
   std::function<bool(State)> Q; // list of possible states for this dfa
-  std::list<myChar> alphabet;
+  std::list<myChar> alphabet;  // alphabet for this DFA
   State q0;                                      // start state
   std::function<State(State, myChar)> transFunc; // DFA transition function
   std::function<bool(State)> F;                  // accept states
+
+ private:
+  auto acceptedStringRecursive(State qi, std::list<State> &visitedStates)
+  {
+    if (F(qi) == true)
+    {
+      return true;  // current state is accept state
+    }
+    for (auto x : visitedStates)
+    {
+      if (qi == x)  // current state has already been visited
+      {
+        return false;
+      }
+    }
+    visitedStates.push_back(qi);
+
+    // recursively call function on all of current state's children
+    for (auto x : alphabet)
+    {
+      if ((acceptedStringRecursive(transFunc(qi, x), visitedStates)))
+        {
+        std::cout << x;
+        return true;
+        }
+    }
+    return false;  // current state and its children are not accept states
+  }
 };
 
 // returns a DFA that only accepts a string of length one that only contains inputChar
@@ -160,7 +199,7 @@ DFA<myChar> oneCharDFA(myChar inputChar)
 {
   return DFA<myChar>(
       "onlyAccepts" + std::string(1, inputChar.getVal()),
-      [=](myChar a) -> bool { return (a == myChar('A') || a == myChar('B')); },
+      [=](myChar a) -> bool { return (a == myChar('A') || a == myChar('B') || a == myChar('C')); },
       std::list<myChar>{inputChar}, myChar('A'),
       [&](myChar a, myChar b) -> myChar {
         if (a.getVal() == 'A' && (b.getVal() == inputChar.getVal()))
@@ -777,6 +816,10 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::vector<myString *> evenNumberOfZerosAndSingleOneStrings{&OZ, &ZOZO, &ZZZZZZO, &ZZO, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZO, &OOO, &ZOZOZ};
   std::vector<bool> expectedEvenNumberZerosAndSingleOne{false, false, true, true, false, false, false, false, false, true, false, false};
   DFAtester(evenNumberOfZerosAndSingleOne, evenNumberOfZerosAndSingleOneStrings, expectedEvenNumberZerosAndSingleOne);
+
+  std::cout << acceptsNothing.acceptedString() << std::endl;
+  std::cout << threeConsecutiveOnesBinary.acceptedString() << std::endl;
+  std::cout << containsCAM.acceptedString() << std::endl;
 }
 
 int main()
