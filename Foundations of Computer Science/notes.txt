@@ -9,7 +9,7 @@ TASK 8: I have created 12 example DFAs (including acceptsNothing and onlyAccepts
 TASK 9: I have created 12 tests for each of my 12 DFAs within my very lengthy function, makeAndTestsDFA(). I wasn't sure of how to make this function smaller, since there are unique input strings for each of the 12 DFAs.
 TASK 10: I created the accepts function within my DFA class
 TASK 11: I created the trace function within my DFA class. At the moment it prints the trace to the console, but I may change this if in the future I need to return the values in some data type.
-TASK 12: TODO
+TASK 12: Works correcty. Implemented using recursive graph searc algorithm, which I figured out how to do from this video https://www.youtube.com/watch?v=zaBhtODEL0w&t=520s
 TASK 13: STILL NEED TO TEST Finished. Just changed the accept states function to its opposite.
 TASK 14: STILL NEED TO TEST  ( task 15)
 TASK 15: TODO should be quick once I get 14 done

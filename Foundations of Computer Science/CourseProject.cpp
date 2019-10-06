@@ -9,6 +9,7 @@
 #include <vector>
 #include <utility>
 #include <stack>
+#include <type_traits>
 
 class myChar // class to represent char values
 {
@@ -139,34 +140,53 @@ public:
   {                                 // does DFA accept inputString?
     State qi = this->q0;
     myString *temp = &inputString;
-    std::cout << qi;
-    // step through DFA with the input string
-    while (temp->isEmpty() != true)
+    if (std::is_same<State, myChar>::value)
     {
+      std::cout << qi << ", ";
+      // step through DFA with the input string
+      while (temp->next()->isEmpty() != true)
+      {
+        qi = transFunc(qi, temp->charObject());
+        std::cout << qi << ", ";
+        temp = temp->next();
+      }
       qi = transFunc(qi, temp->charObject());
-      temp = temp->next();
       std::cout << qi;
+    }
+    else if (std::is_same < State, std::pair<myChar, myChar>>::value)
+    {
+      std::cout << qi.first << qi.second << ", ";
+      // step through DFA with the input string
+      while (temp->next()->isEmpty() != true)
+      {
+        qi = transFunc(qi, temp->charObject());
+        std::cout << qi.first << qi.second << ", ";
+        temp = temp->next();
+      }
+      qi = transFunc(qi, temp->charObject());
+      std::cout << qi.first << qi.second;
     }
   }
 
+  // returns a string that is accepted by the DFA, or false if it accepts no strings
   std::pair<bool, myString *> acceptedString()
   {
     State qi = q0;
     if (F(qi) == true) // empty string is accepted by this DFA
     {
-      std::cout << "accepts empty string" << std::endl;
       return std::make_pair<bool, myString *>(true, new emptyString);
     }
     std::list<State> visitedStates;
     std::stack<myChar> stringStack;
-    acceptedStringRecursive(qi, visitedStates, stringStack);
-    if (stringStack.size() == 0)
+    acceptedStringRecursive(qi, visitedStates, stringStack); // recursive graph search of DFA
+
+    if (stringStack.size() == 0) // graph search found no possible strings
     {
-      std::cout << "No accepted strings" << std::endl;
       return std::make_pair<bool, myString *>(false, NULL);
     }
-    else
+    else // graph search found possible string
     {
+      // accepted string is inside of stringStack, so need to convert values to myString*
       oneString beginning = oneString(stringStack.top().getVal(), NULL);
       myString *temp = &beginning;
       while (stringStack.size() != 0)
@@ -298,14 +318,14 @@ template <class State>
 bool subsetDFA(DFA<State> dfa1, DFA<State> dfa2)
 {
   DFA<State> dfa3 = intersectionDFA(dfa1, complementDFA(dfa2));
-  // now need to call accepted string funciton on dfa3 to determine whether any acceptedStirngs are possible with this dfa
+  return (dfa3.acceptedString().first ? false : true); // if dfa3 accepts nothing, then dfa1 is a subset of dfa2
 }
 
 template <class State>
 bool equalityDFA(DFA<State> dfa1, DFA<State> dfa2)
 {
   DFA<State> dfa3 = unionDFA(intersectionDFA(dfa1, complementDFA(dfa2)), intersectionDFA(complementDFA(dfa1), dfa2));
-  // now need to call acceptedStirng function on dfa3 to determine whether it is empty
+  return dfa3.acceptedString().first ? false : true; // if dfa3 accepts nothing, then dfa1 and dfa2 are equal
 }
 
 // takes in dfa, vector of test strings and expected values for the test strings on the given dfa
@@ -318,6 +338,7 @@ void DFAtester(DFA<State> a, std::vector<myString *> testStrings, std::vector<bo
 
   for (int i = 0; i < testStrings.size(); i++)
   {
+    std::cout << i + 1 << ": ";
     if (a.accepts(*testStrings[i]) == expected[i])
     {
       std::cout << "Test Passed!";
@@ -335,10 +356,10 @@ void DFAtester(DFA<State> a, std::vector<myString *> testStrings, std::vector<bo
 
   std::cout << "TESTS PASSED: " << passed << std::endl; // print out results
   std::cout << "TESTS FAILED: " << failed << std::endl;
+  std::cout << std::endl;
 }
 
-void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
-                       // the results to the console
+void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints results
 {
   // Declarations of DFAs
   DFA<myChar> evenLengthBinary( // returns whether length of inputted binary
@@ -841,10 +862,36 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::vector<bool> expectedEvenNumberZerosAndSingleOne{false, false, true, true, false, false, false, false, false, true, false, false};
   DFAtester(evenNumberOfZerosAndSingleOne, evenNumberOfZerosAndSingleOneStrings, expectedEvenNumberZerosAndSingleOne);
 
-  acceptsNothing.acceptedString();
-  threeConsecutiveOnesBinary.acceptedString();
-  containsCAM.acceptedString();
-  containsLineComment.acceptedString();
+  /* 
+   ---------------------------------------------------------------
+                        DFA UNION TESTS
+   ---------------------------------------------------------------
+*/
+/*
+  std::cout << "Testing AnyNumberOfOnesBinary DFA Union" << std::endl;
+  DFA<std::pair<myChar, myChar>> anyNumberOfOnesBinary = unionDFA<myChar>(oddNumberOfOnesBinary, evenNumberOfOnesBinary);
+  std::vector<myString *> anyNumberOfOnesStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
+  std::vector<bool> expectedAnyNumberOfOnes{true, true, true, true, true, true, true, true, true, true, true, true};
+  DFAtester(anyNumberOfOnesBinary, anyNumberOfOnesStrings, expectedAnyNumberOfOnes);
+*/
+  /* 
+   ---------------------------------------------------------------
+                        DFA INTERSECTION TESTS
+   ---------------------------------------------------------------
+*/
+/*
+  std::cout << "Testing NoNumberOfOnesBinary DFA Intersection" << std::endl;
+  DFA<std::pair<myChar, myChar>> noNumberOfOnesBinary = intersectionDFA<myChar>(oddNumberOfOnesBinary, evenNumberOfOnesBinary);
+  std::vector<myString *> noNumberOfOnesStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
+  std::vector<bool> expectedNoNumberOfOnes{false, false, false, false, false, false, false, false, false, false, false, false};
+  DFAtester(noNumberOfOnesBinary, noNumberOfOnesStrings, expectedNoNumberOfOnes);
+
+  std::cout << "Testing LineCommentAndEvenNumberOfOnes DFA Intersection" << std::endl;
+  DFA<std::pair<myChar, myChar>> lineCommentAndEvenNumberOfOnes = intersectionDFA<myChar>(containsLineComment, evenNumberOfOnesBinary);
+  std::vector<myString *> lineCommentAndEvenNumberOfOnesStrings{&comment1, &comment2, &comment3, &comment4, &comment5, &epsi, &comment6, &comment7, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
+  std::vector<bool> expectedlineCommentAndEvenNumberOfOnes{true, true, false, true, true, false, true, false, false, false, false, false};
+  DFAtester(lineCommentAndEvenNumberOfOnes, lineCommentAndEvenNumberOfOnesStrings, expectedlineCommentAndEvenNumberOfOnes);
+*/
 }
 
 int main()
