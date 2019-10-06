@@ -140,31 +140,14 @@ public:
   {                                 // does DFA accept inputString?
     State qi = this->q0;
     myString *temp = &inputString;
-    if (std::is_same<State, myChar>::value)
+    std::cout << qi;
+    // step through DFA with the input string
+    while (temp->isEmpty() == false)
     {
-      std::cout << qi << ", ";
-      // step through DFA with the input string
-      while (temp->next()->isEmpty() != true)
-      {
-        qi = transFunc(qi, temp->charObject());
-        std::cout << qi << ", ";
-        temp = temp->next();
-      }
+      std::cout << ", ";
       qi = transFunc(qi, temp->charObject());
       std::cout << qi;
-    }
-    else if (std::is_same < State, std::pair<myChar, myChar>>::value)
-    {
-      std::cout << qi.first << qi.second << ", ";
-      // step through DFA with the input string
-      while (temp->next()->isEmpty() != true)
-      {
-        qi = transFunc(qi, temp->charObject());
-        std::cout << qi.first << qi.second << ", ";
-        temp = temp->next();
-      }
-      qi = transFunc(qi, temp->charObject());
-      std::cout << qi.first << qi.second;
+      temp = temp->next();
     }
   }
 
@@ -404,35 +387,33 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
           return a;
       },
       [](myChar a) -> bool { return (a == myChar('A')); });
-  DFA<myChar>
-      evenBinaryNumber( // returns whether the inputted binary number is even
-          "EvenBinaryNumber",
-          [](myChar a) -> bool {
-            return ((a.getVal() == 'A') || (a.getVal() == 'B'));
-          },
-          std::list<myChar>{myChar('1'), myChar('0')}, myChar('A'),
-          [](myChar a, myChar b) -> myChar {
-            if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '0')
-              return myChar('B');
-            else
-              return myChar('A');
-          },
-          [](myChar a) -> bool { return (a == myChar('B')); });
+  DFA<myChar> evenBinaryNumber( // returns whether the inputted binary number is even
+      "EvenBinaryNumber",
+      [](myChar a) -> bool {
+        return ((a.getVal() == 'A') || (a.getVal() == 'B'));
+      },
+      std::list<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      [](myChar a, myChar b) -> myChar {
+        if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '0')
+          return myChar('B');
+        else
+          return myChar('A');
+      },
+      [](myChar a) -> bool { return (a == myChar('B')); });
 
-  DFA<myChar>
-      oddBinaryNumber( // returns whether the inputted binary number is odd
-          "OddBinaryNumber",
-          [](myChar a) -> bool {
-            return ((a.getVal() == 'A') || (a.getVal() == 'B'));
-          },
-          std::list<myChar>{myChar('1'), myChar('0')}, myChar('A'),
-          [](myChar a, myChar b) -> myChar {
-            if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '1')
-              return myChar('B');
-            else
-              return myChar('A');
-          },
-          [](myChar a) -> bool { return (a == myChar('B')); });
+  DFA<myChar> oddBinaryNumber( // returns whether the inputted binary number is odd
+      "OddBinaryNumber",
+      [](myChar a) -> bool {
+        return ((a.getVal() == 'A') || (a.getVal() == 'B'));
+      },
+      std::list<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      [](myChar a, myChar b) -> myChar {
+        if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '1')
+          return myChar('B');
+        else
+          return myChar('A');
+      },
+      [](myChar a) -> bool { return (a == myChar('B')); });
 
   DFA<myChar> containsCAM( // returns whether the input contains my name
                            // somewhere in it
@@ -456,78 +437,75 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
       },
       [](myChar a) -> bool { return (a == myChar('D')); });
 
-  DFA<myChar>
-      containsLineComment( // returns whether the input contains a double slash
-                           // somewhere in it, indicating a comment
-          "ContainsLineComment",
-          [](myChar a) -> bool {
-            return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
-                    (a.getVal() == 'C'));
-          },
-          std::list<myChar>{myChar('/')}, myChar('A'),
-          [](myChar a, myChar b) -> myChar {
-            if (a.getVal() == 'A' && b.getVal() == '/')
-              return myChar('B');
-            else if (a.getVal() == 'B' && b.getVal() == '/')
-              return myChar('C');
-            else if (a.getVal() == 'C')
-              return myChar('C');
-            else
-              return myChar('A');
-          },
-          [](myChar a) -> bool { return (a == myChar('C')); });
+  DFA<myChar> containsLineComment( // returns whether the input contains a double slash
+                                   // somewhere in it, indicating a comment
+      "ContainsLineComment",
+      [](myChar a) -> bool {
+        return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
+                (a.getVal() == 'C'));
+      },
+      std::list<myChar>{myChar('/')}, myChar('A'),
+      [](myChar a, myChar b) -> myChar {
+        if (a.getVal() == 'A' && b.getVal() == '/')
+          return myChar('B');
+        else if (a.getVal() == 'B' && b.getVal() == '/')
+          return myChar('C');
+        else if (a.getVal() == 'C')
+          return myChar('C');
+        else
+          return myChar('A');
+      },
+      [](myChar a) -> bool { return (a == myChar('C')); });
 
-  DFA<myChar>
-      threeConsecutiveZerosBinary( // returns whether the inputted binary number
-                                   // has three consecutive zeros in it
-          "ThreeConsecutiveZerosBinary",
-          [](myChar a) -> bool {
-            return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
-                    (a.getVal() == 'C') || (a.getVal() == 'D'));
-          },
-          std::list<myChar>{myChar('1'), myChar('0')}, myChar('A'),
-          [](myChar a, myChar b) -> myChar {
-            if (a.getVal() == 'A' && b.getVal() == '1')
-              return myChar('A');
-            else if (a.getVal() == 'A' && b.getVal() == '0')
-              return myChar('B');
-            else if (a.getVal() == 'B' && b.getVal() == '0')
-              return myChar('C');
-            else if (a.getVal() == 'C' && b.getVal() == '0')
-              return myChar('D');
-            else if (a.getVal() == 'D')
-              return myChar('D');
-            else
-              return myChar('A');
-          },
-          [](myChar a) -> bool { return (a == myChar('D')); });
+  DFA<myChar> threeConsecutiveZerosBinary( // returns whether the inputted binary number
+                                           // has three consecutive zeros in it
+      "ThreeConsecutiveZerosBinary",
+      [](myChar a) -> bool {
+        return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
+                (a.getVal() == 'C') || (a.getVal() == 'D'));
+      },
+      std::list<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      [](myChar a, myChar b) -> myChar {
+        if (a.getVal() == 'A' && b.getVal() == '1')
+          return myChar('A');
+        else if (a.getVal() == 'A' && b.getVal() == '0')
+          return myChar('B');
+        else if (a.getVal() == 'B' && b.getVal() == '0')
+          return myChar('C');
+        else if (a.getVal() == 'C' && b.getVal() == '0')
+          return myChar('D');
+        else if (a.getVal() == 'D')
+          return myChar('D');
+        else
+          return myChar('A');
+      },
+      [](myChar a) -> bool { return (a == myChar('D')); });
 
-  DFA<myChar>
-      threeConsecutiveOnesBinary( // returns whether the inputted binary number
-                                  // has three consecutive ones in it
-          "ThreeConsecutiveOnesBinary",
-          [](myChar a) -> bool {
-            return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
-                    (a.getVal() == 'C') || (a.getVal() == 'D'));
-          },
-          std::list<myChar>{myChar('1'), myChar('0')}, myChar('A'),
-          [](myChar a, myChar b) -> myChar {
-            if (a.getVal() == 'A' && b.getVal() == '0')
-              return myChar('A');
-            else if (a.getVal() == 'A' && b.getVal() == '1')
-              return myChar('B');
-            else if (a.getVal() == 'B' && b.getVal() == '1')
-              return myChar('C');
-            else if (a.getVal() == 'C' && b.getVal() == '1')
-              return myChar('D');
-            else if (a.getVal() == 'D' && b.getVal() == '1')
-              return myChar('B');
-            else if (a.getVal() == 'D' && b.getVal() == '0')
-              return myChar('D');
-            else
-              return myChar('A');
-          },
-          [](myChar a) -> bool { return (a == myChar('D')); });
+  DFA<myChar> threeConsecutiveOnesBinary( // returns whether the inputted binary number
+                                          // has three consecutive ones in it
+      "ThreeConsecutiveOnesBinary",
+      [](myChar a) -> bool {
+        return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
+                (a.getVal() == 'C') || (a.getVal() == 'D'));
+      },
+      std::list<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      [](myChar a, myChar b) -> myChar {
+        if (a.getVal() == 'A' && b.getVal() == '0')
+          return myChar('A');
+        else if (a.getVal() == 'A' && b.getVal() == '1')
+          return myChar('B');
+        else if (a.getVal() == 'B' && b.getVal() == '1')
+          return myChar('C');
+        else if (a.getVal() == 'C' && b.getVal() == '1')
+          return myChar('D');
+        else if (a.getVal() == 'D' && b.getVal() == '1')
+          return myChar('B');
+        else if (a.getVal() == 'D' && b.getVal() == '0')
+          return myChar('D');
+        else
+          return myChar('A');
+      },
+      [](myChar a) -> bool { return (a == myChar('D')); });
 
   DFA<myChar> oddNumberOfOnesBinary( // returns whether the inputted binary
                                      // number has an odd number of ones in it
@@ -570,31 +548,30 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
       },
       [](myChar a) -> bool { return (a == myChar('A')); });
 
-  DFA<myChar>
-      evenNumberOfZerosAndSingleOne( // returns whether the inputted number has
-                                     // an even number of zeroes followed by a
-                                     // single one in it
-          "EvenNumberOfZerosAndSingleOne",
-          [](myChar a) -> bool {
-            return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
-                    (a.getVal() == 'C') || (a.getVal() == 'D'));
-          },
-          std::list<myChar>{myChar('1'), myChar('0')}, myChar('A'),
-          [](myChar a, myChar b) -> myChar {
-            if (a.getVal() == 'A' && b.getVal() == '0')
-              return myChar('B');
-            else if (a.getVal() == 'B' && b.getVal() == '0')
-              return myChar('A');
-            else if (a.getVal() == 'A' && b.getVal() == '1')
-              return myChar('C');
-            else if (a.getVal() == 'C' && b.getVal() == '1')
-              return myChar('D');
-            else if (a.getVal() == 'D')
-              return myChar('D');
-            else
-              return myChar('A');
-          },
-          [](myChar a) -> bool { return (a == myChar('C')); });
+  DFA<myChar> evenNumberOfZerosAndSingleOne( // returns whether the inputted number has
+                                             // an even number of zeroes followed by a
+                                             // single one in it
+      "EvenNumberOfZerosAndSingleOne",
+      [](myChar a) -> bool {
+        return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
+                (a.getVal() == 'C') || (a.getVal() == 'D'));
+      },
+      std::list<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      [](myChar a, myChar b) -> myChar {
+        if (a.getVal() == 'A' && b.getVal() == '0')
+          return myChar('B');
+        else if (a.getVal() == 'B' && b.getVal() == '0')
+          return myChar('A');
+        else if (a.getVal() == 'A' && b.getVal() == '1')
+          return myChar('C');
+        else if (a.getVal() == 'C' && b.getVal() == '1')
+          return myChar('D');
+        else if (a.getVal() == 'D')
+          return myChar('D');
+        else
+          return myChar('A');
+      },
+      [](myChar a) -> bool { return (a == myChar('C')); });
 
   // Declarations of string objects used in tests
   oneString OZ = oneString('1', new oneString('0', new emptyString));
@@ -812,7 +789,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing OddBinaryNumber DFA" << std::endl; // tests for OddBinaryNumber DF
   std::vector<myString *> oddBinaryNumberStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
-  std::vector<bool> expectedOddBinaryNumber{false, true, true, false, true, true, true, false, false, false, true, false};
+  std::vector<bool> expectedOddBinaryNumber{false, true, true, false, true, false, true, false, false, false, true, false};
   DFAtester(oddBinaryNumber, oddBinaryNumberStrings, expectedOddBinaryNumber);
 
   std::cout << "-----------------------" << std::endl;
@@ -859,7 +836,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
   std::cout << "Testing EvenNumberOfZerosAndSingleOne DFA"
             << std::endl; // tests for EvenNumberOfZerosAndSingleOne DFA
   std::vector<myString *> evenNumberOfZerosAndSingleOneStrings{&OZ, &ZOZO, &ZZZZZZO, &ZZO, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZO, &OOO, &ZOZOZ};
-  std::vector<bool> expectedEvenNumberZerosAndSingleOne{false, false, true, true, false, false, false, false, false, true, false, false};
+  std::vector<bool> expectedEvenNumberZerosAndSingleOne{false, false, true, true, false, false, true, false, false, true, false, false};
   DFAtester(evenNumberOfZerosAndSingleOne, evenNumberOfZerosAndSingleOneStrings, expectedEvenNumberZerosAndSingleOne);
 
   /* 
@@ -867,7 +844,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
                         DFA UNION TESTS
    ---------------------------------------------------------------
 */
-/*
+  /*
   std::cout << "Testing AnyNumberOfOnesBinary DFA Union" << std::endl;
   DFA<std::pair<myChar, myChar>> anyNumberOfOnesBinary = unionDFA<myChar>(oddNumberOfOnesBinary, evenNumberOfOnesBinary);
   std::vector<myString *> anyNumberOfOnesStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
@@ -879,7 +856,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
                         DFA INTERSECTION TESTS
    ---------------------------------------------------------------
 */
-/*
+  /*
   std::cout << "Testing NoNumberOfOnesBinary DFA Intersection" << std::endl;
   DFA<std::pair<myChar, myChar>> noNumberOfOnesBinary = intersectionDFA<myChar>(oddNumberOfOnesBinary, evenNumberOfOnesBinary);
   std::vector<myString *> noNumberOfOnesStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
