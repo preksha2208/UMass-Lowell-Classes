@@ -7,11 +7,32 @@
 #include <list>
 #include <string>
 #include <vector>
-#include <utility>  // for std::pair
+#include <utility> // for std::pair
 #include <stack>
 #include <type_traits>
 
-class myChar // class to represent char values
+// class that is essentially std::pair, but with an overloaded << operator
+template <class State1, class State2>
+class myPair
+{
+public:
+  myPair<State1, State2>(State1 data1, State2 data2) : first(data1), second(data2) {}
+
+  State1 first;
+  State2 second;
+  friend myPair<State1, State2> make_MyPair(State1 data1, State2 data2)
+  {
+    return myPair<State1, State2>(data1, data2);
+  }
+  friend std::ostream &operator<<(std::ostream &os, const myPair &p)
+  {
+    os << p.first << p.second;
+    return os;
+  }
+};
+
+// class to represent char values
+class myChar
 {
 public:
   explicit myChar(char c) { this->c = c; } // initialize char variable
@@ -38,8 +59,9 @@ private:
   char c;
 };
 
-class myString // class to represent strings; the strings are implemented as a
-               // linked list, with each node being a letter
+// class to represent strings; the strings are implemented as a
+// linked list, with each node being a letter
+class myString
 {
 public:
   myString(char c, myString *nextString) : nextString(nextString)
@@ -72,8 +94,8 @@ private:
   myString *nextString;
 };
 
-class oneString : public myString // node of string that contains a myChar
-                                  // object (i.e. a letter)
+// node of string that contains a myChar object (i.e. a letter)
+class oneString : public myString
 {
 public:
   oneString(char c, myString *nextString) : nextString(nextString)
@@ -93,6 +115,7 @@ private:
   myString *nextString;
 };
 
+// epsilon
 class emptyString : public myString
 {
 public:
@@ -244,54 +267,52 @@ DFA<State> complementDFA(DFA<State> inputDFA)
 {
   return DFA<State>("complement of " + inputDFA.name, inputDFA.Q, inputDFA.alphabet, inputDFA.q0,
                     inputDFA.transFunc, [=](State a) -> bool {
-                      if (inputDFA.F(a) == true)
-                        return false;
-                      return true;
+                      return (!inputDFA.F(a));
                     });
 }
 
 // creates a DFA that is the union of dfa1 and dfa2
 template <class State>
-DFA<std::pair<State, State>> unionDFA(DFA<State> dfa1, DFA<State> dfa2)
+DFA<myPair<State, State>> unionDFA(DFA<State> dfa1, DFA<State> dfa2)
 {
   std::list<myChar> a = dfa1.alphabet;
   std::list<myChar> b = dfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both DFAs
 
-  return DFA<std::pair<State, State>>(
+  return DFA<myPair<State, State>>(
       "Union of " + dfa1.name + " and " + dfa2.name,
-      [=](std::pair<State, State> a) -> bool { // function for possible states
+      [=](myPair<State, State> a) -> bool { // function for possible states
         return (dfa1.Q(a.first) && dfa2.Q(a.second));
       },
-      a,                                                                    // alphabet
-      std::make_pair(dfa1.q0, dfa2.q0),                                     // start state, need to figure this one out
-      [=](std::pair<State, State> a, myChar b) -> std::pair<State, State> { // transition function; not correct as is
-        return (std::make_pair(dfa1.transFunc(a.first, b), dfa2.transFunc(a.second, b)));
+      a,                                                              // alphabet
+      myPair<State, State>(dfa1.q0, dfa2.q0),                         // start state, need to figure this one out
+      [=](myPair<State, State> a, myChar b) -> myPair<State, State> { // transition function; not correct as is
+        return (myPair<State, State>(dfa1.transFunc(a.first, b), dfa2.transFunc(a.second, b)));
       },
-      [=](std::pair<State, State> a) { // accept states
+      [=](myPair<State, State> a) { // accept states
         return ((dfa1.F(a.first)) || (dfa2.F(a.second)));
       });
 }
 
 // creates a DFA that is the intersection of dfa1 and dfa2
 template <class State>
-DFA<std::pair<State, State>> intersectionDFA(DFA<State> dfa1, DFA<State> dfa2)
+DFA<myPair<State, State>> intersectionDFA(DFA<State> dfa1, DFA<State> dfa2)
 {
   std::list<myChar> a = dfa1.alphabet;
   std::list<myChar> b = dfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both DFAs
 
-  return DFA<std::pair<State, State>>(
+  return DFA<myPair<State, State>>(
       "Union of " + dfa1.name + " and " + dfa2.name,
-      [=](std::pair<State, State> a) -> bool { // function for possible states
+      [=](myPair<State, State> a) -> bool { // function for possible states
         return (dfa1.Q(a.first) && dfa2.Q(a.second));
       },
-      a,                                // alphabet
-      std::make_pair(dfa1.q0, dfa2.q0), // start state, need to figure this one out
-      [=](std::pair<State, State> a, myChar b) -> std::pair<State, State> {
-        return (std::make_pair(dfa1.transFunc(a.first, b), dfa2.transFunc(a.second, b)));
+      a,                                      // alphabet
+      myPair<State, State>(dfa1.q0, dfa2.q0), // start state, need to figure this one out
+      [=](myPair<State, State> a, myChar b) -> myPair<State, State> {
+        return (myPair<State, State>(dfa1.transFunc(a.first, b), dfa2.transFunc(a.second, b)));
       },
-      [=](std::pair<State, State> a) {                    // accept states
+      [=](myPair<State, State> a) {                       // accept states
         return ((dfa1.F(a.first)) && (dfa2.F(a.second))); // only difference from unionDFA function
       });
 }
@@ -760,6 +781,13 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
       'H', new oneString(
                '/', new oneString('/', new oneString('/', new emptyString))));
   oneString comment7 = oneString('/', new emptyString);
+  oneString a = oneString('a', new emptyString);
+  oneString b = oneString('b', new emptyString);
+  oneString c = oneString('c', new emptyString);
+  oneString ccc = oneString('c', new oneString('c', new oneString('c', new emptyString)));
+  oneString d = oneString('d', new emptyString);
+  oneString e = oneString('e', new emptyString);
+  oneString f = oneString('f', new emptyString);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing EvenLengthBinary DFA: " << std::endl; // Tests for EvenLengthBinaryDFA
@@ -839,36 +867,61 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
   std::vector<bool> expectedEvenNumberZerosAndSingleOne{false, false, true, true, false, false, true, false, false, true, false, false};
   DFAtester(evenNumberOfZerosAndSingleOne, evenNumberOfZerosAndSingleOneStrings, expectedEvenNumberZerosAndSingleOne);
 
-  /* 
-   ---------------------------------------------------------------
-                        DFA UNION TESTS
-   ---------------------------------------------------------------
-*/
-  /*
-  std::cout << "Testing AnyNumberOfOnesBinary DFA Union" << std::endl;
-  DFA<std::pair<myChar, myChar>> anyNumberOfOnesBinary = unionDFA<myChar>(oddNumberOfOnesBinary, evenNumberOfOnesBinary);
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "                      DFA UNION TESTS                     " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl
+            << std::endl;
+
+  std::cout << "Testing union of oddNumberOfOnesBinary and evenNumberOfOnesBinary DFAs" << std::endl;
+  DFA<myPair<myChar, myChar>> anyNumberOfOnesBinary = unionDFA<myChar>(oddNumberOfOnesBinary, evenNumberOfOnesBinary);
   std::vector<myString *> anyNumberOfOnesStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
   std::vector<bool> expectedAnyNumberOfOnes{true, true, true, true, true, true, true, true, true, true, true, true};
   DFAtester(anyNumberOfOnesBinary, anyNumberOfOnesStrings, expectedAnyNumberOfOnes);
-*/
-  /* 
-   ---------------------------------------------------------------
-                        DFA INTERSECTION TESTS
-   ---------------------------------------------------------------
-*/
-  /*
-  std::cout << "Testing NoNumberOfOnesBinary DFA Intersection" << std::endl;
-  DFA<std::pair<myChar, myChar>> noNumberOfOnesBinary = intersectionDFA<myChar>(oddNumberOfOnesBinary, evenNumberOfOnesBinary);
+
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "                      DFA INTERSECTION TESTS                     " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl
+            << std::endl;
+
+  std::cout << "Testing intersection of oddNumberOfOnesBinary and evenNumberOfOnesBinary DFAs" << std::endl;
+  DFA<myPair<myChar, myChar>> noNumberOfOnesBinary = intersectionDFA<myChar>(oddNumberOfOnesBinary, evenNumberOfOnesBinary);
   std::vector<myString *> noNumberOfOnesStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
   std::vector<bool> expectedNoNumberOfOnes{false, false, false, false, false, false, false, false, false, false, false, false};
   DFAtester(noNumberOfOnesBinary, noNumberOfOnesStrings, expectedNoNumberOfOnes);
 
-  std::cout << "Testing LineCommentAndEvenNumberOfOnes DFA Intersection" << std::endl;
-  DFA<std::pair<myChar, myChar>> lineCommentAndEvenNumberOfOnes = intersectionDFA<myChar>(containsLineComment, evenNumberOfOnesBinary);
+  std::cout << "Testing intersection of containsLineComment and evenNumberOfOnesBinary DFAs" << std::endl;
+  DFA<myPair<myChar, myChar>> lineCommentAndEvenNumberOfOnes = intersectionDFA<myChar>(containsLineComment, evenNumberOfOnesBinary);
   std::vector<myString *> lineCommentAndEvenNumberOfOnesStrings{&comment1, &comment2, &comment3, &comment4, &comment5, &epsi, &comment6, &comment7, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
   std::vector<bool> expectedlineCommentAndEvenNumberOfOnes{true, true, false, true, true, false, true, false, false, false, false, false};
   DFAtester(lineCommentAndEvenNumberOfOnes, lineCommentAndEvenNumberOfOnesStrings, expectedlineCommentAndEvenNumberOfOnes);
-*/
+
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "                      DFA COMPLEMENT TESTS                     " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl
+            << std::endl;
+
+  std::cout << "Testing complement of intersection of containsLineComment and evenNumberOfOnesBinary DFAs" << std::endl;
+  DFA<myPair<myChar, myChar>> lineCommentAndEvenNumberOfOnesComp = complementDFA<myPair<myChar, myChar>>(lineCommentAndEvenNumberOfOnes);
+  std::vector<myString *> lineCommentAndEvenNumberOfOnesCompStrings{&comment1, &comment2, &comment3, &comment4, &comment5, &epsi, &comment6, &comment7, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
+  std::vector<bool> expectedlineCommentAndEvenNumberOfOnesComp{false, false, true, false, false, true, false, true, true, true, true, true};
+  DFAtester(lineCommentAndEvenNumberOfOnesComp, lineCommentAndEvenNumberOfOnesCompStrings, expectedlineCommentAndEvenNumberOfOnesComp);
+
+  std::cout << "Testing complement of oddNumberOfOnesBinary DFA" << std::endl;
+  DFA<myChar> oddNumberOfOnesBinaryComp = complementDFA<myChar>(oddNumberOfOnesBinary);
+  std::vector<myString *> oddNumberOfOnesBinaryCompStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
+  std::vector<bool> expectedOddNumberOfOnesBinaryComp{false, false, false, true, true, true, false, true, false, true, false, true};
+  DFAtester(oddNumberOfOnesBinaryComp, oddNumberOfOnesBinaryCompStrings, expectedOddNumberOfOnesBinaryComp);
+
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "                      oneCharDFA TESTS                     " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl
+            << std::endl;
+
+  std::cout << "Testing complement of intersection of containsLineComment and evenNumberOfOnesBinary DFAs" << std::endl;
+  DFA<myChar> onlyAcceptsC = oneCharDFA(myChar('c'));
+  std::vector<myString *> onlyAcceptsCStrings{&a , &b, &c, &d, &e, &f, &ccc, &epsi, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
+  std::vector<bool> expectedOnlyAcceptsCStrings{false, false, true, false, false, false, false, false, false, false, false, false};
+  DFAtester(onlyAcceptsC, onlyAcceptsCStrings, expectedOnlyAcceptsCStrings);
 }
 
 int main()
