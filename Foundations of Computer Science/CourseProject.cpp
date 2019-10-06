@@ -1,13 +1,14 @@
 // Copyright Cameron Knopp 2019
 // Fall 2019 Foundations of Computer Science with Professor Jay McCarthy
 
-#include <functional>  // for std::function
+#include <functional> // for std::function
 #include <iostream>
 #include <iterator>
 #include <list>
 #include <string>
 #include <vector>
 #include <utility>
+#include <stack>
 
 class myChar // class to represent char values
 {
@@ -148,33 +149,57 @@ public:
     }
   }
 
-  auto acceptedString()
+  std::pair<bool, myString *> acceptedString()
   {
     State qi = q0;
-    // if(F(qi) == true)
-    //  return new emptyString;   // return epsilon, since it is accepted by this DFA
+    if (F(qi) == true) // empty string is accepted by this DFA
+    {
+      std::cout << "accepts empty string" << std::endl;
+      return std::make_pair<bool, myString *>(true, new emptyString);
+    }
     std::list<State> visitedStates;
-    return acceptedStringRecursive(qi, visitedStates);
-  }
+    std::stack<myChar> stringStack;
+    acceptedStringRecursive(qi, visitedStates, stringStack);
+    if (stringStack.size() == 0)
+    {
+      std::cout << "No accepted strings" << std::endl;
+      return std::make_pair<bool, myString *>(false, NULL);
+    }
+    else
+    {
+      oneString beginning = oneString(stringStack.top().getVal(), NULL);
+      myString *temp = &beginning;
+      while (stringStack.size() != 0)
+      {
+        temp->setNext(new oneString(stringStack.top().getVal(), NULL));
+        std::cout << stringStack.top().getVal();
+        stringStack.pop();
+        temp = temp->next();
+      }
+      temp->setNext(new emptyString);
+      std::cout << std::endl;
 
+      return std::make_pair<bool, myString *>(true, &beginning);
+    }
+  }
 
   std::string name;
   std::function<bool(State)> Q; // list of possible states for this dfa
-  std::list<myChar> alphabet;  // alphabet for this DFA
+  std::list<myChar> alphabet;
   State q0;                                      // start state
-  std::function<State(State, myChar)> transFunc; // DFA transition function
+  std::function<State(State, myChar)> transFunc; // transition function
   std::function<bool(State)> F;                  // accept states
 
- private:
-  auto acceptedStringRecursive(State qi, std::list<State> &visitedStates)
+private:
+  bool acceptedStringRecursive(State qi, std::list<State> &visitedStates, std::stack<myChar> &stringStack)
   {
     if (F(qi) == true)
     {
-      return true;  // current state is accept state
+      return true; // current state is accept state
     }
     for (auto x : visitedStates)
     {
-      if (qi == x)  // current state has already been visited
+      if (qi == x) // current state has already been visited
       {
         return false;
       }
@@ -184,13 +209,13 @@ public:
     // recursively call function on all of current state's children
     for (auto x : alphabet)
     {
-      if ((acceptedStringRecursive(transFunc(qi, x), visitedStates)))
-        {
-        std::cout << x;
+      if ((acceptedStringRecursive(transFunc(qi, x), visitedStates, stringStack)))
+      {
+        stringStack.push(x);
         return true;
-        }
+      }
     }
-    return false;  // current state and its children are not accept states
+    return false; // current state and its children are not accept states
   }
 };
 
@@ -221,7 +246,6 @@ DFA<State> complementDFA(DFA<State> inputDFA)
                       return true;
                     });
 }
-
 
 // creates a DFA that is the union of dfa1 and dfa2
 template <class State>
@@ -259,13 +283,13 @@ DFA<std::pair<State, State>> intersectionDFA(DFA<State> dfa1, DFA<State> dfa2)
       [=](std::pair<State, State> a) -> bool { // function for possible states
         return (dfa1.Q(a.first) && dfa2.Q(a.second));
       },
-      a,                                                                    // alphabet
-      std::make_pair(dfa1.q0, dfa2.q0),                                     // start state, need to figure this one out
+      a,                                // alphabet
+      std::make_pair(dfa1.q0, dfa2.q0), // start state, need to figure this one out
       [=](std::pair<State, State> a, myChar b) -> std::pair<State, State> {
         return (std::make_pair(dfa1.transFunc(a.first, b), dfa2.transFunc(a.second, b)));
       },
-      [=](std::pair<State, State> a) { // accept states
-        return ((dfa1.F(a.first)) && (dfa2.F(a.second)));  // only difference from unionDFA function
+      [=](std::pair<State, State> a) {                    // accept states
+        return ((dfa1.F(a.first)) && (dfa2.F(a.second))); // only difference from unionDFA function
       });
 }
 
@@ -289,7 +313,7 @@ bool equalityDFA(DFA<State> dfa1, DFA<State> dfa2)
 template <class State>
 void DFAtester(DFA<State> a, std::vector<myString *> testStrings, std::vector<bool> expected)
 {
-  int passed = 0;  // keep track of tests passed or failed
+  int passed = 0; // keep track of tests passed or failed
   int failed = 0;
 
   for (int i = 0; i < testStrings.size(); i++)
@@ -309,7 +333,7 @@ void DFAtester(DFA<State> a, std::vector<myString *> testStrings, std::vector<bo
     std::cout << std::endl;
   }
 
-  std::cout << "TESTS PASSED: " << passed << std::endl;  // print out results
+  std::cout << "TESTS PASSED: " << passed << std::endl; // print out results
   std::cout << "TESTS FAILED: " << failed << std::endl;
 }
 
@@ -817,9 +841,10 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, and prints
   std::vector<bool> expectedEvenNumberZerosAndSingleOne{false, false, true, true, false, false, false, false, false, true, false, false};
   DFAtester(evenNumberOfZerosAndSingleOne, evenNumberOfZerosAndSingleOneStrings, expectedEvenNumberZerosAndSingleOne);
 
-  std::cout << acceptsNothing.acceptedString() << std::endl;
-  std::cout << threeConsecutiveOnesBinary.acceptedString() << std::endl;
-  std::cout << containsCAM.acceptedString() << std::endl;
+  acceptsNothing.acceptedString();
+  threeConsecutiveOnesBinary.acceptedString();
+  containsCAM.acceptedString();
+  containsLineComment.acceptedString();
 }
 
 int main()
