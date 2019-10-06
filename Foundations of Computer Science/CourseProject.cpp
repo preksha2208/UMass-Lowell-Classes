@@ -322,20 +322,20 @@ template <class State>
 bool subsetDFA(DFA<State> dfa1, DFA<State> dfa2)
 {
   DFA<State> dfa3 = intersectionDFA(dfa1, complementDFA(dfa2));
-  return (dfa3.acceptedString().first ? false : true); // if dfa3 accepts nothing, then dfa1 is a subset of dfa2
+  return (!dfa3.acceptedString().first); // if dfa3 accepts nothing, then dfa is subset of dfa2
 }
 
 template <class State>
 bool equalityDFA(DFA<State> dfa1, DFA<State> dfa2)
 {
   DFA<State> dfa3 = unionDFA(intersectionDFA(dfa1, complementDFA(dfa2)), intersectionDFA(complementDFA(dfa1), dfa2));
-  return dfa3.acceptedString().first ? false : true; // if dfa3 accepts nothing, then dfa1 and dfa2 are equal
+  return (!dfa3.acceptedString().first); // if dfa3 accepts nothing, then dfa1 = dfa2
 }
 
 // takes in dfa, vector of test strings and expected values for the test strings on the given dfa
 // bool values are at same index in bool vector as their corresponding test string in the other vector
 template <class State>
-void DFAtester(DFA<State> a, std::vector<myString *> testStrings, std::vector<bool> expected)
+void DFAtester(DFA<State> &a, std::vector<myString *> &testStrings, std::vector<bool> &expected)
 {
   int passed = 0; // keep track of tests passed or failed
   int failed = 0;
@@ -789,6 +789,11 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
   oneString e = oneString('e', new emptyString);
   oneString f = oneString('f', new emptyString);
 
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "                      DFA CLASS TESTS                     " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl
+            << std::endl;
+
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing EvenLengthBinary DFA: " << std::endl; // Tests for EvenLengthBinaryDFA
   std::vector<myString *> evenLengthStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
@@ -913,15 +918,25 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
   DFAtester(oddNumberOfOnesBinaryComp, oddNumberOfOnesBinaryCompStrings, expectedOddNumberOfOnesBinaryComp);
 
   std::cout << "---------------------------------------------------------------" << std::endl;
-  std::cout << "                      oneCharDFA TESTS                     " << std::endl;
+  std::cout << "                      ONE CHAR DFA TESTS                     " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl
             << std::endl;
 
   std::cout << "Testing complement of intersection of containsLineComment and evenNumberOfOnesBinary DFAs" << std::endl;
   DFA<myChar> onlyAcceptsC = oneCharDFA(myChar('c'));
-  std::vector<myString *> onlyAcceptsCStrings{&a , &b, &c, &d, &e, &f, &ccc, &epsi, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
+  std::vector<myString *> onlyAcceptsCStrings{&a, &b, &c, &d, &e, &f, &ccc, &epsi, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
   std::vector<bool> expectedOnlyAcceptsCStrings{false, false, true, false, false, false, false, false, false, false, false, false};
   DFAtester(onlyAcceptsC, onlyAcceptsCStrings, expectedOnlyAcceptsCStrings);
+
+/*
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "                      DFA EQUALITY FUNCTION TESTS                     " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl
+            << std::endl;
+  std::cout << "Is oddNumberOfOnesBinary == oddNumberOfOnesBinary? " << equalityDFA(oddNumberOfOnesBinary, oddNumberOfOnesBinary);
+  std::cout << std::endl;
+  std::cout << "Is oddNumberOfOnesBinary == EvenNumberOfOnesBinary? " << equalityDFA(oddNumberOfOnesBinary, evenNumberOfOnesBinary);
+*/
 }
 
 int main()
