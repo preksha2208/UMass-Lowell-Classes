@@ -272,47 +272,47 @@ DFA<State> complementDFA(DFA<State> inputDFA)
 }
 
 // creates a DFA that is the union of dfa1 and dfa2
-template <class State>
-DFA<myPair<State, State>> unionDFA(DFA<State> dfa1, DFA<State> dfa2)
+template <class State1, class State2>
+DFA<myPair<State1, State2>> unionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 {
   std::list<myChar> a = dfa1.alphabet;
   std::list<myChar> b = dfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both DFAs
 
-  return DFA<myPair<State, State>>(
+  return DFA<myPair<State1, State2>>(
       "Union of " + dfa1.name + " and " + dfa2.name,
-      [=](myPair<State, State> a) -> bool { // function for possible states
+      [=](myPair<State1, State2> a) -> bool { // function for possible states
         return (dfa1.Q(a.first) && dfa2.Q(a.second));
       },
       a,                                                              // alphabet
-      myPair<State, State>(dfa1.q0, dfa2.q0),                         // start state, need to figure this one out
-      [=](myPair<State, State> a, myChar b) -> myPair<State, State> { // transition function; not correct as is
-        return (myPair<State, State>(dfa1.transFunc(a.first, b), dfa2.transFunc(a.second, b)));
+      myPair<State1, State2>(dfa1.q0, dfa2.q0),                         // start state, need to figure this one out
+      [=](myPair<State1, State2> a, myChar b) -> myPair<State1, State2> { // transition function; not correct as is
+        return (myPair<State1, State2>(dfa1.transFunc(a.first, b), dfa2.transFunc(a.second, b)));
       },
-      [=](myPair<State, State> a) { // accept states
+      [=](myPair<State1, State2> a) -> bool { // accept states
         return ((dfa1.F(a.first)) || (dfa2.F(a.second)));
       });
 }
 
 // creates a DFA that is the intersection of dfa1 and dfa2
-template <class State>
-DFA<myPair<State, State>> intersectionDFA(DFA<State> dfa1, DFA<State> dfa2)
+template <class State1, class State2>
+DFA<myPair<State1, State2>> intersectionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 {
   std::list<myChar> a = dfa1.alphabet;
   std::list<myChar> b = dfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both DFAs
 
-  return DFA<myPair<State, State>>(
+  return DFA<myPair<State1, State2>>(
       "Union of " + dfa1.name + " and " + dfa2.name,
-      [=](myPair<State, State> a) -> bool { // function for possible states
+      [=](myPair<State1, State2> a) -> bool { // function for possible states
         return (dfa1.Q(a.first) && dfa2.Q(a.second));
       },
       a,                                      // alphabet
-      myPair<State, State>(dfa1.q0, dfa2.q0), // start state, need to figure this one out
-      [=](myPair<State, State> a, myChar b) -> myPair<State, State> {
-        return (myPair<State, State>(dfa1.transFunc(a.first, b), dfa2.transFunc(a.second, b)));
+      myPair<State1, State2>(dfa1.q0, dfa2.q0), // start state, need to figure this one out
+      [=](myPair<State1, State2> a, myChar b) -> myPair<State1, State2> {
+        return (myPair<State1, State2>(dfa1.transFunc(a.first, b), dfa2.transFunc(a.second, b)));
       },
-      [=](myPair<State, State> a) {                       // accept states
+      [=](myPair<State1, State2> a) -> bool {                       // accept states
         return ((dfa1.F(a.first)) && (dfa2.F(a.second))); // only difference from unionDFA function
       });
 }
@@ -325,10 +325,10 @@ bool subsetDFA(DFA<State> dfa1, DFA<State> dfa2)
   return (!dfa3.acceptedString().first); // if dfa3 accepts nothing, then dfa is subset of dfa2
 }
 
-template <class State>
-bool equalityDFA(DFA<State> dfa1, DFA<State> dfa2)
+template <class State1, class State2>
+bool equalityDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 {
-  DFA<State> dfa3 = unionDFA(intersectionDFA(dfa1, complementDFA(dfa2)), intersectionDFA(complementDFA(dfa1), dfa2));
+  DFA<myPair<State1, State2>> dfa3 = unionDFA(intersectionDFA(dfa1, complementDFA(dfa2)), intersectionDFA(complementDFA(dfa1), dfa2));
   return (!dfa3.acceptedString().first); // if dfa3 accepts nothing, then dfa1 = dfa2
 }
 
@@ -928,7 +928,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
   std::vector<bool> expectedOnlyAcceptsCStrings{false, false, true, false, false, false, false, false, false, false, false, false};
   DFAtester(onlyAcceptsC, onlyAcceptsCStrings, expectedOnlyAcceptsCStrings);
 
-/*
+
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                      DFA EQUALITY FUNCTION TESTS                     " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl
@@ -936,7 +936,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
   std::cout << "Is oddNumberOfOnesBinary == oddNumberOfOnesBinary? " << equalityDFA(oddNumberOfOnesBinary, oddNumberOfOnesBinary);
   std::cout << std::endl;
   std::cout << "Is oddNumberOfOnesBinary == EvenNumberOfOnesBinary? " << equalityDFA(oddNumberOfOnesBinary, evenNumberOfOnesBinary);
-*/
+
 }
 
 int main()
