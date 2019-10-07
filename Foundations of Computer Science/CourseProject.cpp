@@ -29,6 +29,10 @@ public:
     os << p.first << p.second;
     return os;
   }
+  friend bool operator==(const myPair &a, const myPair &b)
+  {
+    return (a.first == b.first && a.second == b.second);
+  }
 };
 
 // class to represent char values
@@ -284,8 +288,8 @@ DFA<myPair<State1, State2>> unionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
       [=](myPair<State1, State2> a) -> bool { // function for possible states
         return (dfa1.Q(a.first) && dfa2.Q(a.second));
       },
-      a,                                                              // alphabet
-      myPair<State1, State2>(dfa1.q0, dfa2.q0),                         // start state, need to figure this one out
+      a,                                                                  // alphabet
+      myPair<State1, State2>(dfa1.q0, dfa2.q0),                           // start state, need to figure this one out
       [=](myPair<State1, State2> a, myChar b) -> myPair<State1, State2> { // transition function; not correct as is
         return (myPair<State1, State2>(dfa1.transFunc(a.first, b), dfa2.transFunc(a.second, b)));
       },
@@ -307,12 +311,12 @@ DFA<myPair<State1, State2>> intersectionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
       [=](myPair<State1, State2> a) -> bool { // function for possible states
         return (dfa1.Q(a.first) && dfa2.Q(a.second));
       },
-      a,                                      // alphabet
+      a,                                        // alphabet
       myPair<State1, State2>(dfa1.q0, dfa2.q0), // start state, need to figure this one out
       [=](myPair<State1, State2> a, myChar b) -> myPair<State1, State2> {
         return (myPair<State1, State2>(dfa1.transFunc(a.first, b), dfa2.transFunc(a.second, b)));
       },
-      [=](myPair<State1, State2> a) -> bool {                       // accept states
+      [=](myPair<State1, State2> a) -> bool {             // accept states
         return ((dfa1.F(a.first)) && (dfa2.F(a.second))); // only difference from unionDFA function
       });
 }
@@ -328,7 +332,7 @@ bool subsetDFA(DFA<State> dfa1, DFA<State> dfa2)
 template <class State1, class State2>
 bool equalityDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 {
-  DFA<myPair<State1, State2>> dfa3 = unionDFA(intersectionDFA(dfa1, complementDFA(dfa2)), intersectionDFA(complementDFA(dfa1), dfa2));
+  DFA<myPair<myPair<State1, State2>, myPair<State1, State2>>> dfa3 = unionDFA(intersectionDFA(dfa1, complementDFA(dfa2)), intersectionDFA(complementDFA(dfa1), dfa2));
   return (!dfa3.acceptedString().first); // if dfa3 accepts nothing, then dfa1 = dfa2
 }
 
@@ -928,7 +932,6 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
   std::vector<bool> expectedOnlyAcceptsCStrings{false, false, true, false, false, false, false, false, false, false, false, false};
   DFAtester(onlyAcceptsC, onlyAcceptsCStrings, expectedOnlyAcceptsCStrings);
 
-
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                      DFA EQUALITY FUNCTION TESTS                     " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl
@@ -936,7 +939,6 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
   std::cout << "Is oddNumberOfOnesBinary == oddNumberOfOnesBinary? " << equalityDFA(oddNumberOfOnesBinary, oddNumberOfOnesBinary);
   std::cout << std::endl;
   std::cout << "Is oddNumberOfOnesBinary == EvenNumberOfOnesBinary? " << equalityDFA(oddNumberOfOnesBinary, evenNumberOfOnesBinary);
-
 }
 
 int main()
