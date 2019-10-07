@@ -322,10 +322,10 @@ DFA<myPair<State1, State2>> intersectionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 }
 
 // returns true/false to indicate whether dfa1 is a subset of dfa2
-template <class State>
-bool subsetDFA(DFA<State> dfa1, DFA<State> dfa2)
+template <class State1, class State2>
+bool subsetDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 {
-  DFA<State> dfa3 = intersectionDFA(dfa1, complementDFA(dfa2));
+  DFA<State1, State2> dfa3 = intersectionDFA(dfa1, complementDFA(dfa2));
   return (!dfa3.acceptedString().first); // if dfa3 accepts nothing, then dfa is subset of dfa2
 }
 
@@ -793,6 +793,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
   oneString e = oneString('e', new emptyString);
   oneString f = oneString('f', new emptyString);
 
+  std::cout << std::boolalpha; // makes the console print true/false rather than 1/0
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                      DFA CLASS TESTS                     " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl
@@ -926,19 +927,32 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
   std::cout << "---------------------------------------------------------------" << std::endl
             << std::endl;
 
-  std::cout << "Testing complement of intersection of containsLineComment and evenNumberOfOnesBinary DFAs" << std::endl;
+  std::cout << "Testing oneCharDFA onlyAcceptsC" << std::endl;
   DFA<myChar> onlyAcceptsC = oneCharDFA(myChar('c'));
   std::vector<myString *> onlyAcceptsCStrings{&a, &b, &c, &d, &e, &f, &ccc, &epsi, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
   std::vector<bool> expectedOnlyAcceptsCStrings{false, false, true, false, false, false, false, false, false, false, false, false};
   DFAtester(onlyAcceptsC, onlyAcceptsCStrings, expectedOnlyAcceptsCStrings);
 
   std::cout << "---------------------------------------------------------------" << std::endl;
-  std::cout << "                      DFA EQUALITY FUNCTION TESTS                     " << std::endl;
+  std::cout << "                  DFA EQUALITY FUNCTION TESTS                  " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl
             << std::endl;
-  std::cout << "Is oddNumberOfOnesBinary == oddNumberOfOnesBinary? " << equalityDFA(oddNumberOfOnesBinary, oddNumberOfOnesBinary);
+  std::cout << "Is OddNumberOfOnesBinary == oddNumberOfOnesBinary? " << equalityDFA(oddNumberOfOnesBinary, oddNumberOfOnesBinary);
   std::cout << std::endl;
-  std::cout << "Is oddNumberOfOnesBinary == EvenNumberOfOnesBinary? " << equalityDFA(oddNumberOfOnesBinary, evenNumberOfOnesBinary);
+  std::cout << "Is OddNumberOfOnesBinary == EvenNumberOfOnesBinary? " << equalityDFA(oddNumberOfOnesBinary, evenNumberOfOnesBinary);
+  std::cout << std::endl;
+  std::cout << "Is OnlyAcceptsC == OnlyAcceptsC? " << equalityDFA(onlyAcceptsC, onlyAcceptsC);
+  std::cout << std::endl;
+  std::cout << "Is OnlyAcceptsC == complement of intersection of containsLineComment and evenNumberOfOnesBinary DFAs? "
+            << equalityDFA(onlyAcceptsC, lineCommentAndEvenNumberOfOnesComp);
+  std::cout << std::endl;
+
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "                   DFA SUBSET FUNCTION TESTS                   " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl
+            << std::endl;
+  
+  
 }
 
 int main()
