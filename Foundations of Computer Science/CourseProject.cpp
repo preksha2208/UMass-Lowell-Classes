@@ -378,7 +378,7 @@ myString* lexi(int n, std::list<myChar> alphabet)
   }
   std::cout << "i: " << i;
 
-  l = new emptyString;
+  myString* l = new emptyString;
  
   return l;
 
