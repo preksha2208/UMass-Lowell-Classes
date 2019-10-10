@@ -325,7 +325,7 @@ DFA<myPair<State1, State2>> intersectionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 template <class State1, class State2>
 bool subsetDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 {
-  DFA<State1, State2> dfa3 = intersectionDFA(dfa1, complementDFA(dfa2));
+  DFA<myPair<State1, State2>> dfa3 = intersectionDFA(dfa1, complementDFA(dfa2));
   return (!dfa3.acceptedString().first); // if dfa3 accepts nothing, then dfa is subset of dfa2
 }
 
@@ -335,6 +335,34 @@ bool equalityDFA(DFA<State1> dfa1, DFA<State2> dfa2)
   DFA<myPair<myPair<State1, State2>, myPair<State1, State2>>> dfa3 = unionDFA(intersectionDFA(dfa1, complementDFA(dfa2)), intersectionDFA(complementDFA(dfa1), dfa2));
   return (!dfa3.acceptedString().first); // if dfa3 accepts nothing, then dfa1 = dfa2
 }
+
+template <class State>
+class NFA
+{
+public:
+  NFA<State>(std::string name, std::function<bool(State)> Q,
+             std::list<myChar> alphabet, State q0,
+             std::function<State(State, myChar)> transFunc,
+             std::function<bool(State)> F)
+      : name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc),
+        F(F) {}
+  NFA<State>(const DFA<State>& inputDFA)
+  {
+    this->name = inputDFA.name;
+    this->Q = inputDFA.Q;
+    this->alphabet = inputDFA.alphabet;
+    this->q0 = inputDFA.q0;
+    this->transFunc = inputDFA.transFunc;
+    this->F = inputDFA.F;
+  }
+  
+  std::string name;
+  std::function<bool(State)> Q; // list of possible states for this dfa
+  std::list<myChar> alphabet;
+  State q0;                                      // start state
+  std::function<State(State, myChar)> transFunc; // transition function
+  std::function<bool(State)> F;                  // accept states
+};
 
 // takes in dfa, vector of test strings and expected values for the test strings on the given dfa
 // bool values are at same index in bool vector as their corresponding test string in the other vector
@@ -951,8 +979,6 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
   std::cout << "                   DFA SUBSET FUNCTION TESTS                   " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl
             << std::endl;
-  
-  
 }
 
 int main()

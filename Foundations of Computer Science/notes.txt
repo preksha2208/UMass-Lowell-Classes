@@ -21,9 +21,9 @@ TASK 20: TODO this one is more tedious than difficult
 TASK 21: 
 TASK 22:
 TASK 23:
-TASK 24: TODO every DFA is an NFA, so just need to copy the DFA values over to an NFA object
-TASK 25:
-TASK 26:
+TASK 24: Still need to work on the transition function, but I've got the outline of the class finished 
+TASK 25: Every NFA is a DFA, so just set the values of the new NFA equal to the values of the DFA
+TASK 26: 
 TASK 27:
 TASK 28:
 TASK 29:
