@@ -364,6 +364,26 @@ public:
   std::function<bool(State)> F;                  // accept states
 };
 
+// generate nth string of alphabet's lexicographical ordering
+myString* lexi(int n, std::list<myChar> alphabet)
+{
+  int size = alphabet.size();
+  if (size == 0)
+    return new emptyString;
+  
+  int i = alphabet.size();
+  while (i < n) 
+  {
+    i = i*i;
+  }
+  std::cout << "i: " << i;
+
+  l = new emptyString;
+ 
+  return l;
+
+}
+
 // takes in dfa, vector of test strings and expected values for the test strings on the given dfa
 // bool values are at same index in bool vector as their corresponding test string in the other vector
 template <class State>
@@ -984,5 +1004,6 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
 int main()
 {
   makeAndTestDFAs();
+  lexi(11, std::list<myChar> { myChar('A'), myChar('B')});
   return 0;
 }
