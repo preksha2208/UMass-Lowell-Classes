@@ -1006,6 +1006,31 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
   std::cout << std::endl;
   std::cout << "Is AcceptsNothing a subset of ContainsLineComment? " << subsetDFA(acceptsNothing, containsLineComment);
   std::cout << std::endl;
+
+  DFA<myChar> anyBinary(     // returns whether it is a binary number
+      "AnyBinary",           // name
+      [](myChar a) -> bool { // state function
+        return ((a.getVal() == 'A') || (a.getVal() == 'B'));
+      },
+      std::list<myChar>{myChar('0'), myChar('1')}, // alphabet
+      myChar('A'),                                 // start state
+      [](myChar a, myChar b) -> myChar {           // transition function
+        if ((a.getVal() == 'A') && ((b.getVal() == '0') || (b.getVal() == '1')))
+          return myChar('A');
+        else
+          return myChar('B');
+      },
+      [](myChar a) -> bool { // accept states
+        return (a.getVal() == 'A');
+      });
+  DFA<myChar> 
+
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "                   DFA TASK 22 TESTS                   " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl
+            << std::endl;
+  std::cout << "Is AnyBinary == (union of OddBinaryNumber and EvenBinaryNumber)? " << equalityDFA(anyBinary, unionDFA(oddBinaryNumber, evenBinaryNumber));
+  std::cout << std::endl;
 }
 
 int main()
