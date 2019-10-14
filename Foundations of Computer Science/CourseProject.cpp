@@ -202,12 +202,10 @@ public:
       while (stringStack.size() != 0)
       {
         temp->setNext(new oneString(stringStack.top().getVal(), NULL));
-        std::cout << stringStack.top().getVal();
         stringStack.pop();
         temp = temp->next();
       }
       temp->setNext(new emptyString);
-      std::cout << std::endl;
 
       return std::make_pair<bool, myString *>(true, &beginning);
     }
@@ -326,7 +324,7 @@ template <class State1, class State2>
 bool subsetDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 {
   DFA<myPair<State1, State2>> dfa3 = intersectionDFA(dfa1, complementDFA(dfa2));
-  return (!dfa3.acceptedString().first); // if dfa3 accepts nothing, then dfa is subset of dfa2
+  return (!(dfa3.acceptedString().first)); // if dfa3 accepts nothing, then dfa is subset of dfa2
 }
 
 template <class State1, class State2>
@@ -346,7 +344,7 @@ public:
              std::function<bool(State)> F)
       : name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc),
         F(F) {}
-  NFA<State>(const DFA<State>& inputDFA)
+  NFA<State>(const DFA<State> &inputDFA)
   {
     this->name = inputDFA.name;
     this->Q = inputDFA.Q;
@@ -355,7 +353,7 @@ public:
     this->transFunc = inputDFA.transFunc;
     this->F = inputDFA.F;
   }
-  
+
   std::string name;
   std::function<bool(State)> Q; // list of possible states for this dfa
   std::list<myChar> alphabet;
@@ -365,23 +363,22 @@ public:
 };
 
 // generate nth string of alphabet's lexicographical ordering
-myString* lexi(int n, std::list<myChar> alphabet)
+myString *lexi(int n, std::list<myChar> alphabet)
 {
   int size = alphabet.size();
   if (size == 0)
     return new emptyString;
-  
+
   int i = alphabet.size();
-  while (i < n) 
+  while (i < n)
   {
-    i = i*i;
+    i = i * i;
   }
   std::cout << "i: " << i;
 
-  myString* l = new emptyString;
- 
-  return l;
+  myString *l = new emptyString;
 
+  return l;
 }
 
 // takes in dfa, vector of test strings and expected values for the test strings on the given dfa
@@ -999,11 +996,21 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
   std::cout << "                   DFA SUBSET FUNCTION TESTS                   " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl
             << std::endl;
+  std::cout << "Is OddNumberOfOnesBinary a subset of the union of OddNumberOfOnesBinary and EvenNumberOfOnesBinary? " << subsetDFA(oddNumberOfOnesBinary, unionDFA(oddNumberOfOnesBinary, evenNumberOfOnesBinary));
+  std::cout << std::endl;
+  std::cout << "Is OddNumberOfOnesBinary a subset of the complement of itself? " << subsetDFA(oddNumberOfOnesBinary, complementDFA(oddNumberOfOnesBinary));
+  std::cout << std::endl;
+  std::cout << "Is OnlyAcceptsEmptyString a subset of EvenLengthBinary? " << subsetDFA(onlyAcceptsEmptyString, evenLengthBinary);
+  std::cout << std::endl;
+  std::cout << "Is ContainsCAM a subset of ContainsLineComment? " << subsetDFA(containsCAM, containsLineComment);
+  std::cout << std::endl;
+  std::cout << "Is AcceptsNothing a subset of ContainsLineComment? " << subsetDFA(acceptsNothing, containsLineComment);
+  std::cout << std::endl;
 }
 
 int main()
 {
   makeAndTestDFAs();
-  lexi(11, std::list<myChar> { myChar('A'), myChar('B')});
+  lexi(11, std::list<myChar>{myChar('A'), myChar('B')});
   return 0;
 }
