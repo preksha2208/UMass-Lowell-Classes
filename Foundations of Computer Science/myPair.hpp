@@ -1,7 +1,8 @@
 #ifndef MYPAIR_HPP
 #define MYPAIR_HPP
 
-template<class State1, class State2>
+// custom pair class. Essentially same as std::pair, but with overloaded << operator
+template <class State1, class State2>
 class myPair
 {
 public:

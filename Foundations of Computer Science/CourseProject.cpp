@@ -104,7 +104,6 @@ bool equalityDFA(DFA<State1> dfa1, DFA<State2> dfa2)
   return (!dfa3.acceptedString().first); // if dfa3 accepts nothing, then dfa1 = dfa2
 }
 
-
 // generate nth string of alphabet's lexicographical ordering
 myString *lexi(int n, std::list<myChar> alphabet)
 {
@@ -229,7 +228,6 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
           return myChar('A');
         else
           return myChar('C');
-        
       },
       [](myChar a) -> bool { return (a == myChar('B')); });
 
@@ -761,7 +759,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
       std::vector<myChar>{myChar('1'), myChar('0')}, // alphabet
-      myChar('A'),                                   // start state
+      myChar('B'),                                   // start state
       [](myChar a, myChar b) -> myChar {             // transition function
         if ((a.getVal() == 'A' || a.getVal() == 'B') && ((b.getVal() == '0') || (b.getVal() == '1')))
           return myChar('A');
@@ -772,20 +770,20 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
         return (a.getVal() == 'A');
       });
 
-   DFA<myChar> acceptsEverything(    // accepts any given input
-      "AcceptsEverything",           // name
-      [](myChar a) -> bool { // state function
+  DFA<myChar> acceptsEverything( // accepts any given input
+      "AcceptsEverything",       // name
+      [](myChar a) -> bool {     // state function
         return (a.getVal() == 'A');
       },
-      std::vector<myChar>{}, // alphabet
-      myChar('A'),                                   // start state
-      [](myChar a, myChar b) -> myChar {             // transition function
+      std::vector<myChar>{},             // alphabet
+      myChar('A'),                       // start state
+      [](myChar a, myChar b) -> myChar { // transition function
         return myChar('A');
       },
       [](myChar a) -> bool { // accept states
         return (a.getVal() == 'A');
       });
-  
+
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "   VERIFYING UNION, COMPLEMENT, AND INTERSECT USING EQUALITY                " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl
@@ -797,7 +795,8 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
   std::cout << "Is AcceptsEverything == (complement of AcceptsNothing)? " << equalityDFA(acceptsEverything, complementDFA(acceptsNothing));
   std::cout << std::endl;
   std::cout << "Is AcceptsNothing == complement of (intersection of ContainsCAM and EvenBinaryNumber)? " << equalityDFA(acceptsNothing, intersectionDFA(containsCAM, evenBinaryNumber));
-  std::cout << std::endl << std::endl;
+  std::cout << std::endl
+            << std::endl;
 }
 
 int main()

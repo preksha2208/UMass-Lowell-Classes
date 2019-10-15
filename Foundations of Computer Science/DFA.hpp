@@ -14,6 +14,12 @@ public:
              std::function<bool(State)> F)
       : name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc),
         F(F) {}
+  std::string name;
+  std::function<bool(State)> Q; // list of possible states for this dfa
+  std::vector<myChar> alphabet;
+  State q0;                                      // start state
+  std::function<State(State, myChar)> transFunc; // transition function
+  std::function<bool(State)> F;                  // accept states
 
   bool accepts(myString &inputString) // does DFA accept inputString?
   {
@@ -77,13 +83,6 @@ public:
       return std::make_pair<bool, myString *>(true, &beginning);
     }
   }
-
-  std::string name;
-  std::function<bool(State)> Q; // list of possible states for this dfa
-  std::vector<myChar> alphabet;
-  State q0;                                      // start state
-  std::function<State(State, myChar)> transFunc; // transition function
-  std::function<bool(State)> F;                  // accept states
 
 private:
   bool acceptedStringRecursive(State qi, std::list<State> &visitedStates, std::stack<myChar> &stringStack)

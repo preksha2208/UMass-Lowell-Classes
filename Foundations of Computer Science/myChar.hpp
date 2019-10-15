@@ -2,6 +2,7 @@
 #define MYCHAR_HPP
 #include <iostream>
 
+// custom char class
 class myChar
 {
 public:

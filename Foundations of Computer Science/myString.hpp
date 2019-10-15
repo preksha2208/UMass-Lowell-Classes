@@ -2,6 +2,7 @@
 #define MYSTRING_HPP
 #include "myChar.hpp"
 
+// represents a string as a linked list of myChar nodes followed by an emptyString node
 class myString
 {
 public:
