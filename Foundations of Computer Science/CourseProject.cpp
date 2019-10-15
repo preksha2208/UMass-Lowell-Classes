@@ -469,13 +469,13 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
       std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '0')
-          return myChar('A');
-        else if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '1')
           return myChar('B');
+        else if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '1')
+          return myChar('A');
         else
           return myChar('C');
       },
-      [](myChar a) -> bool { return (a == myChar('A')); });
+      [](myChar a) -> bool { return (a == myChar('B')); });
 
   DFA<myChar> oddBinaryNumber( // returns whether the inputted binary number is odd
       "OddBinaryNumber",
@@ -485,14 +485,14 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
       std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '1')
-          return myChar('A');
-        else if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '0')
           return myChar('B');
+        else if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '0')
+          return myChar('A');
         else
           return myChar('C');
         
       },
-      [](myChar a) -> bool { return (a == myChar('A')); });
+      [](myChar a) -> bool { return (a == myChar('B')); });
 
   DFA<myChar> containsCAM( // returns whether the input contains my name
                            // somewhere in it
