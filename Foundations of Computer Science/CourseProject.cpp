@@ -281,9 +281,10 @@ DFA<myPair<State1, State2>> unionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
   std::vector<myChar> a = dfa1.alphabet;
   std::vector<myChar> b = dfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both DFAs
-  std::sort(a.begin(), a.end());
-std::erase( unique( a.begin(), a.end() ), a.end() );
-  
+  std::sort(a.begin(), a.end(), [](myChar &a, myChar &b) {
+    return (a.getVal() < b.getVal());
+  });
+
   return DFA<myPair<State1, State2>>(
       "Union of " + dfa1.name + " and " + dfa2.name,
       [=](myPair<State1, State2> a) -> bool { // function for possible states
@@ -306,8 +307,6 @@ DFA<myPair<State1, State2>> intersectionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
   std::vector<myChar> a = dfa1.alphabet;
   std::vector<myChar> b = dfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both DFAs
-  a.sort();
-  a.unique();
 
   return DFA<myPair<State1, State2>>(
       "Union of " + dfa1.name + " and " + dfa2.name,
@@ -427,8 +426,8 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
       std::vector<myChar>{myChar('0'), myChar('1')}, // alphabet
-      myChar('A'),                                 // start state
-      [](myChar a, myChar b) -> myChar {           // transition function
+      myChar('A'),                                   // start state
+      [](myChar a, myChar b) -> myChar {             // transition function
         if ((a.getVal() == 'A') && ((b.getVal() == '0') || (b.getVal() == '1')))
           return myChar('B');
         else if ((a.getVal() == 'B') &&
@@ -470,25 +469,30 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
       std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '0')
+          return myChar('A');
+        else if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '1')
           return myChar('B');
         else
-          return myChar('A');
+          return myChar('C');
       },
-      [](myChar a) -> bool { return (a == myChar('B')); });
+      [](myChar a) -> bool { return (a == myChar('A')); });
 
   DFA<myChar> oddBinaryNumber( // returns whether the inputted binary number is odd
       "OddBinaryNumber",
       [](myChar a) -> bool {
-        return ((a.getVal() == 'A') || (a.getVal() == 'B'));
+        return ((a.getVal() == 'A') || (a.getVal() == 'B') || (a.getVal() == 'C'));
       },
       std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '1')
+          return myChar('A');
+        else if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '0')
           return myChar('B');
         else
-          return myChar('A');
+          return myChar('C');
+        
       },
-      [](myChar a) -> bool { return (a == myChar('B')); });
+      [](myChar a) -> bool { return (a == myChar('A')); });
 
   DFA<myChar> containsCAM( // returns whether the input contains my name
                            // somewhere in it
@@ -1017,10 +1021,10 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
       [](myChar a) -> bool { // state function
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
-      std::vector<myChar>{myChar('0'), myChar('1')}, // alphabet
-      myChar('A'),                                 // start state
-      [](myChar a, myChar b) -> myChar {           // transition function
-        if ((a.getVal() == 'A') && ((b.getVal() == '0') || (b.getVal() == '1')))
+      std::vector<myChar>{myChar('1'), myChar('0')}, // alphabet
+      myChar('A'),                                   // start state
+      [](myChar a, myChar b) -> myChar {             // transition function
+        if ((a.getVal() == 'A' || a.getVal() == 'B') && ((b.getVal() == '0') || (b.getVal() == '1')))
           return myChar('A');
         else
           return myChar('B');
@@ -1029,14 +1033,32 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
         return (a.getVal() == 'A');
       });
 
+   DFA<myChar> acceptsEverything(    // accepts any given input
+      "AcceptsEverything",           // name
+      [](myChar a) -> bool { // state function
+        return (a.getVal() == 'A');
+      },
+      std::vector<myChar>{}, // alphabet
+      myChar('A'),                                   // start state
+      [](myChar a, myChar b) -> myChar {             // transition function
+        return myChar('A');
+      },
+      [](myChar a) -> bool { // accept states
+        return (a.getVal() == 'A');
+      });
+  
   std::cout << "---------------------------------------------------------------" << std::endl;
-  std::cout << "                   DFA TASK 22 TESTS                   " << std::endl;
+  std::cout << "   VERIFYING UNION, COMPLEMENT, AND INTERSECT USING EQUALITY                " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl
             << std::endl;
   std::cout << "Is AnyBinary == (union of OddBinaryNumber and EvenBinaryNumber)? " << equalityDFA(anyBinary, unionDFA(oddBinaryNumber, evenBinaryNumber));
   std::cout << std::endl;
-  std::cout << "Is OddBinaryNumber == (union of OddBinaryNumberand AcceptsNothing)? " << equalityDFA(oddBinaryNumber, unionDFA(oddBinaryNumber, acceptsNothing));
+  std::cout << "Is OddBinaryNumber == (union of OddBinaryNumber and AcceptsNothing)? " << equalityDFA(oddBinaryNumber, unionDFA(oddBinaryNumber, acceptsNothing));
   std::cout << std::endl;
+  std::cout << "Is AcceptsEverything == (complement of AcceptsNothing)? " << equalityDFA(acceptsEverything, complementDFA(acceptsNothing));
+  std::cout << std::endl;
+  std::cout << "Is AcceptsNothing == complement of (intersection of ContainsCAM and EvenBinaryNumber)? " << equalityDFA(acceptsNothing, intersectionDFA(containsCAM, evenBinaryNumber));
+  std::cout << std::endl << std::endl;
 }
 
 int main()
