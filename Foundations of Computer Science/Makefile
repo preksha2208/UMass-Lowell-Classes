@@ -2,7 +2,7 @@
 # Copyright Cameron Knopp 2019
 
 CC = clang++ -std=c++17
-OBJECTS = CourseProject.o
+OBJECTS = CourseProject.o 
 
 all: CourseProject
 
@@ -11,6 +11,8 @@ CourseProject: CourseProject.o
 
 $(OBJECTS): CourseProject.cpp
 	$(CC) CourseProject.cpp -c
+
+
 
 clean:
 	rm *.o CourseProject
