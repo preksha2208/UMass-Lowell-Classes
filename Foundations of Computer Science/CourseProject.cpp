@@ -10,6 +10,7 @@
 #include <utility> // for std::pair
 #include <stack>
 #include <type_traits>
+#include <algorithm>
 
 // class that is essentially std::pair, but with an overloaded << operator
 template <class State1, class State2>
@@ -142,7 +143,7 @@ class DFA
 {
 public:
   DFA<State>(std::string name, std::function<bool(State)> Q,
-             std::list<myChar> alphabet, State q0,
+             std::vector<myChar> alphabet, State q0,
              std::function<State(State, myChar)> transFunc,
              std::function<bool(State)> F)
       : name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc),
@@ -213,7 +214,7 @@ public:
 
   std::string name;
   std::function<bool(State)> Q; // list of possible states for this dfa
-  std::list<myChar> alphabet;
+  std::vector<myChar> alphabet;
   State q0;                                      // start state
   std::function<State(State, myChar)> transFunc; // transition function
   std::function<bool(State)> F;                  // accept states
@@ -253,7 +254,7 @@ DFA<myChar> oneCharDFA(myChar inputChar)
   return DFA<myChar>(
       "onlyAccepts" + std::string(1, inputChar.getVal()),
       [=](myChar a) -> bool { return (a == myChar('A') || a == myChar('B') || a == myChar('C')); },
-      std::list<myChar>{inputChar}, myChar('A'),
+      std::vector<myChar>{inputChar}, myChar('A'),
       [&](myChar a, myChar b) -> myChar {
         if (a.getVal() == 'A' && (b.getVal() == inputChar.getVal()))
           return myChar('B');
@@ -277,10 +278,12 @@ DFA<State> complementDFA(DFA<State> inputDFA)
 template <class State1, class State2>
 DFA<myPair<State1, State2>> unionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 {
-  std::list<myChar> a = dfa1.alphabet;
-  std::list<myChar> b = dfa2.alphabet;
+  std::vector<myChar> a = dfa1.alphabet;
+  std::vector<myChar> b = dfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both DFAs
-
+  std::sort(a.begin(), a.end());
+std::erase( unique( a.begin(), a.end() ), a.end() );
+  
   return DFA<myPair<State1, State2>>(
       "Union of " + dfa1.name + " and " + dfa2.name,
       [=](myPair<State1, State2> a) -> bool { // function for possible states
@@ -300,9 +303,11 @@ DFA<myPair<State1, State2>> unionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 template <class State1, class State2>
 DFA<myPair<State1, State2>> intersectionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 {
-  std::list<myChar> a = dfa1.alphabet;
-  std::list<myChar> b = dfa2.alphabet;
+  std::vector<myChar> a = dfa1.alphabet;
+  std::vector<myChar> b = dfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both DFAs
+  a.sort();
+  a.unique();
 
   return DFA<myPair<State1, State2>>(
       "Union of " + dfa1.name + " and " + dfa2.name,
@@ -339,7 +344,7 @@ class NFA
 {
 public:
   NFA<State>(std::string name, std::function<bool(State)> Q,
-             std::list<myChar> alphabet, State q0,
+             std::vector<myChar> alphabet, State q0,
              std::function<State(State, myChar)> transFunc,
              std::function<bool(State)> F)
       : name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc),
@@ -356,7 +361,7 @@ public:
 
   std::string name;
   std::function<bool(State)> Q; // list of possible states for this dfa
-  std::list<myChar> alphabet;
+  std::vector<myChar> alphabet;
   State q0;                                      // start state
   std::function<State(State, myChar)> transFunc; // transition function
   std::function<bool(State)> F;                  // accept states
@@ -421,7 +426,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
       [](myChar a) -> bool {    // state function
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
-      std::list<myChar>{myChar('0'), myChar('1')}, // alphabet
+      std::vector<myChar>{myChar('0'), myChar('1')}, // alphabet
       myChar('A'),                                 // start state
       [](myChar a, myChar b) -> myChar {           // transition function
         if ((a.getVal() == 'A') && ((b.getVal() == '0') || (b.getVal() == '1')))
@@ -438,7 +443,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
 
   DFA<myChar> acceptsNothing( // accepts nothing, as the name implies
       "AcceptsNothing", [](myChar a) -> bool { return false; },
-      std::list<myChar>{}, myChar('A'),
+      std::vector<myChar>{}, myChar('A'),
       [](myChar a, myChar b) -> myChar { return a; },
       [](myChar a) -> bool { return false; });
 
@@ -447,7 +452,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
-      std::list<myChar>{myChar('E')}, myChar('A'),
+      std::vector<myChar>{myChar('E')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if (a.getVal() == 'A' && b.getVal() != 'E')
           return myChar('B');
@@ -462,7 +467,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
-      std::list<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '0')
           return myChar('B');
@@ -476,7 +481,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
-      std::list<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '1')
           return myChar('B');
@@ -492,7 +497,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
         return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
                 (a.getVal() == 'C') || (a.getVal() == 'D'));
       },
-      std::list<myChar>{myChar('C'), myChar('A'), myChar('M')}, myChar('A'),
+      std::vector<myChar>{myChar('C'), myChar('A'), myChar('M')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if (b.getVal() == 'C')
           return myChar('B');
@@ -514,7 +519,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
         return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
                 (a.getVal() == 'C'));
       },
-      std::list<myChar>{myChar('/')}, myChar('A'),
+      std::vector<myChar>{myChar('/')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if (a.getVal() == 'A' && b.getVal() == '/')
           return myChar('B');
@@ -534,7 +539,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
         return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
                 (a.getVal() == 'C') || (a.getVal() == 'D'));
       },
-      std::list<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if (a.getVal() == 'A' && b.getVal() == '1')
           return myChar('A');
@@ -558,7 +563,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
         return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
                 (a.getVal() == 'C') || (a.getVal() == 'D'));
       },
-      std::list<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if (a.getVal() == 'A' && b.getVal() == '0')
           return myChar('A');
@@ -583,7 +588,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
-      std::list<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if (a.getVal() == 'A' && b.getVal() == '0')
           return myChar('A');
@@ -603,7 +608,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
-      std::list<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if (a.getVal() == 'A' && b.getVal() == '0')
           return myChar('A');
@@ -626,7 +631,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
         return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
                 (a.getVal() == 'C') || (a.getVal() == 'D'));
       },
-      std::list<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if (a.getVal() == 'A' && b.getVal() == '0')
           return myChar('B');
@@ -1012,7 +1017,7 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
       [](myChar a) -> bool { // state function
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
-      std::list<myChar>{myChar('0'), myChar('1')}, // alphabet
+      std::vector<myChar>{myChar('0'), myChar('1')}, // alphabet
       myChar('A'),                                 // start state
       [](myChar a, myChar b) -> myChar {           // transition function
         if ((a.getVal() == 'A') && ((b.getVal() == '0') || (b.getVal() == '1')))
@@ -1023,13 +1028,14 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
       [](myChar a) -> bool { // accept states
         return (a.getVal() == 'A');
       });
-  DFA<myChar> 
 
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                   DFA TASK 22 TESTS                   " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl
             << std::endl;
   std::cout << "Is AnyBinary == (union of OddBinaryNumber and EvenBinaryNumber)? " << equalityDFA(anyBinary, unionDFA(oddBinaryNumber, evenBinaryNumber));
+  std::cout << std::endl;
+  std::cout << "Is OddBinaryNumber == (union of OddBinaryNumberand AcceptsNothing)? " << equalityDFA(oddBinaryNumber, unionDFA(oddBinaryNumber, acceptsNothing));
   std::cout << std::endl;
 }
 
