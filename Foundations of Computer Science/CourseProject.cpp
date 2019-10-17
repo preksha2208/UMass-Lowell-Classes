@@ -15,6 +15,7 @@
 #include "myPair.hpp"
 #include "NFA.hpp"
 
+// creates a DFA that only excepts a string of length one of just inputChar
 DFA<myChar> oneCharDFA(myChar inputChar)
 {
   return DFA<myChar>(
@@ -154,7 +155,8 @@ void DFAtester(DFA<State> &a, std::vector<myString *> &testStrings, std::vector<
   std::cout << std::endl;
 }
 
-void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints results
+// creates DFAs and runs tests on them
+void makeAndTestDFAs()
 {
   // Declarations of DFAs
   DFA<myChar> evenLengthBinary( // returns whether length of inputted binary
@@ -287,9 +289,8 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
           return myChar('D');
         else if (a.getVal() == 'D')
           return myChar('D');
-        else 
+        else
           return myChar('E');
-
       },
       [](myChar a) -> bool { return (a == myChar('D')); });
 
@@ -799,9 +800,13 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
             << std::endl;
 }
 
+// creates NFAs and runs tests on them
+void makeAndTestNFAs()
+{
+}
+
 int main()
 {
   makeAndTestDFAs();
-  lexi(11, std::list<myChar>{myChar('A'), myChar('B')});
   return 0;
 }

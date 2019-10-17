@@ -2,6 +2,7 @@
 #define ONESTRING_HPP
 #include "myString.hpp"
 
+// represents a letter in a string linked list
 class oneString : public myString
 {
 public:

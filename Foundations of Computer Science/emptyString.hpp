@@ -6,8 +6,8 @@
 class emptyString : public myString
 {
 public:
-  emptyString() { this->c = myChar('E'); } // needs to change E->actual epsilon
-  bool isEmpty() { return true; }
+  emptyString() { this->c = myChar('E'); }  // can probably delete this
+  bool isEmpty() { return true; }   // this is how it is identified
   myString *next() { return NULL; }
   void setNext(myString *next)
   {

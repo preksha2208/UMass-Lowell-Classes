@@ -2,6 +2,7 @@
 #define MYPAIR_HPP
 
 // custom pair class. Essentially same as std::pair, but with overloaded << operator
+// created so that the trace function can call cout << on a pair object
 template <class State1, class State2>
 class myPair
 {
