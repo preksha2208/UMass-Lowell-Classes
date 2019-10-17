@@ -673,6 +673,12 @@ void makeAndTestDFAs() // creates 12 DFAs, runs 12 tests on each DFA, prints res
   std::vector<bool> expectedAnyNumberOfOnes{true, true, true, true, true, true, true, true, true, true, true, true};
   DFAtester(anyNumberOfOnesBinary, anyNumberOfOnesStrings, expectedAnyNumberOfOnes);
 
+  std::cout << "Testing union of OddBinaryNumber and EvenBinaryNumber DFAs" << std::endl;
+  DFA<myPair<myChar, myChar>> evenOrOddBinary = unionDFA<myChar>(evenBinaryNumber, oddBinaryNumber);
+  std::vector<myString *> evenOrOddBinaryStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
+  std::vector<bool> expectedEvenOrOddBinary{true, true, true, true, true, false, true, true, true, true, true, true};
+  DFAtester(evenOrOddBinary, evenOrOddBinaryStrings, expectedEvenOrOddBinary);
+
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                      DFA INTERSECTION TESTS                     " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl
