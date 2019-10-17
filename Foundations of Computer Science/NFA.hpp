@@ -11,7 +11,7 @@ public:
              std::function<bool(State)> F)
       : name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc),
         F(F) {}
-  NFA<State>(const DFA<State> &inputDFA)
+  NFA<State>(const DFA<State> &inputDFA)  // converts DFA to NFA
   {
     this->name = inputDFA.name;
     this->Q = inputDFA.Q;
@@ -26,6 +26,7 @@ public:
   std::vector<myChar> alphabet;
   State q0;                                      // start state
   std::function<State(State, myChar)> transFunc; // transition function
+  std::function<State(State)> epsilonTrans;  // returns what the state transitions to on epsilon
   std::function<bool(State)> F;                  // accept states
 };
 

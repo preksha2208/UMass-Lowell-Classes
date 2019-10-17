@@ -20,8 +20,8 @@ TASK 19: Done
 TASK 20: Done. This mathematical explanation here helped https://cs.stackexchange.com/questions/81813/is-the-equality-of-two-dfas-a-decidable-problem .
 TASK 21: Done
 TASK 22: Done
-TASK 23: Still need to work on the transition function, but I've got the outline of the class finished 
-TASK 24: Every NFA is a DFA, so just set the values of the new NFA equal to the values of the DFA
+TASK 23: Done. I have a separate transition function for what a state transition to on epsilon.
+TASK 24: Done. Just needed to set the values of the NFA equal to the values of the DFA
 TASK 25: 
 TASK 26: 
 TASK 27:
