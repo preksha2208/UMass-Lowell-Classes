@@ -15,9 +15,9 @@ TASK 14: Done
 TASK 15: Done
 TASK 16: Done
 TASK 17: Done
-TASK 18: Finished using this explanation of DFA subsets https://cs.stackexchange.com/questions/9130/testing-whether-the-language-of-one-automaton-is-a-subset-of-another
+TASK 18: Finished using this mathematical explanation of DFA subsets https://cs.stackexchange.com/questions/9130/testing-whether-the-language-of-one-automaton-is-a-subset-of-another
 TASK 19: Done
-TASK 20: Done
+TASK 20: Done. This mathematical explanation here helped https://cs.stackexchange.com/questions/81813/is-the-equality-of-two-dfas-a-decidable-problem .
 TASK 21: Done
 TASK 22: Done
 TASK 23: Still need to work on the transition function, but I've got the outline of the class finished 
