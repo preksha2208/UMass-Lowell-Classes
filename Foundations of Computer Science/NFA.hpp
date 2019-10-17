@@ -22,12 +22,29 @@ public:
   }
 
   std::string name;
-  std::function<bool(State&)> Q; // list of possible states for this dfa
+  std::function<bool(State &)> Q; // list of possible states for this dfa
   std::vector<myChar> alphabet;
-  State q0;                                      // start state
-  std::function<std::vector<State>(State&, myChar&)> transFunc; // transition function
-  std::function<std::vector<State>(State&)> epsilonTrans;      // returns what the state transitions to on epsilon
-  std::function<bool(State&)> F;                  // accept states
+  State q0;                                                       // start state
+  std::function<std::vector<State>(State &, myChar &)> transFunc; // transition function
+  std::function<std::vector<State>(State &)> epsilonTrans;        // returns what the state transitions to on epsilon
+  std::function<bool(State &)> F;                                 // accept states
+
+  bool accepts(myString &inputString) // does NFA accept inputString?
+  {
+    State qi = this->q0;
+    myString *temp = &inputString;
+
+    // step through NFA with the input string
+    while (temp->isEmpty() != true)
+    {
+      qi = transFunc(qi, temp->charObject());
+      temp = temp->next();
+    }
+
+    return F(qi); // checks whether arrived-at state is an accept state
+  }
+
+private:
 };
 
 #endif

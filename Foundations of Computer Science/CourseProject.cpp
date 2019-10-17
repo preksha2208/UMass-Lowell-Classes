@@ -824,10 +824,10 @@ void makeAndTestNFAs()
                                 [](myChar a) -> std::vector<myChar> {
                                   if (a.getVal() == 'B')
                                     return std::vector<myChar>{'C'};
-                                }, 
+                                },
                                 [](myChar a) -> bool {
                                   return (a.getVal() == 'D');
-                                } );
+                                });
 }
 
 int main()
