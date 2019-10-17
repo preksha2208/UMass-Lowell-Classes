@@ -824,6 +824,8 @@ void makeAndTestNFAs()
                                 [](myChar a) -> std::vector<myChar> {
                                   if (a.getVal() == 'B')
                                     return std::vector<myChar>{'C'};
+                                  else
+                                    return std::vector<myChar>{};
                                 },
                                 [](myChar a) -> bool {
                                   return (a.getVal() == 'D');

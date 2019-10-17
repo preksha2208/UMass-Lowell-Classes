@@ -35,7 +35,7 @@ public:
   bool accepts(myString &inputString) // does NFA accept inputString?
   {
     State qi = this->q0;
-    std::vector<State> currentStates;
+    std::vector<State> currentStates;  // keeps track of current states
     std::vector<State> tempVector;
     std::vector<State> newStates;
     myString *temp = &inputString;
@@ -50,18 +50,20 @@ public:
     {
       newStates.clear(); // prepare to get new set of states from transFunc
 
-      for (x : currentStates)
+      for (auto x : currentStates)
       {
         tempVector = transFunc(x, temp->charObject()); // generate new sets of states from input char w/ each current state
         newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
         tempVector = epsilonTrans(x); // check whether there are epsilon transitions for current state
         newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
       }
+      currentStates.clear();
+      currentStates = newStates;
 
       temp = temp->next(); // move to next character in the string
     }
 
-    for (x : currentStates)
+    for (auto x : currentStates)
     {
       if (F(x))  // check whether any of the set of current states is an accept state
         return true;  // return true if an accept state has been reached
