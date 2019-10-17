@@ -34,17 +34,11 @@ public:
 
   bool accepts(myString &inputString) // does NFA accept inputString?
   {
-    State qi = this->q0;
-    std::vector<State> currentStates;  // keeps track of current states
+    std::vector<State> currentStates { this->q0 };  // keeps track of current states
     std::vector<State> tempVector;
     std::vector<State> newStates;
     myString *temp = &inputString;
-
-    if (temp->isEmpty() != true) // get first set of states from first transition
-    {
-      newStates = transFunc(qi, temp->charObject()); // newStates is the set of states obtained from this transition
-      currentStates.insert(currentStates.end(), newStates.begin(), newStates.end());
-    }
+    
     // step through NFA with the input string
     while (temp->isEmpty() != true)
     {
@@ -57,19 +51,47 @@ public:
         tempVector = epsilonTrans(x); // check whether there are epsilon transitions for current state
         newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
       }
+
       currentStates.clear();
       currentStates = newStates;
-
       temp = temp->next(); // move to next character in the string
     }
 
     for (auto x : currentStates)
     {
       if (F(x))  // check whether any of the set of current states is an accept state
-        return true;  // return true if an accept state has been reached
+        return true;  // if in accept state, then that means this NFA accepts the input string
     }
-    return false;   // otherwise return false. The NFA does not accept this input string
+    return false;   // NFA does not accept the input string
   }
+
+  void trace(myString &inputString) // prints trace of visited states
+  {
+    std::vector<State> currentStates { this->q0 }; 
+    std::vector<State> tempVector;
+    std::vector<State> newStates;
+    myString *temp = &inputString;
+    std::cout << "Trace: ";
+    // step through NFA with the input string
+    while (temp->isEmpty() != true)
+    {
+      newStates.clear(); // prepare to get new set of states from transFunc
+      std::cout << ", ";
+      for (auto x : currentStates)
+      {
+        std::cout << x << " ";  // print out each current state separated by a space
+        tempVector = transFunc(x, temp->charObject()); // generate new sets of states from input char w/ each current state
+        newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+        tempVector = epsilonTrans(x); // check whether there are epsilon transitions for current state
+        newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+      }
+
+      currentStates.clear();
+      currentStates = newStates;
+      temp = temp->next(); // move to next character in the string
+    }
+  }
+
 
 private:
 };
