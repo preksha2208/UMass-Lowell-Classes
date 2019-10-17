@@ -819,7 +819,7 @@ void makeAndTestNFAs()
                                   else if (a.getVal() == 'C' && b.getVal() == '1')
                                     return std::vector<myChar>{myChar('D')};
                                   else
-                                    return std::vector<myChar>{a};  // may need to change this
+                                    return std::vector<myChar>{ a };  // may need to change this
                                 },
                                 [](myChar a) -> std::vector<myChar> {  // epsilon transition
                                   if (a.getVal() == 'B')
@@ -832,7 +832,8 @@ void makeAndTestNFAs()
                                 });
   
   oneString OZZ = oneString('1', new oneString('0', new oneString('0', new emptyString)));
-  oneIsThirdFromEnd.accepts(OZZ);
+  std::cout << "Does oneIsThirdFromEnd accept OZZ? " << oneIsThirdFromEnd.accepts(OZZ) << std::endl;
+  // oneIsThirdFromEnd.trace(OZZ);
 }
 
 int main()

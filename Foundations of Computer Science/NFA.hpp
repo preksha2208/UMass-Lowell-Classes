@@ -28,7 +28,7 @@ public:
   std::function<bool(State &)> Q; // list of possible states for this dfa
   std::vector<myChar> alphabet;
   State q0;                                                     // start state
-  std::function<std::vector<State>(State, myChar &)> transFunc; // transition function
+  std::function<std::vector<State>(State, myChar)> transFunc; // transition function
   std::function<std::vector<State>(State)> epsilonTrans;        // returns what the state transitions to on epsilon
   std::function<bool(State &)> F;                               // accept states
 
@@ -38,13 +38,16 @@ public:
     std::vector<State> tempVector;
     std::vector<State> newStates;
     myString *temp = &inputString;
-    
+    int i = 1;
+
     // step through NFA with the input string
     while (temp->isEmpty() != true)
     {
       newStates.clear(); // prepare to get new set of states from transFunc
+      std::cout << "iteration #" << i<< std::endl;
+      i++;
 
-      for (auto x : currentStates)
+      for (State x : currentStates)  // for each state  in current states
       {
         tempVector = transFunc(x, temp->charObject()); // generate new sets of states from input char w/ each current state
         newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
@@ -57,7 +60,7 @@ public:
       temp = temp->next(); // move to next character in the string
     }
 
-    for (auto x : currentStates)
+    for (State x : currentStates)
     {
       if (F(x))  // check whether any of the set of current states is an accept state
         return true;  // if in accept state, then that means this NFA accepts the input string
