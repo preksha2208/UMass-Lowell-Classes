@@ -8,18 +8,18 @@ template <class State>
 class DFA
 {
 public:
-  DFA<State>(std::string name, std::function<bool(State)> Q,
+  DFA<State>(std::string name, std::function<bool(State&)> Q,
              std::vector<myChar> alphabet, State q0,
              std::function<State(State, myChar)> transFunc,
-             std::function<bool(State)> F)
+             std::function<bool(State&)> F)
       : name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc),
         F(F) {}
   std::string name;
-  std::function<bool(State)> Q; // list of possible states for this dfa
+  std::function<bool(State&)> Q; // list of possible states for this dfa
   std::vector<myChar> alphabet;
   State q0;                                      // start state
   std::function<State(State, myChar)> transFunc; // transition function
-  std::function<bool(State)> F;                  // accept states
+  std::function<bool(State&)> F;                  // accept states
 
   bool accepts(myString &inputString) // does DFA accept inputString?
   {

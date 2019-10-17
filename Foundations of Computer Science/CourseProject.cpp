@@ -803,6 +803,31 @@ void makeAndTestDFAs()
 // creates NFAs and runs tests on them
 void makeAndTestNFAs()
 {
+  NFA<myChar> oneIsThirdFromEnd("OneIsThirdFromEnd",
+                                [](myChar a) -> bool {
+                                  return (a.getVal() == 'A' || a.getVal() == 'B' || a.getVal() == 'C' || a.getVal() == 'D');
+                                },
+                                std::vector<myChar>{myChar('0'), myChar('1')},
+                                myChar('A'),
+                                [](myChar a, myChar b) -> std::vector<myChar> {
+                                  if (a.getVal() == 'A' && b.getVal() == '1')
+                                    return std::vector<myChar>{myChar('A'), myChar('B')};
+                                  else if (a.getVal() == 'A' && b.getVal() == '0')
+                                    return std::vector<myChar>{myChar('A')};
+                                  else if (a.getVal() == 'B' && b.getVal() == '0')
+                                    return std::vector<myChar>{myChar('C')};
+                                  else if (a.getVal() == 'C' && b.getVal() == '1')
+                                    return std::vector<myChar>{myChar('D')};
+                                  else
+                                    return std::vector<myChar>{a};
+                                },
+                                [](myChar a) -> std::vector<myChar> {
+                                  if (a.getVal() == 'B')
+                                    return std::vector<myChar>{'C'};
+                                }, 
+                                [](myChar a) -> bool {
+                                  return (a.getVal() == 'D');
+                                } );
 }
 
 int main()
