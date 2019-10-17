@@ -803,13 +803,13 @@ void makeAndTestDFAs()
 // creates NFAs and runs tests on them
 void makeAndTestNFAs()
 {
-  NFA<myChar> oneIsThirdFromEnd("OneIsThirdFromEnd",
+  NFA<myChar> oneIsThirdFromEnd("OneIsThirdFromEnd",   // name
                                 [](myChar a) -> bool {
                                   return (a.getVal() == 'A' || a.getVal() == 'B' || a.getVal() == 'C' || a.getVal() == 'D');
-                                },
-                                std::vector<myChar>{myChar('0'), myChar('1')},
-                                myChar('A'),
-                                [](myChar a, myChar b) -> std::vector<myChar> {
+                                },  // states function
+                                std::vector<myChar>{myChar('0'), myChar('1')},  // alphabet
+                                myChar('A'),  // start state
+                                [](myChar a, myChar b) -> std::vector<myChar> {  // transition function
                                   if (a.getVal() == 'A' && b.getVal() == '1')
                                     return std::vector<myChar>{myChar('A'), myChar('B')};
                                   else if (a.getVal() == 'A' && b.getVal() == '0')
@@ -819,21 +819,25 @@ void makeAndTestNFAs()
                                   else if (a.getVal() == 'C' && b.getVal() == '1')
                                     return std::vector<myChar>{myChar('D')};
                                   else
-                                    return std::vector<myChar>{a};
+                                    return std::vector<myChar>{a};  // may need to change this
                                 },
-                                [](myChar a) -> std::vector<myChar> {
+                                [](myChar a) -> std::vector<myChar> {  // epsilon transition
                                   if (a.getVal() == 'B')
                                     return std::vector<myChar>{'C'};
                                   else
                                     return std::vector<myChar>{};
                                 },
-                                [](myChar a) -> bool {
+                                [](myChar a) -> bool {  // accept states
                                   return (a.getVal() == 'D');
                                 });
+  
+  oneString OZZ = oneString('1', new oneString('0', new oneString('0', new emptyString)));
+  oneIsThirdFromEnd.accepts(OZZ);
 }
 
 int main()
 {
   makeAndTestDFAs();
+  makeAndTestNFAs();
   return 0;
 }
