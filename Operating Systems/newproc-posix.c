@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <sys/types.h>
+
+#define READ_END 0
+#define WRITE_END 1
 
 int main(int argc, char *arv[])
 {
@@ -13,11 +17,11 @@ int main(int argc, char *arv[])
         // fork error
     }
     if (pid == 0)
-    {   // first child process, run sort
+    { // first child process, run sort
         // tie write end of pipe fd1 to standard output (file descriptor 1)
-// close read end of pipe fd1
-// start the sort command using execlp
-// should not get here
+        // close read end of pipe fd1
+        // start the sort command using execlp
+        // should not get here
     }
     //create second pipe fd2
     // fork second child
