@@ -46,17 +46,25 @@ public:
       newStates.clear(); // prepare to get new set of states from transFunc
       std::cout << "iteration #" << i<< std::endl;
       i++;
-
+      std::cout << "currentStates size before loop: " << currentStates.size() << std::endl;
+      std::cout << "newStates size before loop: " << newStates.size() << std::endl;
       for (State x : currentStates)  // for each state  in current states
       {
         tempVector = transFunc(x, temp->charObject()); // generate new sets of states from input char w/ each current state
+        std::cout << "tempVector  size after transFunc: " << tempVector.size() << std::endl;
         newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
-        tempVector = epsilonTrans(x); // check whether there are epsilon transitions for current state
+        std::cout << "newStates size after transFunc: " << newStates.size() << std::endl;
+       /* tempVector = epsilonTrans(x); // check whether there are epsilon transitions for current state
+        std::cout << "tempVector size after epsilon transFunc: " << tempVector.size() << std::endl;
         newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+        std::cout << "newStates size after epsilon transFunc: " << newStates.size() << std::endl; */
       }
 
       currentStates.clear();
       currentStates = newStates;
+      std::cout << "currentStates size after loop: " << currentStates.size() << std::endl;
+      /*for (auto x : currentStates)
+        std::cout << x << std::endl; */
       temp = temp->next(); // move to next character in the string
     }
 
