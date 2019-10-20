@@ -5,15 +5,16 @@ int main(int argc, char *arv[])
 {
     //create first pipe fd1
     // fork first child
-    auto pid = fork(); // create first child for sort
+    pid_t pid;
+    pid = fork(); // create first child for sort
+
     if (pid < 0)
     {
         // fork error
     }
     if (pid == 0)
     {   // first child process, run sort
-        // tie write end of pipe fd1 to standard output (file descriptor
-1)
+        // tie write end of pipe fd1 to standard output (file descriptor 1)
 // close read end of pipe fd1
 // start the sort command using execlp
 // should not get here
