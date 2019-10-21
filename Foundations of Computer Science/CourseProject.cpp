@@ -123,11 +123,14 @@ NFA<myPair<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
       },
       a,                                                                  // alphabet
       myPair<State1, State2>(nfa1.q0, nfa2.q0),                           // start state, need to figure this one out
-      [=](myPair<State1, State2> a, myChar b) -> myPair<State1, State2>{ // transition function; not correct as is
+      [=](myPair<State1, State2> a, myChar b) -> myPair<State1, State2> { // transition function; not correct as is
         return  myPair<State1, State2>(nfa1.transFunc(a.first, b), nfa2.transFunc(a.second, b)));
       },
-      myPair<State1, State2>
-      [=](myPair<State1, State2> a) -> bool { // accept states
+      [=](myPair<State1, State2> a) -> myPair<State1, State2> {
+        return myPair<State1, State2>(nfa1.epsilonTrans(a.first), nfa2.epsilonTrans(a.second));
+      },
+      [=](myPair<State1, State2> a)
+          -> bool { // accept states
         return ((dfa1.F(a.first)) || (dfa2.F(a.second)));
       });
 }
@@ -149,11 +152,14 @@ NFA<myPair<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2> nfa2)
       },
       a,                                                                  // alphabet
       myPair<State1, State2>(nfa1.q0, nfa2.q0),                           // start state, need to figure this one out
-      [=](myPair<State1, State2> a, myChar b) -> myPair<State1, State2>{ // transition function; not correct as is
+      [=](myPair<State1, State2> a, myChar b) -> myPair<State1, State2> { // transition function; not correct as is
         return  myPair<State1, State2>(nfa1.transFunc(a.first, b), nfa2.transFunc(a.second, b)));
       },
-      myPair<State1, State2>
-      [=](myPair<State1, State2> a) -> bool { // accept states
+      [=](mPair<State1, State2> a) -> myPair<State1, State2> {
+        if (nfa1.F(a.first))
+          return myPair<State1, State2>()
+      },
+      myPair<State1, State2>[=](myPair<State1, State2> a) -> bool { // accept states
         return ((dfa1.F(a.first)) || (dfa2.F(a.second)));
       });
 }
@@ -856,13 +862,13 @@ void makeAndTestDFAs()
 // creates NFAs and runs tests on them
 void makeAndTestNFAs()
 {
-  NFA<myChar> oneIsThirdFromEnd("OneIsThirdFromEnd",   // name
+  NFA<myChar> oneIsThirdFromEnd("OneIsThirdFromEnd", // name
                                 [](myChar a) -> bool {
                                   return (a.getVal() == 'A' || a.getVal() == 'B' || a.getVal() == 'C' || a.getVal() == 'D');
-                                },  // states function
+                                },                                              // states function
                                 std::vector<myChar>{myChar('0'), myChar('1')},  // alphabet
-                                myChar('A'),  // start state
-                                [](myChar a, myChar b) -> std::vector<myChar> {  // transition function
+                                myChar('A'),                                    // start state
+                                [](myChar a, myChar b) -> std::vector<myChar> { // transition function
                                   if (a.getVal() == 'A' && b.getVal() == '1')
                                     return std::vector<myChar>{myChar('A'), myChar('B')};
                                   else if (a.getVal() == 'A' && b.getVal() == '0')
@@ -874,18 +880,18 @@ void makeAndTestNFAs()
                                   else if (a.getVal() == 'D')
                                     return std::vector<myChar>{myChar('A')};
                                   else
-                                    return std::vector<myChar>{ a };  // may need to change this
+                                    return std::vector<myChar>{a}; // may need to change this
                                 },
-                                [](myChar a) -> std::vector<myChar> {  // epsilon transition
+                                [](myChar a) -> std::vector<myChar> { // epsilon transition
                                   if (a.getVal() == 'B')
                                     return std::vector<myChar>{'C'};
                                   else
                                     return std::vector<myChar>{};
                                 },
-                                [](myChar a) -> bool {  // accept states
+                                [](myChar a) -> bool { // accept states
                                   return (a.getVal() == 'D');
                                 });
-  
+
   oneString OZZ = oneString('1', new oneString('0', new oneString('0', new emptyString)));
   oneString OOZ = oneString('1', new oneString('1', new oneString('0', new emptyString)));
   oneString OOOZ = oneString('1', new oneString('1', new oneString('1', new oneString('0', new emptyString))));
