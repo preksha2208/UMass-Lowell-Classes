@@ -47,9 +47,11 @@ public:
       for (State x : currentStates)  // for each state  in current states
       {
         tempVector = transFunc(x, temp->charObject()); // generate new sets of states from input char w/ each current state
-        newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+        if(tempVector.size() != 0)
+          newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
         tempVector = epsilonTrans(x); // check whether there are epsilon transitions for current state
-        newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+        if(tempVector.size() != 0)
+          newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
       }
 
       currentStates.clear();

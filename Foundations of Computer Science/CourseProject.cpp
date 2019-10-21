@@ -844,7 +844,7 @@ void makeAndTestNFAs()
   std::cout << "Does oneIsThirdFromEnd accept OZOO? " << oneIsThirdFromEnd.accepts(OZOO) << std::endl;
   std::cout << "Does oneIsThirdFromEnd accept the empty string? " << oneIsThirdFromEnd.accepts(epsi) << std::endl;
 
-  // oneIsThirdFromEnd.trace(OZZ);
+  oneIsThirdFromEnd.trace(OZZ);
 }
 
 int main()
