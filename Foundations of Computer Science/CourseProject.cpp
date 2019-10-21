@@ -814,10 +814,12 @@ void makeAndTestNFAs()
                                     return std::vector<myChar>{myChar('A'), myChar('B')};
                                   else if (a.getVal() == 'A' && b.getVal() == '0')
                                     return std::vector<myChar>{myChar('A')};
-                                  else if (a.getVal() == 'B' && b.getVal() == '0')
+                                  else if (a.getVal() == 'B' && (b.getVal() == '0' || b.getVal() == '1'))
                                     return std::vector<myChar>{myChar('C')};
-                                  else if (a.getVal() == 'C' && b.getVal() == '1')
+                                  else if (a.getVal() == 'C' && (b.getVal() == '1' || b.getVal() == '0'))
                                     return std::vector<myChar>{myChar('D')};
+                                  else if (a.getVal() == 'D')
+                                    return std::vector<myChar>{myChar('A')};
                                   else
                                     return std::vector<myChar>{ a };  // may need to change this
                                 },
@@ -832,7 +834,16 @@ void makeAndTestNFAs()
                                 });
   
   oneString OZZ = oneString('1', new oneString('0', new oneString('0', new emptyString)));
+  oneString OOZ = oneString('1', new oneString('1', new oneString('0', new emptyString)));
+  oneString OOOZ = oneString('1', new oneString('1', new oneString('1', new oneString('0', new emptyString))));
+  oneString OZOO = oneString('1', new oneString('0', new oneString('1', new oneString('1', new emptyString))));
+  emptyString epsi;
   std::cout << "Does oneIsThirdFromEnd accept OZZ? " << oneIsThirdFromEnd.accepts(OZZ) << std::endl;
+  std::cout << "Does oneIsThirdFromEnd accept OZZ? " << oneIsThirdFromEnd.accepts(OOZ) << std::endl;
+  std::cout << "Does oneIsThirdFromEnd accept OOOZ? " << oneIsThirdFromEnd.accepts(OOOZ) << std::endl;
+  std::cout << "Does oneIsThirdFromEnd accept OZOO? " << oneIsThirdFromEnd.accepts(OZOO) << std::endl;
+  std::cout << "Does oneIsThirdFromEnd accept the empty string? " << oneIsThirdFromEnd.accepts(epsi) << std::endl;
+
   // oneIsThirdFromEnd.trace(OZZ);
 }
 
