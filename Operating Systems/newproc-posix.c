@@ -7,51 +7,66 @@
 
 int main(int argc, char *arv[])
 {
-    //create first pipe fd1
+    // create first pipe fd1
+    int fd1[2];
+    if (pipe(fd1) == -1)
+    {
+        fprintf(stderr, "Pipe Failed\n");
+        return 1;
+    }
     // fork first child
     pid_t pid;
     pid = fork(); // create first child for sort
 
     if (pid < 0)
     {
-        // fork error
+        fprintf(stderr, "Fork Failed\n");
+        return 1;
     }
     if (pid == 0)
-    { // first child process, run sort
-        // tie write end of pipe fd1 to standard output (file descriptor 1)
-        // close read end of pipe fd1
-        // start the sort command using execlp
+    {                                         // first child process, run sort
+        dup2(fd1[WRITE_END], 1);              // tie write end of pipe fd1 to standard output (file descriptor 1)
+        close(fd1[READ_END]);                 // close read end of pipe fd1
+        execlp("usr/bin/sort", "sort", NULL); // start the sort command using execlp
         // should not get here
     }
     //create second pipe fd2
+    int fd2[2];
+    if (pipe(fd2) == -1)
+    {
+        fprintf(stderr, "Pipe Failed\n");
+        return 1;
+    }
     // fork second child
     pid = fork(); // create second child for uniq
     if (pid < 0)
     {
-        // fork error
+        fprintf(stderr, "Fork Failed\n");
+        return 1;
     }
     if (pid == 0)
-    { // second child process, run uniq
-        // tie read end of fd1 to standard input (file descriptor 0)
-        // tie write end of fd2 to standard output (file descriptor 1)
-        // close write end of pipe fd1
-        // close read end of pipe fd2
-        // start the uniq command using execlp
+    {                                         // second child process, run uniq
+        dup2(fd1[READ_END], 0);               // tie read end of fd1 to standard input (file descriptor 0)
+        dup2(fd2[WRITE_END], 1);              // tie write end of fd2 to standard output (file descriptor 1)
+        close(fd1[WRITE_END]);                // close write end of pipe fd1
+        close(fd2[READ_END]);                 // close read end of pipe fd2
+        execlp("usr/bin/uniq", "uniq", NULL); // start the uniq command using execlp
         // should not get here
     }
     // fork third child
-    pid = fork() // create third child for wc -l
-        f(pid < 0)
+    pid = fork(); // create third child for wc -l
+    if (pid < 0)
     {
-        // fork error
+        fprintf(stderr, "Fork Failed\n");
+        return 1;
     }
     if (pid == 0)
-    { // third child process, run wc -l
-        // tie read end of fd2 to standard input (file descriptor 0)
-        // close write end of pipe fd2
-        // close read end of pipe fd1
-        // close write end of pipe fd1
-        // start the wc -l command using execlp
+    {                                     // third child process, run wc -l
+        dup2(fd2[READ_END], 0);           // tie read end of fd2 to standard input (file descriptor 0)
+        close(fd2[WRITE_END]);            // close write end of pipe fd2
+        close(fd1[READ_END]);             // close read end of pipe fd1
+        close(fd1[WRITE_END]);            // close write end of pipe fd1
+        execlp("usr/bin/wc", "wc", "-l"); // start the uniq command using execlp// start the wc -l command using execlp
         // should not get here
     }
     // parent process code
