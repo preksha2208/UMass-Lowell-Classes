@@ -150,17 +150,42 @@ NFA<myPair<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2> nfa2)
       [=](myPair<State1, State2> a) -> bool { // function for possible states
         return (nfa1.Q(a.first) && nfa2.Q(a.second));
       },
-      a,                                                                  // alphabet
-      myPair<State1, State2>(nfa1.q0, nfa2.q0),                           // start state, need to figure this one out
-      [=](myPair<State1, State2> a, myChar b) -> myPair<State1, State2> { // transition function; not correct as is
+      a,                                                                               // alphabet
+      myPair<State1, State2>(nfa1.q0, nfa2.q0),                                        // start state, need to figure this one out
+      [=](myPair<State1, State2> a, myChar b) -> std::vector<myPair<State1, State2>> { // transition function; not correct as is
         return  myPair<State1, State2>(nfa1.transFunc(a.first, b), nfa2.transFunc(a.second, b)));
       },
-      [=](mPair<State1, State2> a) -> myPair<State1, State2> {
+      [=](mPair<State1, State2> a) -> std::vector<myPair<State1, State2>> {
         if (nfa1.F(a.first))
-          return myPair<State1, State2>()
+          return myPair<State1, State2>(); // fix this
       },
       myPair<State1, State2>[=](myPair<State1, State2> a) -> bool { // accept states
         return ((dfa1.F(a.first)) || (dfa2.F(a.second)));
+      });
+}
+
+NFA<myChar> kleeneStarNFA(NFA<myChar> nfa)
+{
+  return NFA<myChar>(
+      nfa.name + " Kleene Star",
+      [=](myChar a) -> bool { return (a == myChar('A') || a == myChar('B') || a == myChar('C')); },
+      nfa.alphabet, myChar('x'), // need to change
+      nfa.transFunc,
+      [=](myChar a) -> std::vector<myChar> {
+        if (a == myChar('x'))
+          return std::vector<myChar>{nfa.q0};
+        else if (nfa.F(a))
+          return std::vector<myChar>{nfa.q0};
+        else
+          return nfa.epsilonTrans(a);
+      },
+      [=](myChar a) -> bool {
+        if (a == nfa.q0)
+          return true;
+        else if (nfa.F(a))
+          return true;
+        else
+          return false;
       });
 }
 
