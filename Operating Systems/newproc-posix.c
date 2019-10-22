@@ -5,8 +5,10 @@
 #define READ_END 0
 #define WRITE_END 1
 
-int main(int argc, char *arv[])
+int main(int argc, char *argv[])
 {
+
+    // need to pull in Notes.txt somehow
     // create first pipe fd1
     int fd1[2];
     if (pipe(fd1) == -1)
@@ -71,5 +73,11 @@ int main(int argc, char *arv[])
     }
     // parent process code
     // close both ends of pipes fd1 and fd2
+    close(fd1[READ_END]);
+    close(fd2[READ_END]);
+    close(fd1[WRITE_END]);
+    close(fd2[WRITE_END]);
     // wait for third process to end.
+    wait(pid);
+    return 0;
 }
