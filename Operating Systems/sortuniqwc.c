@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     {                                                        // first child process, run sort
         dup2(fd1[WRITE_END], 1);                             // tie write end of pipe fd1 to standard output (file descriptor 1)
         close(fd1[READ_END]);                                // close read end of pipe fd1
-        execlp("usr/bin/sort", "sort", NULL);                // start the sort command using execlp
+        execlp("/usr/bin/sort", "sort", NULL);                // start the sort command using execlp
         printf("Should not be here after execlp to sort\n"); // should not get here
     }
     //create second pipe fd2
@@ -53,11 +53,12 @@ int main(int argc, char *argv[])
         dup2(fd2[WRITE_END], 1);                             // tie write end of fd2 to standard output (file descriptor 1)
         close(fd1[WRITE_END]);                               // close write end of pipe fd1
         close(fd2[READ_END]);                                // close read end of pipe fd2
-        execlp("usr/bin/uniq", "uniq", NULL);                // start the uniq command using execlp
+        execlp("/usr/bin/uniq", "uniq", NULL);                // start the uniq command using execlp
         printf("Should not be here after execlp to uniq\n"); // should not get here
     }
     // fork third child
     pid = fork(); // create third child for wc -l
+    printf("This process id is %d\n", getpid());
     if (pid < 0)
     {
         fprintf(stderr, "Fork Failed\n");
@@ -69,7 +70,7 @@ int main(int argc, char *argv[])
         close(fd2[WRITE_END]);                                // close write end of pipe fd2
         close(fd1[READ_END]);                                 // close read end of pipe fd1
         close(fd1[WRITE_END]);                                // close write end of pipe fd1
-        execlp("usr/bin/wc", "wc", "-l", NULL);                // start the wc -l command using execlp
+        execlp("/usr/bin/wc", "wc", "-l", NULL);               // start the wc -l command using execlp
         printf("Should not be here after execlp to wc -l\n"); // should not get here
     }
 
