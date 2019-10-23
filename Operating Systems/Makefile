@@ -2,15 +2,15 @@
 # Copyright Cameron Knopp 2019
 
 CC = clang 
-OBJECTS = newproc-posix.o
+OBJECTS = sortuniqwc.o
 
-all: newproc-posix
+all: sortuniqwc
 
-newproc-posix: newproc-posix.o
+sortuniqwc: sortuniqwc.o
 	$(CC) $(OBJECTS) -o $@
 
-$(OBJECTS): newproc-posix.c
-	$(CC) newproc-posic.c -c
+$(OBJECTS): sortuniqwc.c
+	$(CC) sortuniqwc.c -c
 
 clean:
-	rm *.o newproc-posix
+	rm *.o sortuniqwc
