@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         dup2(fd1[WRITE_END], 1);              // tie write end of pipe fd1 to standard output (file descriptor 1)
         close(fd1[READ_END]);                 // close read end of pipe fd1
         execlp("usr/bin/sort", "sort", NULL); // start the sort command using execlp
-        // should not get here
+        printf("Should not be here after execlp to sort\n"); // should not get here
     }
     //create second pipe fd2
     int fd2[2];
@@ -53,7 +53,8 @@ int main(int argc, char *argv[])
         close(fd1[WRITE_END]);                // close write end of pipe fd1
         close(fd2[READ_END]);                 // close read end of pipe fd2
         execlp("usr/bin/uniq", "uniq", NULL); // start the uniq command using execlp
-        // should not get here
+                printf("Should not be here after execlp to uniq\n"); // should not get here
+// should not get here
     }
     // fork third child
     pid = fork(); // create third child for wc -l

@@ -2,17 +2,15 @@
 # Copyright Cameron Knopp 2019
 
 CC = clang 
-OBJECTS = newproc-posic.o
+OBJECTS = newproc-posix.o
 
-all: CourseProject
+all: newproc-posix
 
 newproc-posix: newproc-posix.o
 	$(CC) $(OBJECTS) -o $@
 
 $(OBJECTS): newproc-posix.c
 	$(CC) newproc-posic.c -c
-
-
 
 clean:
 	rm *.o newproc-posix
