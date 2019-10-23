@@ -8,8 +8,6 @@
 
 int main(int argc, char *argv[])
 {
-
-    // need to pull in Notes.txt somehow
     // create first pipe fd1
     int fd1[2];
     if (pipe(fd1) == -1)
@@ -58,7 +56,7 @@ int main(int argc, char *argv[])
     }
     // fork third child
     pid = fork(); // create third child for wc -l
-    printf("This process id is %d\n", getpid());
+    
     if (pid < 0)
     {
         fprintf(stderr, "Fork Failed\n");
