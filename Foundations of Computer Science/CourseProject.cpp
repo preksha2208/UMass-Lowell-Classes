@@ -172,11 +172,16 @@ NFA<myChar> kleeneStarNFA(NFA<myChar> nfa)
 {
   return NFA<myChar>(
       nfa.name + " Kleene Star",
-      [=](myChar a) -> bool { return (a == myChar('A') || a == myChar('B') || a == myChar('C')); },
-      nfa.alphabet, myChar('x'), // need to change
+      [=](myChar a) -> bool { 
+        if(a == myChar('|'))
+          return true;
+        else
+         return nfa.Q(a);
+      },
+      nfa.alphabet, myChar('|'),  // start state may have to be changed to something else
       nfa.transFunc,
       [=](myChar a) -> std::vector<myChar> {
-        if (a == myChar('x'))
+        if (a == myChar('|'))   // 
           return std::vector<myChar>{nfa.q0};
         else if (nfa.F(a))
           return std::vector<myChar>{nfa.q0};
@@ -184,12 +189,10 @@ NFA<myChar> kleeneStarNFA(NFA<myChar> nfa)
           return nfa.epsilonTrans(a);
       },
       [=](myChar a) -> bool {
-        if (a == nfa.q0)
-          return true;
-        else if (nfa.F(a))
+        if (a == myChar('|'))
           return true;
         else
-          return false;
+          return nfa.F(a);
       });
 }
 
