@@ -124,7 +124,8 @@ NFA<myPair<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
       a,                                                                  // alphabet
       myPair<State1, State2>(nfa1.q0, nfa2.q0),                           // start state
       [=](myPair<State1, State2> a, myChar b) -> std::vector<myPair<State1, State2>> { // transition function
-        return  myPair<State1, State2>(nfa1.transFunc(a.first, b), nfa2.transFunc(a.second, b)));
+        return  std::vector<myPair<State1, State>> // need
+        //myPair<State1, State2>(nfa1.transFunc(a.first, b), nfa2.transFunc(a.second, b)));
       },
       [=](myPair<State1, State2> a) -> std::vector<myPair<State1, State2>> {
         return myPair<State1, State2>(nfa1.epsilonTrans(a.first), nfa2.epsilonTrans(a.second));
