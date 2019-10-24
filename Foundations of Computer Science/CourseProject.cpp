@@ -130,7 +130,7 @@ NFA<myPair<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
         return myPair<State1, State2>(nfa1.epsilonTrans(a.first), nfa2.epsilonTrans(a.second));
       },
       [=](myPair<State1, State2> a) -> bool { // accept states
-        return ((dfa1.F(a.first)) || (dfa2.F(a.second)));
+        return ((nfa1.F(a.first)) || (nfa2.F(a.second)));
       });
 }
 
@@ -152,19 +152,21 @@ NFA<myPair<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2> nfa2)
       a,                                                                               // alphabet
       myPair<State1, State2>(nfa1.q0, nfa2.q0),                                        // start state
       [=](myPair<State1, State2> a, myChar b) -> std::vector<myPair<State1, State2>> { // transition function
-        if (nfa1.F(a.first))  // check if nfa1 is in accept state
-          return  myPair<State1, State2>(a.first, nfa2.transFunc(a.second, b))); // if yes, then do transFunc only on nfa2
+        // check if nfa1 is in accept state
+        if (nfa1.F(a.first)) 
+        // if yes, then do transFunc only on nfa2
+          return  myPair<State1, State2>>{a.first, nfa2.transFunc(a.second, b)}; 
         else
-          return myPair<State1, State2>(nfa1.transFunc(a.first, b), nfa2.second);  // otherwise, do transFunc only on nfa1
+          return myPair<State1, State2>(nfa1.transFunc(a.first, b), a.second);  // otherwise, do transFunc only on nfa1
       },
-      [=](mPair<State1, State2> a) -> std::vector<myPair<State1, State2>> { // epsilon transitions
+      [=](myPair<State1, State2> a) -> std::vector<myPair<State1, State2>> { // epsilon transitions
         if (nfa1.F(a.first))  // check if first nfa has reached its accept state
           return  myPair<State1, State2>(a.first, nfa2.epsilonTrans(a.second));  // if yes, then do epsilonTrans only on second NFA
         else
-          return myPair<State1, State2>(nfa1.epsilonTrans(a.first), nfa2.second); // otherwise, do epsilonFunc only on nfa1
+          return myPair<State1, State2>(nfa1.epsilonTrans(a.first), a.second); // otherwise, do epsilonFunc only on nfa1
       },
-      myPair<State1, State2>[=](myPair<State1, State2> a) -> bool { // accept states
-        return ((dfa1.F(a.first)) && (dfa2.F(a.second))); 
+      [=](myPair<State1, State2> a) -> bool { // accept states
+        return ((nfa1.F(a.first)) && (nfa2.F(a.second))); 
       });
 }
 

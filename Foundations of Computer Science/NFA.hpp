@@ -1,6 +1,12 @@
 #ifndef NFA_HPP
 #define NFA_HPP
 
+#include <iostream>
+#include "DFA.hpp"
+#include "oneString.hpp"
+#include "emptyString.hpp"
+#include "myPair.hpp"
+
 template <class State>
 class NFA
 {
