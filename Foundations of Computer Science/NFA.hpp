@@ -78,16 +78,15 @@ public:
     while (temp->isEmpty() != true)
     {
       newStates.clear(); // prepare to get new set of states from transFunc
-      std::cout << ", ";
       for (auto x : currentStates)
       {
-        std::cout << x << " ";  // print out each current state separated by a space
+        std::cout << x << ", ";  // print out each current state separated by a space
         tempVector = transFunc(x, temp->charObject()); // generate new sets of states from input char w/ each current state
         newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
         tempVector = epsilonTrans(x); // check whether there are epsilon transitions for current state
         newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
       }
-
+      std::cout << std::endl;  // move to next level of tree
       currentStates.clear();
       currentStates = newStates;
       temp = temp->next(); // move to next character in the string

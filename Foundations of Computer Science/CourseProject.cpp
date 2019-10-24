@@ -122,15 +122,14 @@ NFA<myPair<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
         return (nfa1.Q(a.first) && nfa2.Q(a.second));
       },
       a,                                                                  // alphabet
-      myPair<State1, State2>(nfa1.q0, nfa2.q0),                           // start state, need to figure this one out
-      [=](myPair<State1, State2> a, myChar b) -> myPair<State1, State2> { // transition function; not correct as is
+      myPair<State1, State2>(nfa1.q0, nfa2.q0),                           // start state
+      [=](myPair<State1, State2> a, myChar b) -> std::vector<myPair<State1, State2>> { // transition function
         return  myPair<State1, State2>(nfa1.transFunc(a.first, b), nfa2.transFunc(a.second, b)));
       },
-      [=](myPair<State1, State2> a) -> myPair<State1, State2> {
+      [=](myPair<State1, State2> a) -> std::vector<myPair<State1, State2>> {
         return myPair<State1, State2>(nfa1.epsilonTrans(a.first), nfa2.epsilonTrans(a.second));
       },
-      [=](myPair<State1, State2> a)
-          -> bool { // accept states
+      [=](myPair<State1, State2> a) -> bool { // accept states
         return ((dfa1.F(a.first)) || (dfa2.F(a.second)));
       });
 }
@@ -151,16 +150,21 @@ NFA<myPair<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2> nfa2)
         return (nfa1.Q(a.first) && nfa2.Q(a.second));
       },
       a,                                                                               // alphabet
-      myPair<State1, State2>(nfa1.q0, nfa2.q0),                                        // start state, need to figure this one out
-      [=](myPair<State1, State2> a, myChar b) -> std::vector<myPair<State1, State2>> { // transition function; not correct as is
-        return  myPair<State1, State2>(nfa1.transFunc(a.first, b), nfa2.transFunc(a.second, b)));
+      myPair<State1, State2>(nfa1.q0, nfa2.q0),                                        // start state
+      [=](myPair<State1, State2> a, myChar b) -> std::vector<myPair<State1, State2>> { // transition function
+        if (nfa1.F(a.first))  // check if nfa1 is in accept state
+          return  myPair<State1, State2>(a.first, nfa2.transFunc(a.second, b))); // if yes, then do transFunc only on nfa2
+        else
+          return myPair<State1, State2>(nfa1.transFunc(a.first, b), nfa2.second);  // otherwise, do transFunc only on nfa1
       },
-      [=](mPair<State1, State2> a) -> std::vector<myPair<State1, State2>> {
-        if (nfa1.F(a.first))
-          return myPair<State1, State2>(); // fix this
+      [=](mPair<State1, State2> a) -> std::vector<myPair<State1, State2>> { // epsilon transitions
+        if (nfa1.F(a.first))  // check if first nfa has reached its accept state
+          return  myPair<State1, State2>(a.first, nfa2.epsilonTrans(a.second));  // if yes, then do epsilonTrans only on second NFA
+        else
+          return myPair<State1, State2>(nfa1.epsilonTrans(a.first), nfa2.second); // otherwise, do epsilonFunc only on nfa1
       },
       myPair<State1, State2>[=](myPair<State1, State2> a) -> bool { // accept states
-        return ((dfa1.F(a.first)) || (dfa2.F(a.second)));
+        return ((dfa1.F(a.first)) && (dfa2.F(a.second))); 
       });
 }
 
