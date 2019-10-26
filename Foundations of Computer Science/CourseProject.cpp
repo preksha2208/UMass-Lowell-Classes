@@ -105,6 +105,7 @@ bool equalityDFA(DFA<State1> dfa1, DFA<State2> dfa2)
   return (!dfa3.acceptedString().first); // if dfa3 accepts nothing, then dfa1 = dfa2
 }
 
+/*
 // creates a DFA that is the union of dfa1 and dfa2
 template <class State1, class State2>
 NFA<myPair<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
@@ -198,6 +199,7 @@ NFA<myChar> kleeneStarNFA(NFA<myChar> nfa)
           return nfa.F(a);
       });
 }
+*/
 
 // generate nth string of alphabet's lexicographical ordering
 myString *lexi(int n, std::list<myChar> alphabet)
@@ -938,7 +940,6 @@ void makeAndTestNFAs()
   std::cout << "Does oneIsThirdFromEnd accept OZOO? " << oneIsThirdFromEnd.accepts(OZOO) << std::endl;
   std::cout << "Does oneIsThirdFromEnd accept the empty string? " << oneIsThirdFromEnd.accepts(epsi) << std::endl;
 
-  oneIsThirdFromEnd.trace(OZZ);
 }
 
 int main()
