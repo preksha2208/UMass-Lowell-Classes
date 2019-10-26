@@ -78,9 +78,9 @@ public:
   void oracle(myString &inputString, myString &trace, bool &isValid)
   {
 
-    myString *traceTemp = &trace; // pointer to first state in given trace
+    myString *tempTrace = &trace; // pointer to first state in given trace
 
-    if (traceTemp->charValue() != this->q0.charValue())
+    if (tempTrace->charValue() != this->q0.charValue())
     {
       isValid = false;
       return; // invalid if first element of trace is not NFA's start state
@@ -124,7 +124,7 @@ public:
         break; // done stepping through input string if trace has been proven invalid
       }
 
-      temptrace = tempTrace->next(); // move to next state in trace
+      tempTrace = tempTrace->next(); // move to next state in trace
       temp = temp->next();           // move to next character in the string
     }
     return;
