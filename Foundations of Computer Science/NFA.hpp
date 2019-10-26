@@ -77,11 +77,12 @@ public:
   // returns true or false through isValid boolean
   void oracle(myString &inputString, myString &trace, bool &isValid)
   {
-    isValid = false;
+
     myString *traceTemp = &trace; // pointer to first state in given trace
 
     if (traceTemp->charValue() != this->q0.charValue())
     {
+      isValid = false;
       return; // invalid if first element of trace is not NFA's start state
     }
 
@@ -93,6 +94,7 @@ public:
     // step through NFA with the input string and at each step compare with trace
     while (temp->isEmpty() != true)
     {
+      isValid = false;
       newStates.clear(); // prepare to get new set of states from transFunc
       for (auto x : currentStates)
       {                                                // print out each current state separated by a space
@@ -103,6 +105,7 @@ public:
       }
       currentStates.clear();
       currentStates = newStates;
+
       for (myChar x : currentStates) // compare current states with given trace
       {
         if (x.getVal() == tempTrace->charValue())
@@ -115,10 +118,12 @@ public:
           isValid = false;
         }
       }
+
       if (isValid == false)
       {
-        break;
+        break; // done stepping through input string if trace has been proven invalid
       }
+
       temptrace = tempTrace->next(); // move to next state in trace
       temp = temp->next();           // move to next character in the string
     }
