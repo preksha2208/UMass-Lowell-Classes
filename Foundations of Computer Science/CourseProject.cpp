@@ -939,12 +939,42 @@ void makeAndTestNFAs()
   std::cout << "Does oneIsThirdFromEnd accept OOOZ? " << oneIsThirdFromEnd.accepts(OOOZ) << std::endl;
   std::cout << "Does oneIsThirdFromEnd accept OZOO? " << oneIsThirdFromEnd.accepts(OZOO) << std::endl;
   std::cout << "Does oneIsThirdFromEnd accept the empty string? " << oneIsThirdFromEnd.accepts(epsi) << std::endl;
+}
 
+void showMenu()
+{
+  std::cout << "1: Make and Test DFAs" << std::endl;
+  std::cout << "2: Make and Test NFAs" << std::endl;
+  std::cout << "3: Exit" << std::endl;
 }
 
 int main()
 {
-  makeAndTestDFAs();
-  makeAndTestNFAs();
+  int choice;
+  char repeat;
+  do
+  {
+  showMenu();
+  std::cin >> choice;
+
+  switch (choice)
+  {
+  case 1:
+    makeAndTestDFAs();
+    break;
+  case 2:
+    makeAndTestNFAs();
+    break;
+  case 3:
+    return 0;
+  default:
+    std::cout << "That is not a valid menu choice" << std::endl;
+    system("cls"); //clear screen
+    showMenu();    //show menu again
+  }
+  std::cout << "Would you like to keep going (type Y or N): ";
+  std::cin >> repeat;
+  } while(repeat == 'Y');
+
   return 0;
 }

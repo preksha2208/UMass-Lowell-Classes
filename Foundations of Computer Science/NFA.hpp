@@ -73,6 +73,41 @@ public:
     return false; // NFA does not accept the input string
   }
 
+  bool traceTree(myString &inputString) // creates tree of all possible traces
+  {
+    std::vector<State> currentStates{this->q0}; // keeps track of current states
+    std::vector<State> tempVector;
+    std::vector<State> newStates;
+    myString *temp = &inputString;
+
+    // step through NFA with the input string
+    while (temp->isEmpty() != true)
+    {
+      newStates.clear(); // prepare to get new set of states from transFunc
+
+      for (State x : currentStates) // for each state  in current states
+      {
+        tempVector = transFunc(x, temp->charObject()); // generate new sets of states from input char w/ each current state
+        if (tempVector.size() != 0)
+          newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+        tempVector = epsilonTrans(x); // check whether there are epsilon transitions for current state
+        if (tempVector.size() != 0)
+          newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+      }
+
+      currentStates.clear();
+      currentStates = newStates;
+      temp = temp->next(); // move to next character in the string
+    }
+
+    for (State x : currentStates)
+    {
+      if (F(x))      // check whether any of the set of current states is an accept state
+        return true; // if in accept state, then that means this NFA accepts the input string
+    }
+    return false; // NFA does not accept the input string
+  }
+
   // returns whether or not the given trace is a valid execution of the NFA
   // returns true or false through isValid boolean
   void oracle(myString &inputString, myString &trace, bool &isValid)
