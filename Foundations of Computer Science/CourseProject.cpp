@@ -901,7 +901,7 @@ void makeAndTestNFAs()
 {
   NFA<myChar> oneIsThirdFromEnd("OneIsThirdFromEnd", // name
                                 [](myChar a) -> bool {
-                                  return (a.getVal() == 'A' || a.getVal() == 'B' || a.getVal() == 'C' || a.getVal() == 'D');
+                                  return (a.getVal() == 'A' || a.getVal() == 'B' || a.getVal() == 'C' || a.getVal() == 'D' || a.getVal() == 'E');
                                 },                                              // states function
                                 std::vector<myChar>{myChar('0'), myChar('1')},  // alphabet
                                 myChar('A'),                                    // start state
@@ -914,14 +914,14 @@ void makeAndTestNFAs()
                                     return std::vector<myChar>{myChar('C')};
                                   else if (a.getVal() == 'C' && (b.getVal() == '1' || b.getVal() == '0'))
                                     return std::vector<myChar>{myChar('D')};
-                                  else if (a.getVal() == 'D')
+                                  else if (a.getVal() == 'D' && (b.getVal() == '1' || b.getVal() == '0'))
                                     return std::vector<myChar>{myChar('A')};
                                   else
-                                    return std::vector<myChar>{a}; // may need to change this
+                                    return std::vector<myChar>{myChar('E')}; // may need to change this
                                 },
                                 [](myChar a) -> std::vector<myChar> { // epsilon transition
                                   if (a.getVal() == 'B')
-                                    return std::vector<myChar>{'C'};
+                                    return std::vector<myChar>{myChar('C')};
                                   else
                                     return std::vector<myChar>{};
                                 },
@@ -929,16 +929,59 @@ void makeAndTestNFAs()
                                   return (a.getVal() == 'D');
                                 });
 
+  NFA<myChar> numZerosIsMultipleOfTwoOrThree("NumZerosIsMultipleOfTwoOrThree", // name
+                                             [](myChar a) -> bool {
+                                               return (a.getVal() == 'A' || a.getVal() == 'B' || a.getVal() == 'C' || a.getVal() == 'D' || a.getVal() == 'E' || a.getVal() == 'F' || a.getVal() == 'G');
+                                             },                                              // states function
+                                             std::vector<myChar>{myChar('0')},               // alphabet
+                                             myChar('A'),                                    // start state
+                                             [](myChar a, myChar b) -> std::vector<myChar> { // transition function
+                                               if (a.getVal() == 'B' && b.getVal() == '0')
+                                                 return std::vector<myChar>{myChar('C')};
+                                               else if (a.getVal() == 'C' && b.getVal() == '0')
+                                                 return std::vector<myChar>{myChar('B')};
+                                               else if (a.getVal() == 'D' && b.getVal() == '0')
+                                                 return std::vector<myChar>{myChar('E')};
+                                               else if (a.getVal() == 'E' && b.getVal() == '0')
+                                                 return std::vector<myChar>{myChar('F')};
+                                               else if (a.getVal() == 'F' && b.getVal() == '0')
+                                                 return std::vector<myChar>{myChar('D')};
+                                               else
+                                                 return std::vector<myChar>{myChar('G')}; // may need to change this
+                                             },
+                                             [](myChar a) -> std::vector<myChar> { // epsilon transition
+                                               if (a.getVal() == 'A')
+                                                 return std::vector<myChar>{myChar('B'), myChar('D')};
+                                               else
+                                                 return std::vector<myChar>{};
+                                             },
+                                             [](myChar a) -> bool { // accept states
+                                               return (a.getVal() == 'B' || a.getVal() == 'D');
+                                             });
+
   oneString OZZ = oneString('1', new oneString('0', new oneString('0', new emptyString)));
   oneString OOZ = oneString('1', new oneString('1', new oneString('0', new emptyString)));
   oneString OOOZ = oneString('1', new oneString('1', new oneString('1', new oneString('0', new emptyString))));
   oneString OZOO = oneString('1', new oneString('0', new oneString('1', new oneString('1', new emptyString))));
   emptyString epsi;
+  oneString ZZ = oneString('0', new oneString('0', new emptyString));
+  oneString ZZZ = oneString('0', new oneString('0', new oneString('0', new emptyString)));
+  oneString ZZZZZ = oneString('0', new oneString('0', new oneString('0', new oneString('0', new oneString('0', new emptyString)))));
+
+  std::cout << std::boolalpha;
   std::cout << "Does oneIsThirdFromEnd accept OZZ? " << oneIsThirdFromEnd.accepts(OZZ) << std::endl;
-  std::cout << "Does oneIsThirdFromEnd accept OZZ? " << oneIsThirdFromEnd.accepts(OOZ) << std::endl;
+  std::cout << "Does oneIsThirdFromEnd accept OOZ? " << oneIsThirdFromEnd.accepts(OOZ) << std::endl;
   std::cout << "Does oneIsThirdFromEnd accept OOOZ? " << oneIsThirdFromEnd.accepts(OOOZ) << std::endl;
   std::cout << "Does oneIsThirdFromEnd accept OZOO? " << oneIsThirdFromEnd.accepts(OZOO) << std::endl;
   std::cout << "Does oneIsThirdFromEnd accept the empty string? " << oneIsThirdFromEnd.accepts(epsi) << std::endl;
+  std::cout << std::endl;
+
+  std::cout << "numZerosIsMultipleOfTwoOrThree accept the empty string? " << numZerosIsMultipleOfTwoOrThree.accepts(epsi) << std::endl;
+  std::cout << "numZerosIsMultipleOfTwoOrThree accept the ZZ? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZ) << std::endl;
+  std::cout << "numZerosIsMultipleOfTwoOrThree accept the ZZZ? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZZ) << std::endl;
+  std::cout << "numZerosIsMultipleOfTwoOrThree accept the ZZZZZ? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZZZZ) << std::endl;
+  std::cout << "numZerosIsMultipleOfTwoOrThree accept the OOZ? " << numZerosIsMultipleOfTwoOrThree.accepts(OOZ) << std::endl;
+  std::cout << "numZerosIsMultipleOfTwoOrThree accept the OZOO? " << numZerosIsMultipleOfTwoOrThree.accepts(OZOO) << std::endl;
 }
 
 void showMenu()
@@ -954,27 +997,27 @@ int main()
   char repeat;
   do
   {
-  showMenu();
-  std::cin >> choice;
+    showMenu();
+    std::cin >> choice;
 
-  switch (choice)
-  {
-  case 1:
-    makeAndTestDFAs();
-    break;
-  case 2:
-    makeAndTestNFAs();
-    break;
-  case 3:
-    return 0;
-  default:
-    std::cout << "That is not a valid menu choice" << std::endl;
-    system("cls"); //clear screen
-    showMenu();    //show menu again
-  }
-  std::cout << "Would you like to keep going (type Y or N): ";
-  std::cin >> repeat;
-  } while(repeat == 'Y');
+    switch (choice)
+    {
+    case 1:
+      makeAndTestDFAs();
+      break;
+    case 2:
+      makeAndTestNFAs();
+      break;
+    case 3:
+      return 0;
+    default:
+      std::cout << "That is not a valid menu choice" << std::endl;
+      system("cls"); //clear screen
+      showMenu();    //show menu again
+    }
+    std::cout << "Would you like to keep going (type Y or N): ";
+    std::cin >> repeat;
+  } while (repeat == 'Y');
 
   return 0;
 }

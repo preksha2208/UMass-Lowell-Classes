@@ -45,6 +45,11 @@ public:
     std::vector<State> newStates;
     myString *temp = &inputString;
 
+    if (temp->isEmpty() == true)
+    {
+      tempVector = epsilonTrans(this->q0);
+      currentStates.insert(currentStates.begin(), tempVector.begin(), tempVector.end());
+    }
     // step through NFA with the input string
     while (temp->isEmpty() != true)
     {
@@ -53,11 +58,9 @@ public:
       for (State x : currentStates) // for each state  in current states
       {
         tempVector = transFunc(x, temp->charObject()); // generate new sets of states from input char w/ each current state
-        if (tempVector.size() != 0)
-          newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+        newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
         tempVector = epsilonTrans(x); // check whether there are epsilon transitions for current state
-        if (tempVector.size() != 0)
-          newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+        newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
       }
 
       currentStates.clear();
@@ -79,7 +82,11 @@ public:
     std::vector<State> tempVector;
     std::vector<State> newStates;
     myString *temp = &inputString;
-
+    if (temp->isEmpty() == true)
+    {
+      tempVector = epsilonTrans(this->q0);
+      currentStates.insert(currentStates.begin(), tempVector.begin(), tempVector.end());
+    }
     // step through NFA with the input string
     while (temp->isEmpty() != true)
     {
@@ -88,11 +95,9 @@ public:
       for (State x : currentStates) // for each state  in current states
       {
         tempVector = transFunc(x, temp->charObject()); // generate new sets of states from input char w/ each current state
-        if (tempVector.size() != 0)
-          newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+        newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
         tempVector = epsilonTrans(x); // check whether there are epsilon transitions for current state
-        if (tempVector.size() != 0)
-          newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+        newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
       }
 
       currentStates.clear();
@@ -126,6 +131,11 @@ public:
     std::vector<State> newStates;
     myString *temp = &inputString;
 
+    if (temp->isEmpty() == true)
+    {
+      tempVector = epsilonTrans(this->q0);
+      currentStates.insert(currentStates.begin(), tempVector.begin(), tempVector.end());
+    }
     // step through NFA with the input string and at each step compare with trace
     while (temp->isEmpty() != true)
     {
