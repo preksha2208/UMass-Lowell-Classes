@@ -23,7 +23,7 @@ TASK 22: Done
 TASK 23: Done. I have a separate transition function for what a state transition to on epsilon.
 TASK 24: Done. Just needed to set the values of the NFA equal to the values of the DFA
 TASK 25: Done. Didn't make a dozen example NFAs, but made enough to ensure that my data structure works correctly.
-TASK 26: 
+TASK 26: Done. Wrote the trace in the form of myString objects
 TASK 27: Nearly done.
 TASK 28: 
 TASK 29:
