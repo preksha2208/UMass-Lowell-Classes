@@ -73,9 +73,6 @@ public:
 
       currentStates.clear();
       currentStates = newStates;
-      for (auto x : currentStates)
-        std::cout << x << ", ";
-      std::cout << std::endl;
       temp = temp->next(); // move to next character in the string
     }
 

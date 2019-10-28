@@ -22,18 +22,18 @@ TASK 21: Done
 TASK 22: Done
 TASK 23: Done. I have a separate transition function for what a state transition to on epsilon.
 TASK 24: Done. Just needed to set the values of the NFA equal to the values of the DFA
-TASK 25: 
+TASK 25: Done. Didn't make a dozen example NFAs, but made enough to ensure that my data structure works correctly.
 TASK 26: 
-TASK 27:
-TASK 28:
+TASK 27: Nearly done.
+TASK 28: 
 TASK 29:
 TASK 30:
 TASK 31:
-TASK 32:
-TASK 33:
-TASK 34:
+TASK 32: Done. Steps through input string character by character and runs transition function & checks for epsi transitions
+TASK 33: Nearly done
+TASK 34: Nearly done
 TASK 35:
-TASK 36:
+TASK 36: Nearly done
 TASK 37:
 TASK 38:
 TASK 39:
