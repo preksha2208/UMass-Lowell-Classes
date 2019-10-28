@@ -46,7 +46,7 @@ public:
     std::vector<State> epsilonStates;
     myString *temp = &inputString;
 
-    if (temp->isEmpty())  // inputString is the emptyString
+    if (temp->isEmpty()) // inputString is the emptyString
     {
       tempVector = epsilonTrans(this->q0); // check for epsilon transitions from start state
       currentStates.insert(currentStates.begin(), tempVector.begin(), tempVector.end());
@@ -136,21 +136,31 @@ public:
     std::vector<State> currentStates{this->q0};
     std::vector<State> tempVector;
     std::vector<State> newStates;
+    std::vector<State> epsilonStates;
     myString *temp = &inputString;
 
-    tempVector = epsilonTrans(this->q0);
-    currentStates.insert(currentStates.begin(), tempVector.begin(), tempVector.end());
-
+    if (temp->isEmpty()) // inputString is the emptyString
+    {
+      tempVector = epsilonTrans(this->q0); // check for epsilon transitions from start state
+      currentStates.insert(currentStates.begin(), tempVector.begin(), tempVector.end());
+    }
     // step through NFA with the input string and at each step compare with trace
-    while (temp->isEmpty() != true)
+    while (temp->isEmpty() != true && tempTrace->isEmpty() != true)
     {
       isValid = false;
       newStates.clear(); // prepare to get new set of states from transFunc
-      for (auto x : currentStates)
-      {                                                // print out each current state separated by a space
-        tempVector = transFunc(x, temp->charObject()); // generate new sets of states from input char w/ each current state
-        newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+      epsilonStates.clear();
+
+      for (State x : currentStates)
+      {
         tempVector = epsilonTrans(x); // check whether there are epsilon transitions for current state
+        epsilonStates.insert(epsilonStates.end(), tempVector.begin(), tempVector.end());
+      }
+      currentStates.insert(currentStates.end(), epsilonStates.begin(), epsilonStates.end());
+
+      for (State x : currentStates)
+      {
+        tempVector = transFunc(x, temp->charObject()); // generate new sets of states from input char w/ each current state
         newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
       }
       currentStates.clear();

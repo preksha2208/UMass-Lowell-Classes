@@ -986,6 +986,7 @@ void makeAndTestNFAs()
                                 return (a.getVal() == 'D');
                               });
 
+  // inputStrings
   oneString OZZ = oneString('1', new oneString('0', new oneString('0', new emptyString)));
   oneString OO = oneString('1', new oneString('1', new emptyString));
   oneString OOZ = oneString('1', new oneString('1', new oneString('0', new emptyString)));
@@ -997,6 +998,19 @@ void makeAndTestNFAs()
   oneString ZZZ = oneString('0', new oneString('0', new oneString('0', new emptyString)));
   oneString ZZZZZ = oneString('0', new oneString('0', new oneString('0', new oneString('0', new oneString('0', new emptyString)))));
 
+  //example traces for oneIsThirdFromEnd
+  oneString A = oneString('A', new emptyString);
+  oneString ABCD = oneString('A', new oneString('B', new oneString('C', new oneString('D', new emptyString))));
+  oneString HI = oneString('H', new oneString('I', new emptyString));
+
+  //example traces for numZerosIsMultipleOfTwoOrThree
+  oneString ABCB = oneString('A', new oneString('B', new oneString('C', new oneString('B', new emptyString))));
+  oneString ADEFD = oneString('A', new oneString('D', new oneString('E', new oneString('F', new oneString('D', new emptyString)))));
+  oneString AD = oneString('A', new oneString('D', new emptyString));
+  oneString AB = oneString('A', new oneString('B', new emptyString));
+
+
+  // tests for oneIsThirdFromEnd
   std::cout << std::boolalpha;
   std::cout << "Does oneIsThirdFromEnd accept OZZ? " << oneIsThirdFromEnd.accepts(OZZ) << std::endl;
   std::cout << "Does oneIsThirdFromEnd accept OOZ? " << oneIsThirdFromEnd.accepts(OOZ) << std::endl;
@@ -1005,6 +1019,7 @@ void makeAndTestNFAs()
   std::cout << "Does oneIsThirdFromEnd accept the empty string? " << oneIsThirdFromEnd.accepts(epsi) << std::endl;
   std::cout << std::endl;
 
+  // tests for numZerosIsMultipleOfTwoOrThree
   std::cout << "Does numZerosIsMultipleOfTwoOrThree accept the empty string? " << numZerosIsMultipleOfTwoOrThree.accepts(epsi) << std::endl;
   std::cout << "Does numZerosIsMultipleOfTwoOrThree accept the ZZ? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZ) << std::endl;
   std::cout << "Does numZerosIsMultipleOfTwoOrThree accept the ZZZ? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZZ) << std::endl;
@@ -1012,6 +1027,7 @@ void makeAndTestNFAs()
   std::cout << "Does numZerosIsMultipleOfTwoOrThree accept the OOZ? " << numZerosIsMultipleOfTwoOrThree.accepts(OOZ) << std::endl;
   std::cout << "Does numZerosIsMultipleOfTwoOrThree accept the OZOO? " << numZerosIsMultipleOfTwoOrThree.accepts(OZOO) << std::endl;
 
+  // tests for containsOZOorOO
   std::cout << "Does containsOZOorOO accept the empty string? " << containsOZOorOO.accepts(epsi) << std::endl;
   std::cout << "Does containsOZOorOO accept the OZOO? " << containsOZOorOO.accepts(OZOO) << std::endl;
   std::cout << "Does containsOZOorOO accept the ZZZ? " << containsOZOorOO.accepts(ZZZ) << std::endl;
