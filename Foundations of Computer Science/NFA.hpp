@@ -122,15 +122,14 @@ public:
 
   // returns whether or not the given trace is a valid execution of the NFA
   // returns true or false through isValid boolean
-  void oracle(myString &inputString, myString &trace, bool &isValid)
+  bool oracle(myString &inputString, myString &trace)
   {
-
+    bool isValid;
     myString *tempTrace = &trace; // pointer to first state in given trace
 
-    if (tempTrace->charValue() != this->q0.charValue())
+    if (tempTrace->charValue() != this->q0.getVal())
     {
-      isValid = false;
-      return; // invalid if first element of trace is not NFA's start state
+      return false; // invalid if first element of trace is not NFA's start state
     }
 
     std::vector<State> currentStates{this->q0};
@@ -181,13 +180,19 @@ public:
 
       if (isValid == false)
       {
-        break; // done stepping through input string if trace has been proven invalid
+        return false;
       }
 
       tempTrace = tempTrace->next(); // move to next state in trace
       temp = temp->next();           // move to next character in the string
+
+      if(tempTrace->isEmpty() != temp->isEmpty())
+      {
+        return false;  // trace is either shorter or longer than given input string
+      }
+      
     }
-    return;
+    return true;
   }
 
 private:

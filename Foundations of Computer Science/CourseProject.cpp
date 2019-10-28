@@ -1009,7 +1009,6 @@ void makeAndTestNFAs()
   oneString AD = oneString('A', new oneString('D', new emptyString));
   oneString AB = oneString('A', new oneString('B', new emptyString));
 
-
   // tests for oneIsThirdFromEnd
   std::cout << std::boolalpha;
   std::cout << "Does oneIsThirdFromEnd accept OZZ? " << oneIsThirdFromEnd.accepts(OZZ) << std::endl;
@@ -1034,6 +1033,13 @@ void makeAndTestNFAs()
   std::cout << "Does containsOZOorOO accept the OOOZ? " << containsOZOorOO.accepts(OOOZ) << std::endl;
   std::cout << "Does containsOZOorOO accept the OOZOO? " << containsOZOorOO.accepts(OOZOO) << std::endl;
   std::cout << "Does containsOZOorOO accept the OO? " << containsOZOorOO.accepts(OO) << std::endl;
+
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "                    Oracle Function Tests                      " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl;
+
+  std::cout << "Is 'A' a valid trace of oneIsThirdFromEnd with emptyString? " << oneIsThirdFromEnd.oracle(epsi, A) << std::endl;
+  std::cout << "Is 'ABCD' a valid trace of oneIsThirdFromEnd with OZZ? " << oneIsThirdFromEnd.oracle(OZZ, ABCD) << std::endl;
 }
 
 void showMenu()
