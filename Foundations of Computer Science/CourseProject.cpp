@@ -920,9 +920,6 @@ void makeAndTestNFAs()
                                     return std::vector<myChar>{myChar('E')}; // may need to change this
                                 },
                                 [](myChar a) -> std::vector<myChar> { // epsilon transition
-                                  if (a.getVal() == 'B')
-                                    return std::vector<myChar>{myChar('C')};
-                                  else
                                     return std::vector<myChar>{};
                                 },
                                 [](myChar a) -> bool { // accept states
