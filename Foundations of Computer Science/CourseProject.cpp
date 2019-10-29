@@ -1013,6 +1013,9 @@ void makeAndTestNFAs()
   oneString D = oneString('D', new emptyString);
   oneString E = oneString('E', new emptyString);
 
+  // example traces for containsOZOorOO
+  
+
   // tests for oneIsThirdFromEnd
   std::cout << std::boolalpha;
   std::cout << "Does oneIsThirdFromEnd accept OZZ? " << oneIsThirdFromEnd.accepts(OZZ) << std::endl;
@@ -1056,6 +1059,13 @@ void makeAndTestNFAs()
   std::cout << "Is 'ABCB' a valid trace of numZerosIsMultipleOfTwoOrThree with ZZ? " << numZerosIsMultipleOfTwoOrThree.oracle(ZZ, ABCB) << std::endl;
   std::cout << "Is 'ADEFD' a valid trace of numZerosIsMultipleOfTwoOrThree with ZZZ? " << numZerosIsMultipleOfTwoOrThree.oracle(OZZ, ADEFD) << std::endl;
   std::cout << "Is 'A' a valid trace of numZerosIsMultipleOfTwoOrThree with OZZ? " << numZerosIsMultipleOfTwoOrThree.oracle(OZZ, A) << std::endl;
+
+  // oracle tests for containsOZOorOO
+  std::cout << "Is 'A' a valid trace of containsOZOorOO with emptyString? " << containsOZOorOO.oracle(epsi, A) << std::endl;
+  std::cout << "Is 'ABCD' a valid trace of containsOZOorOO with OO? " << containsOZOorOO.oracle(OO, ABCD) << std::endl;
+  std::cout << "Is 'ABC' a valid trace of containsOZOorOO with OZZ? " << containsOZOorOO.oracle(OZZ, ABC) << std::endl;
+  std::cout << "Is 'A' a valid trace of containsOZOorOO with OZZ? " << containsOZOorOO.oracle(OZZ, A) << std::endl;
+
 }
 
 void showMenu()
