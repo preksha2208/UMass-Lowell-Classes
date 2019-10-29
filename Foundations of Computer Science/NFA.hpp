@@ -2,10 +2,10 @@
 #define NFA_HPP
 
 #include <iostream>
-#include "DFA.hpp"
 #include "oneString.hpp"
 #include "emptyString.hpp"
 #include "myPair.hpp"
+#include "DFA.hpp"
 
 template <class State>
 class NFA
@@ -17,7 +17,8 @@ public:
              std::function<std::vector<State>(State)> epsilonTrans, std::function<bool(State)> F)
       : name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc),
         epsilonTrans(epsilonTrans), F(F) {}
-  NFA<State>(const DFA<State> &inputDFA) // converts DFA to NFA
+
+  NFA<State>(DFA<State> &inputDFA) // converts DFA to NFA
   {
     this->name = inputDFA.name;
     this->Q = inputDFA.Q;

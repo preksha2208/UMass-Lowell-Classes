@@ -1,25 +1,73 @@
 #ifndef DFA_HPP
 #define DFA_HPP
 
+#include <iostream>
 #include "oneString.hpp"
 #include "emptyString.hpp"
+#include "NFA.hpp"
+#include <vector>
 
 template <class State>
 class DFA
 {
 public:
-  DFA<State>(std::string name, std::function<bool(State&)> Q,
+  DFA<State>(std::string name, std::function<bool(State &)> Q,
              std::vector<myChar> alphabet, State q0,
              std::function<State(State, myChar)> transFunc,
-             std::function<bool(State&)> F)
+             std::function<bool(State &)> F)
       : name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc),
         F(F) {}
   std::string name;
-  std::function<bool(State&)> Q; // list of possible states for this dfa
+  std::function<bool(State &)> Q; // list of possible states for this dfa
   std::vector<myChar> alphabet;
   State q0;                                      // start state
   std::function<State(State, myChar)> transFunc; // transition function
-  std::function<bool(State&)> F;                  // accept states
+  std::function<bool(State &)> F;                // accept states
+
+  DFA<std::vector<State>>(NFA<State> nfa) // creates DFA from given NFA
+  {
+    this->name = nfa.name() + " NFA to DFA";
+    this->Q = [=](std::vector<State> &a) -> bool {
+      for (State x : a)
+      {
+        if (!nfa.Q(x))
+          return false;
+      }
+      return true; // all elements of input vector are valid nfa states
+    };
+    this->alphabet = nfa.alphabet; // uses same alphabet as given nfa
+    this->q0 = {nfa.q0};
+    std::vector<State> startStates = nfa.epsilonTrans(nfa.q0);
+    this->q0.insert(this->q0.end(), startStates.begin(), startStates.end()); // start state is nfa's start state and any epsi transitions
+    this->transFunc = [=](std::vector<State> a, myChar b) -> std::vector<State> {
+      std::vector<State> tempVector;
+      std::vector<State> epsilonStates;
+      std::vector<State> newStates;
+
+      for (State x : a)
+      {
+        tempVector = nfa.epsilonTrans(x); // check whether there are epsilon transitions from current state
+        epsilonStates.insert(epsilonStates.end(), tempVector.begin(), tempVector.end());
+      }
+      a.insert(startStates.end(), epsilonStates.begin(), epsilonStates.end());
+
+      for (State x : a)
+      {
+        tempVector = transFunc(x, b); // generate new sets of states from input char w/ each current state
+        newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+      }
+
+      return newStates;
+    };
+    this->F = [=](std::vector<State> &a) -> bool {
+      for (State x : a)
+      {
+        if (!nfa.F(x)) // make states in vector are all accepted by the original nfa
+          return false;
+      }
+      return true;
+    };
+  }
 
   bool accepts(myString &inputString) // does DFA accept inputString?
   {
