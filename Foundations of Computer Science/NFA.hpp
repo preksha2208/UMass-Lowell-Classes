@@ -89,24 +89,33 @@ public:
     std::vector<State> currentStates{this->q0}; // keeps track of current states
     std::vector<State> tempVector;
     std::vector<State> newStates;
+    std::vector<State> epsilonStates;
     myString *temp = &inputString;
 
-    tempVector = epsilonTrans(this->q0);
-    currentStates.insert(currentStates.begin(), tempVector.begin(), tempVector.end());
+    if (temp->isEmpty()) // inputString is the emptyString
+    {
+      tempVector = epsilonTrans(this->q0); // check for epsilon transitions from start state
+      currentStates.insert(currentStates.begin(), tempVector.begin(), tempVector.end());
+    }
 
     // step through NFA with the input string
     while (temp->isEmpty() != true)
     {
       newStates.clear(); // prepare to get new set of states from transFunc
+      epsilonStates.clear();
 
-      for (State x : currentStates) // for each state  in current states
+      for (State x : currentStates)
+      {
+        tempVector = epsilonTrans(x); // check whether there are epsilon transitions for current state
+        epsilonStates.insert(epsilonStates.end(), tempVector.begin(), tempVector.end());
+      }
+      currentStates.insert(currentStates.end(), epsilonStates.begin(), epsilonStates.end());
+
+      for (State x : currentStates)
       {
         tempVector = transFunc(x, temp->charObject()); // generate new sets of states from input char w/ each current state
         newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
-        tempVector = epsilonTrans(x); // check whether there are epsilon transitions for current state
-        newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
       }
-
       currentStates.clear();
       currentStates = newStates;
       temp = temp->next(); // move to next character in the string
@@ -183,6 +192,16 @@ public:
         tempVector = epsilonTrans(x); // check whether there are epsilon transitions for current state
         epsilonStates.insert(epsilonStates.end(), tempVector.begin(), tempVector.end());
       }
+      /*
+      for (myChar x : epsilonStates)
+      {
+        if (tempTrace->charValue() == x.getVal())
+        {
+          tempTrace = tempTrace->next();
+          break;
+        }
+      }
+      */
       currentStates.insert(currentStates.end(), epsilonStates.begin(), epsilonStates.end());
 
       for (State x : currentStates)
