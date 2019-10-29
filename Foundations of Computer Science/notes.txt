@@ -24,11 +24,11 @@ TASK 23: Done. I have a separate transition function for what a state transition
 TASK 24: Done. Just needed to set the values of the NFA equal to the values of the DFA
 TASK 25: Done. Didn't make a dozen example NFAs, but made enough to ensure that my data structure works correctly.
 TASK 26: Done. Wrote the trace in the form of myString objects
-TASK 27: Nearly done.
+TASK 27: Done. Steps through input string and compares to trace. 
 TASK 28: 
 TASK 29:
 TASK 30:
-TASK 31:
+TASK 31: Done. Didn't write a dozen examples for each NFA, but made enough to know that they are functioning correctly.
 TASK 32: Done. Steps through input string character by character and runs transition function & checks for epsi transitions
 TASK 33: Nearly done
 TASK 34: Nearly done

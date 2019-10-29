@@ -127,25 +127,53 @@ public:
     bool isValid;
     myString *tempTrace = &trace; // pointer to first state in given trace
 
-    if (tempTrace->charValue() != this->q0.getVal())
-    {
-      return false; // invalid if first element of trace is not NFA's start state
-    }
-
     std::vector<State> currentStates{this->q0};
     std::vector<State> tempVector;
     std::vector<State> newStates;
     std::vector<State> epsilonStates;
     myString *temp = &inputString;
 
-    if (temp->isEmpty()) // inputString is the emptyString
+    tempVector = epsilonTrans(q0); // check whether there are epsilon transitions from start state
+    currentStates.insert(currentStates.end(), tempVector.begin(), tempVector.end());
+
+    if (temp->isEmpty()) // inputString is empty
     {
-      tempVector = epsilonTrans(this->q0); // check for epsilon transitions from start state
-      currentStates.insert(currentStates.begin(), tempVector.begin(), tempVector.end());
+
+      if (tempTrace->isEmpty() == false && tempTrace->next()->isEmpty())
+      {
+        for (myChar x : currentStates)
+          if (x.getVal() == tempTrace->charValue())
+            return true;
+      }
+      return false;
     }
+
+    for (myChar x : currentStates) // make sure first trace element is possible start state
+    {
+      if (x.getVal() == tempTrace->charValue())
+      {
+        isValid = true; // trace is still valid if the current trace element is one of the current states
+        break;
+      }
+      else
+      {
+        isValid = false;
+      }
+    }
+
+    if (isValid == false)
+    {
+      return false;
+    }
+
+    tempTrace = tempTrace->next();
+    if (tempTrace->isEmpty())
+      return false;
+
     // step through NFA with the input string and at each step compare with trace
     while (temp->isEmpty() != true && tempTrace->isEmpty() != true)
     {
+
       isValid = false;
       newStates.clear(); // prepare to get new set of states from transFunc
       epsilonStates.clear();
@@ -169,7 +197,7 @@ public:
       {
         if (x.getVal() == tempTrace->charValue())
         {
-          isValid = true;
+          isValid = true; // trace is still valid if the current trace element is one of the current states
           break;
         }
         else
@@ -180,19 +208,18 @@ public:
 
       if (isValid == false)
       {
-        return false;
+        break;
       }
 
       tempTrace = tempTrace->next(); // move to next state in trace
       temp = temp->next();           // move to next character in the string
 
-      if(tempTrace->isEmpty() != temp->isEmpty())
+      if (tempTrace->isEmpty() != temp->isEmpty())
       {
-        return false;  // trace is either shorter or longer than given input string
+        return false; // trace is either shorter or longer than given input string
       }
-      
     }
-    return true;
+    return isValid;
   }
 
 private:

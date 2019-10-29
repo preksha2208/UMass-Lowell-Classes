@@ -1005,9 +1005,13 @@ void makeAndTestNFAs()
 
   //example traces for numZerosIsMultipleOfTwoOrThree
   oneString ABCB = oneString('A', new oneString('B', new oneString('C', new oneString('B', new emptyString))));
+  oneString ABC = oneString('A', new oneString('B', new oneString('C', new emptyString)));
   oneString ADEFD = oneString('A', new oneString('D', new oneString('E', new oneString('F', new oneString('D', new emptyString)))));
   oneString AD = oneString('A', new oneString('D', new emptyString));
   oneString AB = oneString('A', new oneString('B', new emptyString));
+  oneString B = oneString('B', new emptyString);
+  oneString D = oneString('D', new emptyString);
+  oneString E = oneString('E', new emptyString);
 
   // tests for oneIsThirdFromEnd
   std::cout << std::boolalpha;
@@ -1038,8 +1042,20 @@ void makeAndTestNFAs()
   std::cout << "                    Oracle Function Tests                      " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
 
+  // oracle tests for oneIsThirdFromEnd
   std::cout << "Is 'A' a valid trace of oneIsThirdFromEnd with emptyString? " << oneIsThirdFromEnd.oracle(epsi, A) << std::endl;
   std::cout << "Is 'ABCD' a valid trace of oneIsThirdFromEnd with OZZ? " << oneIsThirdFromEnd.oracle(OZZ, ABCD) << std::endl;
+  std::cout << "Is 'ABC' a valid trace of oneIsThirdFromEnd with OZZ? " << oneIsThirdFromEnd.oracle(OZZ, ABC) << std::endl;
+  std::cout << "Is 'A' a valid trace of oneIsThirdFromEnd with OZZ? " << oneIsThirdFromEnd.oracle(OZZ, A) << std::endl;
+
+  // oracle tests for numZerosIsMultipleOfTwoOrThree
+  std::cout << "Is 'A' a valid trace of numZerosIsMultipleOfTwoOrThree with emptyString? " << numZerosIsMultipleOfTwoOrThree.oracle(epsi, A) << std::endl;
+  std::cout << "Is 'B' a valid trace of numZerosIsMultipleOfTwoOrThree with emptyString? " << numZerosIsMultipleOfTwoOrThree.oracle(epsi, B) << std::endl;
+  std::cout << "Is 'D' a valid trace of numZerosIsMultipleOfTwoOrThree with emptyString? " << numZerosIsMultipleOfTwoOrThree.oracle(epsi, D) << std::endl;
+  std::cout << "Is 'E' a valid trace of numZerosIsMultipleOfTwoOrThree with emptyString? " << numZerosIsMultipleOfTwoOrThree.oracle(epsi, E) << std::endl;
+  std::cout << "Is 'ABCB' a valid trace of numZerosIsMultipleOfTwoOrThree with ZZ? " << numZerosIsMultipleOfTwoOrThree.oracle(ZZ, ABCB) << std::endl;
+  std::cout << "Is 'ADEFD' a valid trace of numZerosIsMultipleOfTwoOrThree with ZZZ? " << numZerosIsMultipleOfTwoOrThree.oracle(OZZ, ADEFD) << std::endl;
+  std::cout << "Is 'A' a valid trace of numZerosIsMultipleOfTwoOrThree with OZZ? " << numZerosIsMultipleOfTwoOrThree.oracle(OZZ, A) << std::endl;
 }
 
 void showMenu()
