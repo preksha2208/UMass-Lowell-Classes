@@ -17,7 +17,7 @@ public:
              std::function<std::vector<State>(State)> epsilonTrans, std::function<bool(State)> F)
       : name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc),
         epsilonTrans(epsilonTrans), F(F) {}
-
+/*
   NFA<State>(DFA<State> &inputDFA) // converts DFA to NFA
   {
     this->name = inputDFA.name;
@@ -30,7 +30,7 @@ public:
     this->epsilonTrans = [](State) -> std::vector<State> { return std::vector<State>{}; }; // epsilon transitions don't exist in DFAs
     this->F = inputDFA.F;
   }
-
+*/
   std::string name;
   std::function<bool(State &)> Q; // list of possible states for this NFA
   std::vector<myChar> alphabet;

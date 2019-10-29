@@ -26,7 +26,7 @@ public:
 
   DFA<std::vector<State>>(NFA<State> nfa) // creates DFA from given NFA
   {
-    this->name = nfa.name() + " NFA to DFA";
+    this->name = nfa.name() + " in DFA form";
     this->Q = [=](std::vector<State> &a) -> bool {
       for (State x : a)
       {
@@ -57,7 +57,7 @@ public:
         newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
       }
 
-      return newStates;
+      return newStates;  // return new state generated from the current state
     };
     this->F = [=](std::vector<State> &a) -> bool {
       for (State x : a)
