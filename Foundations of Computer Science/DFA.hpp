@@ -12,23 +12,23 @@ class DFA
 {
 public:
   DFA<State>(std::string name, std::function<bool(State &)> Q,
-             std::vector<myChar> alphabet, State q0,
+             myVector<myChar> alphabet, State q0,
              std::function<State(State, myChar)> transFunc,
              std::function<bool(State &)> F)
       : name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc),
         F(F) {}
   std::string name;
   std::function<bool(State &)> Q; // list of possible states for this dfa
-  std::vector<myChar> alphabet;
+  myVector<myChar> alphabet;
   State q0;                                      // start state
   std::function<State(State, myChar)> transFunc; // transition function
   std::function<bool(State &)> F;                // accept states
 
 
-  DFA<std::vector<State>>(NFA<State> nfa) // creates DFA from given NFA
+  DFA<myVector<State>>(NFA<State> nfa) // creates DFA from given NFA
   {
     this->name = nfa.name() + " in DFA form";
-    this->Q = [=](std::vector<State> &a) -> bool {
+    this->Q = [=](myVector<State> &a) -> bool {
       for (State x : a)
       {
         if (!nfa.Q(x))
@@ -38,12 +38,12 @@ public:
     };
     this->alphabet = nfa.alphabet; // uses same alphabet as given nfa
     this->q0 = {nfa.q0};
-    std::vector<State> startStates = nfa.epsilonTrans(nfa.q0);
+    myVector<State> startStates = nfa.epsilonTrans(nfa.q0);
     this->q0.insert(this->q0.end(), startStates.begin(), startStates.end()); // start state is nfa's start state and any epsi transitions
-    this->transFunc = [=](std::vector<State> a, myChar b) -> std::vector<State> {
-      std::vector<State> tempVector;
-      std::vector<State> epsilonStates;
-      std::vector<State> newStates;
+    this->transFunc = [=](myVector<State> a, myChar b) -> myVector<State> {
+      myVector<State> tempVector;
+      myVector<State> epsilonStates;
+      myVector<State> newStates;
 
       for (State x : a)
       {
@@ -60,7 +60,7 @@ public:
 
       return newStates;  // return new state generated from the current state
     };
-    this->F = [=](std::vector<State> &a) -> bool {
+    this->F = [=](myVector<State> &a) -> bool {
       for (State x : a)
       {
         if (!nfa.F(x)) // make states in vector are all accepted by the original nfa
