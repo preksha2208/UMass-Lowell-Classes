@@ -5,6 +5,7 @@
 #include <vector>
 #include "oneString.hpp"
 #include "emptyString.hpp"
+#include "myVector.hpp"
 #include "NFA.hpp"
 
 template <class State>

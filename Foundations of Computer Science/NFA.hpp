@@ -111,8 +111,12 @@ public:
         tempVector = epsilonTrans(x); // check whether there are epsilon transitions from current states
         epsilonStates.insert(epsilonStates.end(), tempVector.begin(), tempVector.end());
       }
+      if(epsilonStates.size() > 0)
+      {
       for (State x : epsilonStates) // print all epsilon transitions
         std::cout << x << " ";
+      std::cout << std::endl;
+      }
 
       currentStates = newStates; // update current states for next iteration through
       currentStates.insert(currentStates.end(), epsilonStates.begin(), epsilonStates.end());
