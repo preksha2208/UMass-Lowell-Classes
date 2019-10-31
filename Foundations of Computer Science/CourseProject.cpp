@@ -998,12 +998,12 @@ void makeAndTestNFAs()
   oneString ZZZ = oneString('0', new oneString('0', new oneString('0', new emptyString)));
   oneString ZZZZZ = oneString('0', new oneString('0', new oneString('0', new oneString('0', new oneString('0', new emptyString)))));
 
-  //example traces for oneIsThirdFromEnd
+  //example traces
   oneString A = oneString('A', new emptyString);
+  oneString AA = onestring('A', new oneString('A', new emptyString));
   oneString ABCD = oneString('A', new oneString('B', new oneString('C', new oneString('D', new emptyString))));
+  oneString ABCE = oneString('A', new oneString('B', new oneString('C', new oneString('E', new emptyString))));
   oneString HI = oneString('H', new oneString('I', new emptyString));
-
-  //example traces for numZerosIsMultipleOfTwoOrThree
   oneString ABCB = oneString('A', new oneString('B', new oneString('C', new oneString('B', new emptyString))));
   oneString ABC = oneString('A', new oneString('B', new oneString('C', new emptyString)));
   oneString ADEFD = oneString('A', new oneString('D', new oneString('E', new oneString('F', new oneString('D', new emptyString)))));
@@ -1013,8 +1013,10 @@ void makeAndTestNFAs()
   oneString D = oneString('D', new emptyString);
   oneString E = oneString('E', new emptyString);
 
-  // example traces for containsOZOorOO
-  
+  //example trace trees for numZerosIsMultipleOfTwoOrThree
+  oneString ABD = oneString('A', new oneString('B', new oneString('D', new emptyString)));
+  oneString A_ABD_GCE = oneString('A', new oneString('-', new oneString('B', new oneString('D',
+               new oneString('-', new oneString('G', new oneString('C', new oneString('E', new emptyString))))))));                                                                                     
 
   // tests for oneIsThirdFromEnd
   std::cout << std::boolalpha;
@@ -1027,19 +1029,19 @@ void makeAndTestNFAs()
 
   // tests for numZerosIsMultipleOfTwoOrThree
   std::cout << "Does numZerosIsMultipleOfTwoOrThree accept the empty string? " << numZerosIsMultipleOfTwoOrThree.accepts(epsi) << std::endl;
-  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept the ZZ? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZ) << std::endl;
-  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept the ZZZ? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZZ) << std::endl;
-  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept the ZZZZZ? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZZZZ) << std::endl;
-  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept the OOZ? " << numZerosIsMultipleOfTwoOrThree.accepts(OOZ) << std::endl;
-  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept the OZOO? " << numZerosIsMultipleOfTwoOrThree.accepts(OZOO) << std::endl;
+  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept ZZ? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZ) << std::endl;
+  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept ZZZ? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZZ) << std::endl;
+  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept ZZZZZ? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZZZZ) << std::endl;
+  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept OOZ? " << numZerosIsMultipleOfTwoOrThree.accepts(OOZ) << std::endl;
+  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept OZOO? " << numZerosIsMultipleOfTwoOrThree.accepts(OZOO) << std::endl;
 
   // tests for containsOZOorOO
   std::cout << "Does containsOZOorOO accept the empty string? " << containsOZOorOO.accepts(epsi) << std::endl;
-  std::cout << "Does containsOZOorOO accept the OZOO? " << containsOZOorOO.accepts(OZOO) << std::endl;
-  std::cout << "Does containsOZOorOO accept the ZZZ? " << containsOZOorOO.accepts(ZZZ) << std::endl;
-  std::cout << "Does containsOZOorOO accept the OOOZ? " << containsOZOorOO.accepts(OOOZ) << std::endl;
-  std::cout << "Does containsOZOorOO accept the OOZOO? " << containsOZOorOO.accepts(OOZOO) << std::endl;
-  std::cout << "Does containsOZOorOO accept the OO? " << containsOZOorOO.accepts(OO) << std::endl;
+  std::cout << "Does containsOZOorOO accept OZOO? " << containsOZOorOO.accepts(OZOO) << std::endl;
+  std::cout << "Does containsOZOorOO accept ZZZ? " << containsOZOorOO.accepts(ZZZ) << std::endl;
+  std::cout << "Does containsOZOorOO accept OOOZ? " << containsOZOorOO.accepts(OOOZ) << std::endl;
+  std::cout << "Does containsOZOorOO accept OOZOO? " << containsOZOorOO.accepts(OOZOO) << std::endl;
+  std::cout << "Does containsOZOorOO accept OO? " << containsOZOorOO.accepts(OO) << std::endl;
 
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    Oracle Function Tests                      " << std::endl;
@@ -1063,9 +1065,20 @@ void makeAndTestNFAs()
   // oracle tests for containsOZOorOO
   std::cout << "Is 'A' a valid trace of containsOZOorOO with emptyString? " << containsOZOorOO.oracle(epsi, A) << std::endl;
   std::cout << "Is 'ABCD' a valid trace of containsOZOorOO with OO? " << containsOZOorOO.oracle(OO, ABCD) << std::endl;
-  std::cout << "Is 'ABC' a valid trace of containsOZOorOO with OZZ? " << containsOZOorOO.oracle(OZZ, ABC) << std::endl;
+  std::cout << "Is 'ABCE' a valid trace of containsOZOorOO with OZZ? " << containsOZOorOO.oracle(OZZ, ABCE) << std::endl;
+  
   std::cout << "Is 'A' a valid trace of containsOZOorOO with OZZ? " << containsOZOorOO.oracle(OZZ, A) << std::endl;
 
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "                    Trace Tree Function Tests                      " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl;
+
+  std::cout << "Trace tree of numZerosIsMultipleOfTwoOrThree with ZZ: " << std::endl;
+  numZerosIsMultipleOfTwoOrThree.traceTree(ZZ);
+  std::cout << "Trace tree of numZerosIsMultipleOfTwoOrThree with emptyString: " << std::endl;
+  numZerosIsMultipleOfTwoOrThree.traceTree(epsi);
+  std::cout << "Trace tree of containsOZOorOO with OO: " << std::endl;
+  containsOZOorOO.traceTree(OO);
 }
 
 void showMenu()

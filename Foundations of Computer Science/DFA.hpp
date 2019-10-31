@@ -24,6 +24,7 @@ public:
   std::function<State(State, myChar)> transFunc; // transition function
   std::function<bool(State &)> F;                // accept states
 
+
   DFA<std::vector<State>>(NFA<State> nfa) // creates DFA from given NFA
   {
     this->name = nfa.name() + " in DFA form";
@@ -68,6 +69,7 @@ public:
       return true;
     };
   }
+  
 
   bool accepts(myString &inputString) // does DFA accept inputString?
   {
