@@ -37,10 +37,10 @@ public:
   std::string name;
   std::function<bool(State &)> Q; // list of possible states for this NFA
   myVector<myChar> alphabet;
-  State q0;                                                   // start state
+  State q0;                                                // start state
   std::function<myVector<State>(State, myChar)> transFunc; // transition function
   std::function<myVector<State>(State)> epsilonTrans;      // returns what the state transitions to on epsilon
-  std::function<bool(State &)> F;                             // accept states
+  std::function<bool(State &)> F;                          // accept states
 
   bool accepts(myString &inputString) // does NFA accept inputString?
   {
@@ -99,7 +99,7 @@ public:
     if (temp->isEmpty()) // inputString is the emptyString
     {
       tempVector = epsilonTrans(this->q0); // check for epsilon transitions from start state
-      currentStates.insert(currentStates.begin(), tempVector.begin(), tempVector.end()); 
+      currentStates.insert(currentStates.begin(), tempVector.begin(), tempVector.end());
       std::cout << std::endl;
       std::cout << this->q0 << std::endl;
       for (auto x : currentStates)
@@ -129,7 +129,7 @@ public:
       for (State x : epsilonStates) // print all epsilon transitions
         std::cout << x << " ";
 
-      currentStates = newStates;  // update current states for next iteration through
+      currentStates = newStates; // update current states for next iteration through
       currentStates.insert(currentStates.end(), epsilonStates.begin(), epsilonStates.end());
       temp = temp->next(); // move to next character in the string
     }
@@ -207,7 +207,7 @@ public:
 
       currentStates = newStates;
       currentStates.insert(currentStates.end(), epsilonStates.begin(), epsilonStates.end());
-      temp = temp->next();           // move to next character in the string 
+      temp = temp->next(); // move to next character in the string
     }
     return isValid;
   }

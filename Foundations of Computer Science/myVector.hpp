@@ -17,14 +17,14 @@ public:
   {
     v = std::vector<State>();
   }
-  myVector<State>(std::initializer_list<State> init)  // init list constructor i.e. {1,2,3}
+  myVector<State>(std::initializer_list<State> init) // init list constructor i.e. {1,2,3}
   {
     v = std::vector<State>(init);
   }
-  myVector<State>(const myVector &v2)  // copy constructor
+  myVector<State>(const myVector &v2) // copy constructor
   {
     v = v2.v;
-  } 
+  }
 
   int size()
   {
@@ -54,7 +54,7 @@ public:
     return a == b; // use std::vector overloaded == operator
   }
 
-  const State &operator[](int index)
+  const State operator[](int index)
   {
     return v[index];
   }

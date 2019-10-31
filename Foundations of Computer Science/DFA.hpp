@@ -24,7 +24,6 @@ public:
   std::function<State(State, myChar)> transFunc; // transition function
   std::function<bool(State &)> F;                // accept states
 
-
   DFA<myVector<State>>(NFA<State> nfa) // creates DFA from given NFA
   {
     this->name = nfa.name() + " in DFA form";
@@ -58,7 +57,7 @@ public:
         newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
       }
 
-      return newStates;  // return new state generated from the current state
+      return newStates; // return new state generated from the current state
     };
     this->F = [=](myVector<State> &a) -> bool {
       for (State x : a)
@@ -69,7 +68,6 @@ public:
       return true;
     };
   }
-  
 
   bool accepts(myString &inputString) // does DFA accept inputString?
   {

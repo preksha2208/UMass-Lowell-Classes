@@ -1094,7 +1094,7 @@ void showMenu()
 
 int main()
 {
-  /*
+
   int choice;
   char repeat;
   do
@@ -1120,7 +1120,7 @@ int main()
     std::cout << "Would you like to keep going (type Y or N): ";
     std::cin >> repeat;
   } while (repeat == 'Y');
-*/
+
 
   return 0;
 }
