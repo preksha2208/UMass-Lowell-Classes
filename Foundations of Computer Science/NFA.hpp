@@ -5,6 +5,7 @@
 #include "oneString.hpp"
 #include "emptyString.hpp"
 #include "myPair.hpp"
+#include "myVector.hpp"
 #include "DFA.hpp"
 
 template <class State>
@@ -12,9 +13,9 @@ class NFA
 {
 public:
   NFA<State>(std::string name, std::function<bool(State)> Q,
-             std::vector<myChar> alphabet, State q0,
-             std::function<std::vector<State>(State, myChar)> transFunc,
-             std::function<std::vector<State>(State)> epsilonTrans, std::function<bool(State)> F)
+             myVector<myChar> alphabet, State q0,
+             std::function<myVector<State>(State, myChar)> transFunc,
+             std::function<myVector<State>(State)> epsilonTrans, std::function<bool(State)> F)
       : name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc),
         epsilonTrans(epsilonTrans), F(F) {}
 
@@ -25,28 +26,28 @@ public:
     this->Q = inputDFA.Q;
     this->alphabet = inputDFA.alphabet;
     this->q0 = inputDFA.q0;
-    this->transFunc = [=](State a, myChar b) -> std::vector<State> {
-      return std::vector<State>{inputDFA.transFunc(a, b)};
+    this->transFunc = [=](State a, myChar b) -> myVector<State> {
+      return myVector<State>{inputDFA.transFunc(a, b)};
     };
-    this->epsilonTrans = [](State) -> std::vector<State> { return std::vector<State>{}; }; // epsilon transitions don't exist in DFAs
+    this->epsilonTrans = [](State) -> myVector<State> { return myVector<State>{}; }; // epsilon transitions don't exist in DFAs
     this->F = inputDFA.F;
   } 
   */
 
   std::string name;
   std::function<bool(State &)> Q; // list of possible states for this NFA
-  std::vector<myChar> alphabet;
+  myVector<myChar> alphabet;
   State q0;                                                   // start state
-  std::function<std::vector<State>(State, myChar)> transFunc; // transition function
-  std::function<std::vector<State>(State)> epsilonTrans;      // returns what the state transitions to on epsilon
+  std::function<myVector<State>(State, myChar)> transFunc; // transition function
+  std::function<myVector<State>(State)> epsilonTrans;      // returns what the state transitions to on epsilon
   std::function<bool(State &)> F;                             // accept states
 
   bool accepts(myString &inputString) // does NFA accept inputString?
   {
-    std::vector<State> currentStates{this->q0}; // keeps track of current states
-    std::vector<State> tempVector;
-    std::vector<State> newStates;
-    std::vector<State> epsilonStates;
+    myVector<State> currentStates{this->q0}; // keeps track of current states
+    myVector<State> tempVector;
+    myVector<State> newStates;
+    myVector<State> epsilonStates;
     myString *temp = &inputString;
 
     if (temp->isEmpty()) // inputString is the emptyString
@@ -89,10 +90,10 @@ public:
 
   void traceTree(myString &inputString) // creates tree of all possible traces
   {
-    std::vector<State> currentStates{this->q0}; // keeps track of current states
-    std::vector<State> tempVector;
-    std::vector<State> newStates;
-    std::vector<State> epsilonStates;
+    myVector<State> currentStates{this->q0}; // keeps track of current states
+    myVector<State> tempVector;
+    myVector<State> newStates;
+    myVector<State> epsilonStates;
     myString *temp = &inputString;
 
     if (temp->isEmpty()) // inputString is the emptyString
@@ -142,10 +143,10 @@ public:
     bool isValid = false;
     myString *tempTrace = &trace; // pointer to first state in given trace
 
-    std::vector<State> currentStates{this->q0};
-    std::vector<State> tempVector;
-    std::vector<State> newStates;
-    std::vector<State> epsilonStates;
+    myVector<State> currentStates{this->q0};
+    myVector<State> tempVector;
+    myVector<State> newStates;
+    myVector<State> epsilonStates;
     myString *temp = &inputString;
 
     if (temp->isEmpty()) // inputString is empty

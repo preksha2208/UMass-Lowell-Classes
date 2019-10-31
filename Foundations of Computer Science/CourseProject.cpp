@@ -22,7 +22,7 @@ DFA<myChar> oneCharDFA(myChar inputChar)
   return DFA<myChar>(
       "onlyAccepts" + std::string(1, inputChar.getVal()),
       [=](myChar a) -> bool { return (a == myChar('A') || a == myChar('B') || a == myChar('C')); },
-      std::vector<myChar>{inputChar}, myChar('A'),
+      myVector<myChar>{inputChar}, myChar('A'),
       [&](myChar a, myChar b) -> myChar {
         if (a.getVal() == 'A' && (b.getVal() == inputChar.getVal()))
           return myChar('B');
@@ -46,8 +46,8 @@ DFA<State> complementDFA(DFA<State> inputDFA)
 template <class State1, class State2>
 DFA<myPair<State1, State2>> unionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 {
-  std::vector<myChar> a = dfa1.alphabet;
-  std::vector<myChar> b = dfa2.alphabet;
+  myVector<myChar> a = dfa1.alphabet;
+  myVector<myChar> b = dfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both DFAs
   std::sort(a.begin(), a.end(), [](myChar &a, myChar &b) {
     return (a.getVal() < b.getVal());
@@ -72,8 +72,8 @@ DFA<myPair<State1, State2>> unionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 template <class State1, class State2>
 DFA<myPair<State1, State2>> intersectionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 {
-  std::vector<myChar> a = dfa1.alphabet;
-  std::vector<myChar> b = dfa2.alphabet;
+  myVector<myChar> a = dfa1.alphabet;
+  myVector<myChar> b = dfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both DFAs
 
   return DFA<myPair<State1, State2>>(
@@ -111,8 +111,8 @@ bool equalityDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 template <class State1, class State2>
 NFA<myPair<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
 {
-  std::vector<myChar> a = nfa1.alphabet;
-  std::vector<myChar> b = nfa2.alphabet;
+  myVector<myChar> a = nfa1.alphabet;
+  myVector<myChar> b = nfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both NFAs
 
   return NFA<myPair<State1, State2>>(
@@ -122,11 +122,11 @@ NFA<myPair<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
       },
       a,                                                                  // alphabet
       myPair<State1, State2>(nfa1.q0, nfa2.q0),                           // start state
-      [=](myPair<State1, State2> a, myChar b) -> std::vector<myPair<State1, State2>> { // transition function
-        return  std::vector<myPair<State1, State>> // need
+      [=](myPair<State1, State2> a, myChar b) -> myVector<myPair<State1, State2>> { // transition function
+        return  myVector<myPair<State1, State2>> // need
         //myPair<State1, State2>(nfa1.transFunc(a.first, b), nfa2.transFunc(a.second, b)));
       },
-      [=](myPair<State1, State2> a) -> std::vector<myPair<State1, State2>> {
+      [=](myPair<State1, State2> a) -> myVector<myPair<State1, State2>> {
         return myPair<State1, State2>(nfa1.epsilonTrans(a.first), nfa2.epsilonTrans(a.second));
       },
       [=](myPair<State1, State2> a) -> bool { // accept states
@@ -137,8 +137,8 @@ NFA<myPair<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
 template <class State1, class State2>
 NFA<myPair<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2> nfa2)
 {
-  std::vector<myChar> a = nfa1.alphabet;
-  std::vector<myChar> b = nfa2.alphabet;
+  myVector<myChar> a = nfa1.alphabet;
+  myVector<myChar> b = nfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both NFAs
 
   return NFA<myPair<State1, State2>>(
@@ -148,16 +148,16 @@ NFA<myPair<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2> nfa2)
       },
       a,                                                                               // alphabet
       myPair<State1, State2>(nfa1.q0, nfa2.q0),                                        // start state
-      [=](myPair<State1, State2> a, myChar b) -> std::vector<myPair<State1, State2>> { // transition function
+      [=](myPair<State1, State2> a, myChar b) -> myVector<myPair<State1, State2>> { // transition function
         // check if nfa1 is in accept state
         if (nfa1.F(a.first)) 
         // if yes, then do transFunc only on nfa2
-          return std::vector<myPair<std::vector<State1>, std::vector<State2>>>{myPair(std::vector<State1>{a.first}, nfa2.transFunc(a.second, b))}; 
+          return myVector<myPair<myVector<State1>, myVector<State2>>>{myPair(myVector<State1>{a.first}, nfa2.transFunc(a.second, b))}; 
         else
-          return std::vector<myPair<std::vector<State1>, std::vector<State2>>>{myPair(nfa1.transFunc(a.first, b), std::vector<State2>{a.second})}; 
+          return myVector<myPair<myVector<State1>, myVector<State2>>>{myPair(nfa1.transFunc(a.first, b), myVector<State2>{a.second})}; 
 
       },
-      [=](myPair<State1, State2> a) -> std::vector<myPair<State1, State2>> { // epsilon transitions
+      [=](myPair<State1, State2> a) -> myVector<myPair<State1, State2>> { // epsilon transitions
         if (nfa1.F(a.first))  // check if first nfa has reached its accept state
           return  myPair<State1, State2>(a.first, nfa2.epsilonTrans(a.second));  // if yes, then do epsilonTrans only on second NFA
         else
@@ -180,11 +180,11 @@ NFA<myChar> kleeneStarNFA(NFA<myChar> nfa)
       },
       nfa.alphabet, myChar('|'),  // start state may have to be changed to something else
       nfa.transFunc,
-      [=](myChar a) -> std::vector<myChar> {
+      [=](myChar a) -> myVector<myChar> {
         if (a == myChar('|'))   // 
-          return std::vector<myChar>{nfa.q0};
+          return myVector<myChar>{nfa.q0};
         else if (nfa.F(a))
-          return std::vector<myChar>{nfa.q0};
+          return myVector<myChar>{nfa.q0};
         else
           return nfa.epsilonTrans(a);
       },
@@ -219,7 +219,7 @@ myString *lexi(int n, std::list<myChar> alphabet)
 // takes in dfa, vector of test strings and expected values for the test strings on the given dfa
 // bool values are at same index in bool vector as their corresponding test string in the other vector
 template <class State>
-void DFAtester(DFA<State> &a, std::vector<myString *> &testStrings, std::vector<bool> &expected)
+void DFAtester(DFA<State> &a, myVector<myString *> &testStrings, myVector<bool> &expected)
 {
   int passed = 0; // keep track of tests passed or failed
   int failed = 0;
@@ -257,9 +257,9 @@ void makeAndTestDFAs()
       [](myChar a) -> bool {    // state function
         return ((a.getVal() == 'A') || (a.getVal() == 'B') || (a.getVal() == 'C'));
       },
-      std::vector<myChar>{myChar('0'), myChar('1')}, // alphabet
-      myChar('A'),                                   // start state
-      [](myChar a, myChar b) -> myChar {             // transition function
+      myVector<myChar>{myChar('0'), myChar('1')}, // alphabet
+      myChar('A'),                                // start state
+      [](myChar a, myChar b) -> myChar {          // transition function
         if ((a.getVal() == 'A') && ((b.getVal() == '0') || (b.getVal() == '1')))
           return myChar('B');
         else if ((a.getVal() == 'B') &&
@@ -274,7 +274,7 @@ void makeAndTestDFAs()
 
   DFA<myChar> acceptsNothing( // accepts nothing, as the name implies
       "AcceptsNothing", [](myChar a) -> bool { return false; },
-      std::vector<myChar>{}, myChar('A'),
+      myVector<myChar>{}, myChar('A'),
       [](myChar a, myChar b) -> myChar { return a; },
       [](myChar a) -> bool { return false; });
 
@@ -283,7 +283,7 @@ void makeAndTestDFAs()
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
-      std::vector<myChar>{}, myChar('A'),
+      myVector<myChar>{}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         return myChar('B');
       },
@@ -293,7 +293,7 @@ void makeAndTestDFAs()
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
-      std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      myVector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '0')
           return myChar('B');
@@ -309,7 +309,7 @@ void makeAndTestDFAs()
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B') || (a.getVal() == 'C'));
       },
-      std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      myVector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if ((a.getVal() == 'A' || a.getVal() == 'B') && b.getVal() == '1')
           return myChar('B');
@@ -327,7 +327,7 @@ void makeAndTestDFAs()
         return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
                 (a.getVal() == 'C') || (a.getVal() == 'D'));
       },
-      std::vector<myChar>{myChar('C'), myChar('A'), myChar('M')}, myChar('A'),
+      myVector<myChar>{myChar('C'), myChar('A'), myChar('M')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if (b.getVal() == 'C')
           return myChar('B');
@@ -349,7 +349,7 @@ void makeAndTestDFAs()
         return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
                 (a.getVal() == 'C'));
       },
-      std::vector<myChar>{myChar('/')}, myChar('A'),
+      myVector<myChar>{myChar('/')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if (a.getVal() == 'A' && b.getVal() == '/')
           return myChar('B');
@@ -369,7 +369,7 @@ void makeAndTestDFAs()
         return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
                 (a.getVal() == 'C') || (a.getVal() == 'D') || (a.getVal() == 'E'));
       },
-      std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      myVector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if (((a.getVal() == 'C') || (a.getVal() == 'B' || (a.getVal() == 'A'))) && b.getVal() == '1')
           return myChar('A');
@@ -393,7 +393,7 @@ void makeAndTestDFAs()
         return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
                 (a.getVal() == 'C') || (a.getVal() == 'D') || (a.getVal() == 'E'));
       },
-      std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      myVector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if ((a.getVal() == 'A' || a.getVal() == 'B' || a.getVal() == 'C') && b.getVal() == '0')
           return myChar('A');
@@ -416,7 +416,7 @@ void makeAndTestDFAs()
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B') || (a.getVal() == 'C'));
       },
-      std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      myVector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if (a.getVal() == 'A' && b.getVal() == '0')
           return myChar('A');
@@ -436,7 +436,7 @@ void makeAndTestDFAs()
       [](myChar a) -> bool {
         return ((a.getVal() == 'A') || (a.getVal() == 'B') || (a.getVal() == 'C'));
       },
-      std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      myVector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if (a.getVal() == 'A' && b.getVal() == '0')
           return myChar('A');
@@ -459,7 +459,7 @@ void makeAndTestDFAs()
         return ((a.getVal() == 'A') || (a.getVal() == 'B') ||
                 (a.getVal() == 'C') || (a.getVal() == 'D'));
       },
-      std::vector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
+      myVector<myChar>{myChar('1'), myChar('0')}, myChar('A'),
       [](myChar a, myChar b) -> myChar {
         if (a.getVal() == 'A' && b.getVal() == '0')
           return myChar('B');
@@ -679,80 +679,80 @@ void makeAndTestDFAs()
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing EvenLengthBinary DFA: " << std::endl; // Tests for EvenLengthBinaryDFA
-  std::vector<myString *> evenLengthStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
-  std::vector<bool> expectedEvenLength{true, true, true, true, true, true, false, false, false, false, false, false};
+  myVector<myString *> evenLengthStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
+  myVector<bool> expectedEvenLength{true, true, true, true, true, true, false, false, false, false, false, false};
   DFAtester(evenLengthBinary, evenLengthStrings, expectedEvenLength);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing AcceptsNothing DFA" << std::endl; // tests for AcceptsNothing DFA
-  std::vector<myString *> acceptsNothingStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
-  std::vector<bool> expectedAcceptsNothing{false, false, false, false, false, false, false, false, false, false, false, false};
+  myVector<myString *> acceptsNothingStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
+  myVector<bool> expectedAcceptsNothing{false, false, false, false, false, false, false, false, false, false, false, false};
   DFAtester(acceptsNothing, acceptsNothingStrings, expectedAcceptsNothing);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing OnlyAcceptsEmptyString DFA" << std::endl; // tests for onlyAcceptsEmptyString DFA
-  std::vector<myString *> onlyAcceptsEmptyStringStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
-  std::vector<bool> expectedOnlyAcceptsEmptyString{false, false, false, false, false, true, false, false, false, false, false, false};
+  myVector<myString *> onlyAcceptsEmptyStringStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
+  myVector<bool> expectedOnlyAcceptsEmptyString{false, false, false, false, false, true, false, false, false, false, false, false};
   DFAtester(onlyAcceptsEmptyString, onlyAcceptsEmptyStringStrings, expectedOnlyAcceptsEmptyString);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing EvenBinaryNumber DFA"
             << std::endl; // tests for evenBinaryNumber DFA
-  std::vector<myString *> evenBinaryNumberStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
-  std::vector<bool> expectedEvenBinaryNumber{true, false, false, true, false, false, false, true, true, true, false, true};
+  myVector<myString *> evenBinaryNumberStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
+  myVector<bool> expectedEvenBinaryNumber{true, false, false, true, false, false, false, true, true, true, false, true};
   DFAtester(evenBinaryNumber, evenBinaryNumberStrings, expectedEvenBinaryNumber);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing OddBinaryNumber DFA" << std::endl; // tests for OddBinaryNumber DF
-  std::vector<myString *> oddBinaryNumberStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
-  std::vector<bool> expectedOddBinaryNumber{false, true, true, false, true, false, true, false, false, false, true, false};
+  myVector<myString *> oddBinaryNumberStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
+  myVector<bool> expectedOddBinaryNumber{false, true, true, false, true, false, true, false, false, false, true, false};
   DFAtester(oddBinaryNumber, oddBinaryNumberStrings, expectedOddBinaryNumber);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing ContainsCAM DFA"
             << std::endl; // tests for containsCAM DFA
-  std::vector<myString *> ContainsCAMStrings{&OZ, &ZO, &OZOO, &ZZZZ, &MAC, &epsi, &CAMOO, &OOCAM, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
-  std::vector<bool> expectedContainsCAM{false, false, false, false, false, false, true, true, true, true, true, true};
+  myVector<myString *> ContainsCAMStrings{&OZ, &ZO, &OZOO, &ZZZZ, &MAC, &epsi, &CAMOO, &OOCAM, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
+  myVector<bool> expectedContainsCAM{false, false, false, false, false, false, true, true, true, true, true, true};
   DFAtester(containsCAM, ContainsCAMStrings, expectedContainsCAM);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing ContainsLineComment DFA" << std::endl; // tests for containsLineComment DFA
-  std::vector<myString *> containsLineCommentStrings{&comment1, &comment2, &comment3, &comment4, &comment5, &epsi, &comment6, &comment7, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
-  std::vector<bool> expectedContainsLineComment{true, true, false, true, true, false, true, false, false, false, false, false};
+  myVector<myString *> containsLineCommentStrings{&comment1, &comment2, &comment3, &comment4, &comment5, &epsi, &comment6, &comment7, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
+  myVector<bool> expectedContainsLineComment{true, true, false, true, true, false, true, false, false, false, false, false};
   DFAtester(containsLineComment, containsLineCommentStrings, expectedContainsLineComment);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing ThreeConsecutiveZerosBinary DFA" << std::endl; // tests for threeConsecutiveZerosBinary DFA
-  std::vector<myString *> threeConsecutiveZerosStrings{&ZZZZ, &ZZZOO, &ZOZZZ, &ZZZZZ, &OOZZZ, &epsi, &OZZZO, &Z, &MAC, &OZ, &OOO, &ZOZOZ};
-  std::vector<bool> expectedThreeConsecutiveZeros{true, true, true, true, true, false, true, false, false, false, false, false};
+  myVector<myString *> threeConsecutiveZerosStrings{&ZZZZ, &ZZZOO, &ZOZZZ, &ZZZZZ, &OOZZZ, &epsi, &OZZZO, &Z, &MAC, &OZ, &OOO, &ZOZOZ};
+  myVector<bool> expectedThreeConsecutiveZeros{true, true, true, true, true, false, true, false, false, false, false, false};
   DFAtester(threeConsecutiveZerosBinary, threeConsecutiveZerosStrings, expectedThreeConsecutiveZeros);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing ThreeConsecutiveOnesBinary DFA"
             << std::endl; // tests for threeConsecutiveOnesBinary DFA
-  std::vector<myString *> threeConsecutiveOnesStrings{&ZZZZ, &ZZZOO, &ZOZZZ, &ZZZZZ, &OOZZZ, &epsi, &ZZZZZ, &OOOZZZ, &ZOOOZZ, &ZZOOOZ, &OOO, &ZZZOOO};
-  std::vector<bool> expectedConsecutiveOnes{false, false, false, false, false, false, false, true, true, true, true, true};
+  myVector<myString *> threeConsecutiveOnesStrings{&ZZZZ, &ZZZOO, &ZOZZZ, &ZZZZZ, &OOZZZ, &epsi, &ZZZZZ, &OOOZZZ, &ZOOOZZ, &ZZOOOZ, &OOO, &ZZZOOO};
+  myVector<bool> expectedConsecutiveOnes{false, false, false, false, false, false, false, true, true, true, true, true};
   DFAtester(threeConsecutiveOnesBinary, threeConsecutiveOnesStrings, expectedConsecutiveOnes);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing OddNumberOfOnesBinary DFA"
             << std::endl; // tests for oddNumberOfOnesBinary DFA
-  std::vector<myString *> oddNumberOfOnesStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
-  std::vector<bool> expectedOddNumberOfOnes{true, true, true, false, false, false, true, false, true, false, true, false};
+  myVector<myString *> oddNumberOfOnesStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
+  myVector<bool> expectedOddNumberOfOnes{true, true, true, false, false, false, true, false, true, false, true, false};
   DFAtester(oddNumberOfOnesBinary, oddNumberOfOnesStrings, expectedOddNumberOfOnes);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing EvenNumberOfOnesBinary DFA"
             << std::endl; // tests for EvenNumberOfOnesBinary DFA
-  std::vector<myString *> evenNumberOfOnesStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
-  std::vector<bool> expectedEvenNumberOfOnes{false, false, false, true, true, true, false, true, false, true, false, true};
+  myVector<myString *> evenNumberOfOnesStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
+  myVector<bool> expectedEvenNumberOfOnes{false, false, false, true, true, true, false, true, false, true, false, true};
   DFAtester(evenNumberOfOnesBinary, evenNumberOfOnesStrings, expectedEvenNumberOfOnes);
 
   std::cout << "-----------------------" << std::endl;
   std::cout << "Testing EvenNumberOfZerosAndSingleOne DFA"
             << std::endl; // tests for EvenNumberOfZerosAndSingleOne DFA
-  std::vector<myString *> evenNumberOfZerosAndSingleOneStrings{&OZ, &ZOZO, &ZZZZZZO, &ZZO, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZO, &OOO, &ZOZOZ};
-  std::vector<bool> expectedEvenNumberZerosAndSingleOne{false, false, true, true, false, false, true, false, false, true, false, false};
+  myVector<myString *> evenNumberOfZerosAndSingleOneStrings{&OZ, &ZOZO, &ZZZZZZO, &ZZO, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZO, &OOO, &ZOZOZ};
+  myVector<bool> expectedEvenNumberZerosAndSingleOne{false, false, true, true, false, false, true, false, false, true, false, false};
   DFAtester(evenNumberOfZerosAndSingleOne, evenNumberOfZerosAndSingleOneStrings, expectedEvenNumberZerosAndSingleOne);
 
   std::cout << "---------------------------------------------------------------" << std::endl;
@@ -762,14 +762,14 @@ void makeAndTestDFAs()
 
   std::cout << "Testing union of oddNumberOfOnesBinary and evenNumberOfOnesBinary DFAs" << std::endl;
   DFA<myPair<myChar, myChar>> anyNumberOfOnesBinary = unionDFA<myChar>(oddNumberOfOnesBinary, evenNumberOfOnesBinary);
-  std::vector<myString *> anyNumberOfOnesStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
-  std::vector<bool> expectedAnyNumberOfOnes{true, true, true, true, true, true, true, true, true, true, true, true};
+  myVector<myString *> anyNumberOfOnesStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
+  myVector<bool> expectedAnyNumberOfOnes{true, true, true, true, true, true, true, true, true, true, true, true};
   DFAtester(anyNumberOfOnesBinary, anyNumberOfOnesStrings, expectedAnyNumberOfOnes);
 
   std::cout << "Testing union of OddBinaryNumber and EvenBinaryNumber DFAs" << std::endl;
   DFA<myPair<myChar, myChar>> evenOrOddBinary = unionDFA<myChar>(evenBinaryNumber, oddBinaryNumber);
-  std::vector<myString *> evenOrOddBinaryStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
-  std::vector<bool> expectedEvenOrOddBinary{true, true, true, true, true, false, true, true, true, true, true, true};
+  myVector<myString *> evenOrOddBinaryStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
+  myVector<bool> expectedEvenOrOddBinary{true, true, true, true, true, false, true, true, true, true, true, true};
   DFAtester(evenOrOddBinary, evenOrOddBinaryStrings, expectedEvenOrOddBinary);
 
   std::cout << "---------------------------------------------------------------" << std::endl;
@@ -779,14 +779,14 @@ void makeAndTestDFAs()
 
   std::cout << "Testing intersection of oddNumberOfOnesBinary and evenNumberOfOnesBinary DFAs" << std::endl;
   DFA<myPair<myChar, myChar>> noNumberOfOnesBinary = intersectionDFA<myChar>(oddNumberOfOnesBinary, evenNumberOfOnesBinary);
-  std::vector<myString *> noNumberOfOnesStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
-  std::vector<bool> expectedNoNumberOfOnes{false, false, false, false, false, false, false, false, false, false, false, false};
+  myVector<myString *> noNumberOfOnesStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
+  myVector<bool> expectedNoNumberOfOnes{false, false, false, false, false, false, false, false, false, false, false, false};
   DFAtester(noNumberOfOnesBinary, noNumberOfOnesStrings, expectedNoNumberOfOnes);
 
   std::cout << "Testing intersection of containsLineComment and evenNumberOfOnesBinary DFAs" << std::endl;
   DFA<myPair<myChar, myChar>> lineCommentAndEvenNumberOfOnes = intersectionDFA<myChar>(containsLineComment, evenNumberOfOnesBinary);
-  std::vector<myString *> lineCommentAndEvenNumberOfOnesStrings{&comment1, &comment2, &comment3, &comment4, &comment5, &epsi, &comment6, &comment7, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
-  std::vector<bool> expectedlineCommentAndEvenNumberOfOnes{false, false, false, false, false, false, false, false, false, false, false, false};
+  myVector<myString *> lineCommentAndEvenNumberOfOnesStrings{&comment1, &comment2, &comment3, &comment4, &comment5, &epsi, &comment6, &comment7, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
+  myVector<bool> expectedlineCommentAndEvenNumberOfOnes{false, false, false, false, false, false, false, false, false, false, false, false};
   DFAtester(lineCommentAndEvenNumberOfOnes, lineCommentAndEvenNumberOfOnesStrings, expectedlineCommentAndEvenNumberOfOnes);
 
   std::cout << "---------------------------------------------------------------" << std::endl;
@@ -796,14 +796,14 @@ void makeAndTestDFAs()
 
   std::cout << "Testing complement of intersection of containsLineComment and evenNumberOfOnesBinary DFAs" << std::endl;
   DFA<myPair<myChar, myChar>> lineCommentAndEvenNumberOfOnesComp = complementDFA<myPair<myChar, myChar>>(lineCommentAndEvenNumberOfOnes);
-  std::vector<myString *> lineCommentAndEvenNumberOfOnesCompStrings{&comment1, &comment2, &comment3, &comment4, &comment5, &epsi, &comment6, &comment7, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
-  std::vector<bool> expectedlineCommentAndEvenNumberOfOnesComp{false, false, false, false, false, false, false, false, false, false, false, false};
+  myVector<myString *> lineCommentAndEvenNumberOfOnesCompStrings{&comment1, &comment2, &comment3, &comment4, &comment5, &epsi, &comment6, &comment7, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
+  myVector<bool> expectedlineCommentAndEvenNumberOfOnesComp{false, false, false, false, false, false, false, false, false, false, false, false};
   DFAtester(lineCommentAndEvenNumberOfOnesComp, lineCommentAndEvenNumberOfOnesCompStrings, expectedlineCommentAndEvenNumberOfOnesComp);
 
   std::cout << "Testing complement of oddNumberOfOnesBinary DFA" << std::endl;
   DFA<myChar> oddNumberOfOnesBinaryComp = complementDFA<myChar>(oddNumberOfOnesBinary);
-  std::vector<myString *> oddNumberOfOnesBinaryCompStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
-  std::vector<bool> expectedOddNumberOfOnesBinaryComp{false, false, false, true, true, true, false, true, false, true, false, true};
+  myVector<myString *> oddNumberOfOnesBinaryCompStrings{&OZ, &ZO, &OZOO, &ZZZZ, &OOOOOO, &epsi, &O, &Z, &ZOZ, &ZZZZZ, &OOO, &ZOZOZ};
+  myVector<bool> expectedOddNumberOfOnesBinaryComp{false, false, false, true, true, true, false, true, false, true, false, true};
   DFAtester(oddNumberOfOnesBinaryComp, oddNumberOfOnesBinaryCompStrings, expectedOddNumberOfOnesBinaryComp);
 
   std::cout << "---------------------------------------------------------------" << std::endl;
@@ -813,8 +813,8 @@ void makeAndTestDFAs()
 
   std::cout << "Testing oneCharDFA onlyAcceptsC" << std::endl;
   DFA<myChar> onlyAcceptsC = oneCharDFA(myChar('c'));
-  std::vector<myString *> onlyAcceptsCStrings{&a, &b, &c, &d, &e, &f, &ccc, &epsi, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
-  std::vector<bool> expectedOnlyAcceptsCStrings{false, false, true, false, false, false, false, false, false, false, false, false};
+  myVector<myString *> onlyAcceptsCStrings{&a, &b, &c, &d, &e, &f, &ccc, &epsi, &OCAMO, &CACAMM, &CAMCAM, &CAMERA};
+  myVector<bool> expectedOnlyAcceptsCStrings{false, false, true, false, false, false, false, false, false, false, false, false};
   DFAtester(onlyAcceptsC, onlyAcceptsCStrings, expectedOnlyAcceptsCStrings);
 
   std::cout << "---------------------------------------------------------------" << std::endl;
@@ -851,9 +851,9 @@ void makeAndTestDFAs()
       [](myChar a) -> bool { // state function
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
-      std::vector<myChar>{myChar('1'), myChar('0')}, // alphabet
-      myChar('B'),                                   // start state
-      [](myChar a, myChar b) -> myChar {             // transition function
+      myVector<myChar>{myChar('1'), myChar('0')}, // alphabet
+      myChar('B'),                                // start state
+      [](myChar a, myChar b) -> myChar {          // transition function
         if ((a.getVal() == 'A' || a.getVal() == 'B') && ((b.getVal() == '0') || (b.getVal() == '1')))
           return myChar('A');
         else
@@ -868,7 +868,7 @@ void makeAndTestDFAs()
       [](myChar a) -> bool {     // state function
         return (a.getVal() == 'A');
       },
-      std::vector<myChar>{},             // alphabet
+      myVector<myChar>{},                // alphabet
       myChar('A'),                       // start state
       [](myChar a, myChar b) -> myChar { // transition function
         return myChar('A');
@@ -898,25 +898,25 @@ void makeAndTestNFAs()
   NFA<myChar> oneIsThirdFromEnd("OneIsThirdFromEnd", // name
                                 [](myChar a) -> bool {
                                   return (a.getVal() == 'A' || a.getVal() == 'B' || a.getVal() == 'C' || a.getVal() == 'D' || a.getVal() == 'E');
-                                },                                              // states function
-                                std::vector<myChar>{myChar('0'), myChar('1')},  // alphabet
-                                myChar('A'),                                    // start state
-                                [](myChar a, myChar b) -> std::vector<myChar> { // transition function
+                                },                                           // states function
+                                myVector<myChar>{myChar('0'), myChar('1')},  // alphabet
+                                myChar('A'),                                 // start state
+                                [](myChar a, myChar b) -> myVector<myChar> { // transition function
                                   if (a.getVal() == 'A' && b.getVal() == '1')
-                                    return std::vector<myChar>{myChar('A'), myChar('B')};
+                                    return myVector<myChar>{myChar('A'), myChar('B')};
                                   else if (a.getVal() == 'A' && b.getVal() == '0')
-                                    return std::vector<myChar>{myChar('A')};
+                                    return myVector<myChar>{myChar('A')};
                                   else if (a.getVal() == 'B' && (b.getVal() == '0' || b.getVal() == '1'))
-                                    return std::vector<myChar>{myChar('C')};
+                                    return myVector<myChar>{myChar('C')};
                                   else if (a.getVal() == 'C' && (b.getVal() == '1' || b.getVal() == '0'))
-                                    return std::vector<myChar>{myChar('D')};
+                                    return myVector<myChar>{myChar('D')};
                                   else if (a.getVal() == 'D' && (b.getVal() == '1' || b.getVal() == '0'))
-                                    return std::vector<myChar>{myChar('A')};
+                                    return myVector<myChar>{myChar('A')};
                                   else
-                                    return std::vector<myChar>{myChar('E')}; // may need to change this
+                                    return myVector<myChar>{myChar('E')}; // may need to change this
                                 },
-                                [](myChar a) -> std::vector<myChar> { // epsilon transition
-                                  return std::vector<myChar>{};
+                                [](myChar a) -> myVector<myChar> { // epsilon transition
+                                  return myVector<myChar>{};
                                 },
                                 [](myChar a) -> bool { // accept states
                                   return (a.getVal() == 'D');
@@ -925,28 +925,28 @@ void makeAndTestNFAs()
   NFA<myChar> numZerosIsMultipleOfTwoOrThree("NumZerosIsMultipleOfTwoOrThree", // name
                                              [](myChar a) -> bool {
                                                return (a.getVal() == 'A' || a.getVal() == 'B' || a.getVal() == 'C' || a.getVal() == 'D' || a.getVal() == 'E' || a.getVal() == 'F' || a.getVal() == 'G');
-                                             },                                              // states function
-                                             std::vector<myChar>{myChar('0')},               // alphabet
-                                             myChar('A'),                                    // start state
-                                             [](myChar a, myChar b) -> std::vector<myChar> { // transition function
+                                             },                                           // states function
+                                             myVector<myChar>{myChar('0')},               // alphabet
+                                             myChar('A'),                                 // start state
+                                             [](myChar a, myChar b) -> myVector<myChar> { // transition function
                                                if (a.getVal() == 'B' && b.getVal() == '0')
-                                                 return std::vector<myChar>{myChar('C')};
+                                                 return myVector<myChar>{myChar('C')};
                                                else if (a.getVal() == 'C' && b.getVal() == '0')
-                                                 return std::vector<myChar>{myChar('B')};
+                                                 return myVector<myChar>{myChar('B')};
                                                else if (a.getVal() == 'D' && b.getVal() == '0')
-                                                 return std::vector<myChar>{myChar('E')};
+                                                 return myVector<myChar>{myChar('E')};
                                                else if (a.getVal() == 'E' && b.getVal() == '0')
-                                                 return std::vector<myChar>{myChar('F')};
+                                                 return myVector<myChar>{myChar('F')};
                                                else if (a.getVal() == 'F' && b.getVal() == '0')
-                                                 return std::vector<myChar>{myChar('D')};
+                                                 return myVector<myChar>{myChar('D')};
                                                else
-                                                 return std::vector<myChar>{myChar('G')}; // may need to change this
+                                                 return myVector<myChar>{myChar('G')}; // may need to change this
                                              },
-                                             [](myChar a) -> std::vector<myChar> { // epsilon transition
+                                             [](myChar a) -> myVector<myChar> { // epsilon transition
                                                if (a.getVal() == 'A')
-                                                 return std::vector<myChar>{myChar('B'), myChar('D')};
+                                                 return myVector<myChar>{myChar('B'), myChar('D')};
                                                else
-                                                 return std::vector<myChar>{};
+                                                 return myVector<myChar>{};
                                              },
                                              [](myChar a) -> bool { // accept states
                                                return (a.getVal() == 'B' || a.getVal() == 'D');
@@ -955,28 +955,28 @@ void makeAndTestNFAs()
   NFA<myChar> containsOZOorOO("ContainsOZOorOO", // name
                               [](myChar a) -> bool {
                                 return (a.getVal() == 'A' || a.getVal() == 'B' || a.getVal() == 'C' || a.getVal() == 'D' || a.getVal() == 'E');
-                              },                                              // states function
-                              std::vector<myChar>{myChar('0'), myChar('1')},  // alphabet
-                              myChar('A'),                                    // start state
-                              [](myChar a, myChar b) -> std::vector<myChar> { // transition function
+                              },                                           // states function
+                              myVector<myChar>{myChar('0'), myChar('1')},  // alphabet
+                              myChar('A'),                                 // start state
+                              [](myChar a, myChar b) -> myVector<myChar> { // transition function
                                 if (a.getVal() == 'A' && b.getVal() == '1')
-                                  return std::vector<myChar>{myChar('A'), myChar('B')};
+                                  return myVector<myChar>{myChar('A'), myChar('B')};
                                 else if (a.getVal() == 'A' && b.getVal() == '0')
-                                  return std::vector<myChar>{myChar('A')};
+                                  return myVector<myChar>{myChar('A')};
                                 else if (a.getVal() == 'B' && (b.getVal() == '0'))
-                                  return std::vector<myChar>{myChar('C')};
+                                  return myVector<myChar>{myChar('C')};
                                 else if (a.getVal() == 'C' && (b.getVal() == '1'))
-                                  return std::vector<myChar>{myChar('D')};
+                                  return myVector<myChar>{myChar('D')};
                                 else if (a.getVal() == 'D' && (b.getVal() == '1' || b.getVal() == '0'))
-                                  return std::vector<myChar>{myChar('D')};
+                                  return myVector<myChar>{myChar('D')};
                                 else
-                                  return std::vector<myChar>{myChar('E')}; // may need to change this
+                                  return myVector<myChar>{myChar('E')}; // may need to change this
                               },
-                              [](myChar a) -> std::vector<myChar> { // epsilon transition
+                              [](myChar a) -> myVector<myChar> { // epsilon transition
                                 if (a.getVal() == 'B')
-                                  return std::vector<myChar>{myChar('C')};
+                                  return myVector<myChar>{myChar('C')};
                                 else
-                                  return std::vector<myChar>{};
+                                  return myVector<myChar>{};
                               },
                               [](myChar a) -> bool { // accept states
                                 return (a.getVal() == 'D');
@@ -1013,11 +1013,11 @@ void makeAndTestNFAs()
   oneString ABD = oneString('A', new oneString('B', new oneString('D', new emptyString)));
   // trace tree for numZerosIsMultipleOfTwoOrThree with ZZ
   oneString A_ABD_GCE = oneString('A', new oneString('-', new oneString('B', new oneString('D',
-               new oneString('-', new oneString('G', new oneString('C', new oneString('E', new emptyString)))))))); 
-  // trace tree for containsOZOorOO with OZZ 
+                                                                                           new oneString('-', new oneString('G', new oneString('C', new oneString('E', new emptyString))))))));
+  // trace tree for containsOZOorOO with OZZ
   oneString A_ABC_ACE = oneString('A', new oneString('-', new oneString('A', new oneString('B', new oneString('C',
-               new oneString('-', new oneString('A', new oneString('C', new oneString('E', new emptyString)))))))));
-  // trace tree for oneIsThirdFromEnd with                                                                                
+                                                                                                              new oneString('-', new oneString('A', new oneString('C', new oneString('E', new emptyString)))))))));
+  // trace tree for oneIsThirdFromEnd with
 
   // tests for oneIsThirdFromEnd
   std::cout << std::boolalpha;
@@ -1081,10 +1081,8 @@ void makeAndTestNFAs()
   containsOZOorOO.traceTree(OO);
   std::cout << "Trace tree of containsOZOorOO with OZZ: ";
   containsOZOorOO.traceTree(OZZ);
-   std::cout << "Trace tree of oneIsThirdFromEnd with OZZ: ";
+  std::cout << "Trace tree of oneIsThirdFromEnd with OZZ: ";
   oneIsThirdFromEnd.traceTree(OZZ);
-  
-
 }
 
 void showMenu()
@@ -1096,6 +1094,7 @@ void showMenu()
 
 int main()
 {
+  /*
   int choice;
   char repeat;
   do
@@ -1121,7 +1120,7 @@ int main()
     std::cout << "Would you like to keep going (type Y or N): ";
     std::cin >> repeat;
   } while (repeat == 'Y');
-
+*/
 
   return 0;
 }
