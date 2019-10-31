@@ -107,7 +107,7 @@ bool equalityDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 }
 
 template <class State>
-NFA<State> DFA2NFA(DFA<State> &inputDFA) // converts DFA to NFA
+NFA<State> DFA2NFA(DFA<State> &inputDFA) // converts DFA -> NFA
 {
   return NFA<State>(
       inputDFA.name,
@@ -122,7 +122,7 @@ NFA<State> DFA2NFA(DFA<State> &inputDFA) // converts DFA to NFA
 }
 
 template <class State>
-DFA<myVector<State>> NFA2DFA(NFA<State> nfa) // creates DFA from given NFA
+DFA<myVector<State>> NFA2DFA(NFA<State> nfa) // converts NFA -> DFA
 {
   myVector<State> startStates{nfa.epsilonTrans(nfa.q0)};
   startStates.insert(startStates.begin(), nfa.q0);
@@ -169,11 +169,11 @@ DFA<myVector<State>> NFA2DFA(NFA<State> nfa) // creates DFA from given NFA
       });
 }
 
-/*
 // creates a NFA that is the union of nfa1 and nfa2
 template <class State1, class State2>
 NFA<myPair<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
 {
+  typedef myVector<myPair<myVector<State1>, myVector<State2>>> pairVec;
   myVector<myChar> a = nfa1.alphabet;
   myVector<myChar> b = nfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both NFAs
@@ -183,14 +183,13 @@ NFA<myPair<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
       [=](myPair<State1, State2> a) -> bool { // function for possible states
         return (nfa1.Q(a.first) && nfa2.Q(a.second));
       },
-      a,                                                                  // alphabet
-      myPair<State1, State2>(nfa1.q0, nfa2.q0),                           // start state
-      [=](myPair<State1, State2> a, myChar b) -> myVector<myPair<State1, State2>> { // transition function
-        return  myVector<myPair<State1, State2>> // need
-        //myPair<State1, State2>(nfa1.transFunc(a.first, b), nfa2.transFunc(a.second, b)));
+      a,                                                   // alphabet
+      myPair<State1, State2>(nfa1.q0, nfa2.q0),            // start state
+      [=](myPair<State1, State2> a, myChar b) -> pairVec { // transition function
+        return pairVec{myPair<myVector<State1>, myVector<State2>>({nfa1.transFunc(a.first, b)}, {nfa2.transFunc(a.second, b)})};
       },
-      [=](myPair<State1, State2> a) -> myVector<myPair<State1, State2>> {
-        return myPair<State1, State2>(nfa1.epsilonTrans(a.first), nfa2.epsilonTrans(a.second));
+      [=](myPair<State1, State2> a) -> pairVec {
+        return pairVec{myPair<myVector<State1>, myVector<State2>>({nfa1.epsilonTrans(a.first)}, {nfa2.epsilonTrans(a.second)})};
       },
       [=](myPair<State1, State2> a) -> bool { // accept states
         return ((nfa1.F(a.first)) || (nfa2.F(a.second)));
@@ -200,41 +199,43 @@ NFA<myPair<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
 template <class State1, class State2>
 NFA<myPair<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2> nfa2)
 {
+  typedef myVector<myPair<myVector<State1>, myVector<State2>>> pairVec;
   myVector<myChar> a = nfa1.alphabet;
   myVector<myChar> b = nfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both NFAs
 
   return NFA<myPair<State1, State2>>(
-      "Union of " + nfa1.name + " and " + nfa2.name,
+      "Concatenation of " + nfa1.name + " and " + nfa2.name,
       [=](myPair<State1, State2> a) -> bool { // function for possible states
         return (nfa1.Q(a.first) && nfa2.Q(a.second));
       },
-      a,                                                                               // alphabet
-      myPair<State1, State2>(nfa1.q0, nfa2.q0),                                        // start state
-      [=](myPair<State1, State2> a, myChar b) -> myVector<myPair<State1, State2>> { // transition function
+      a,                                                   // alphabet
+      myPair<State1, State2>(nfa1.q0, nfa2.q0),            // start state
+      [=](myPair<State1, State2> a, myChar b) -> pairVec { // transition function
         // check if nfa1 is in accept state
-        if (nfa1.F(a.first)) 
-        // if yes, then do transFunc only on nfa2
-          return myVector<myPair<myVector<State1>, myVector<State2>>>{myPair(myVector<State1>{a.first}, nfa2.transFunc(a.second, b))}; 
+        if (nfa1.F(a.first))
+          // if yes, then do transFunc only on nfa2
+          return pairVec{myPair<myVector<State1>, myVector<State2>>({a.first}, {nfa2.transFunc(a.second, b)})};
         else
-          return myVector<myPair<myVector<State1>, myVector<State2>>>{myPair(nfa1.transFunc(a.first, b), myVector<State2>{a.second})}; 
+          return pairVec{myPair<myVector<State1>, myVector<State2>>({nfa1.transFunc(a.first, b)}, {a.second})};
 
       },
-      [=](myPair<State1, State2> a) -> myVector<myPair<State1, State2>> { // epsilon transitions
-        if (nfa1.F(a.first))  // check if first nfa has reached its accept state
-          return  myPair<State1, State2>(a.first, nfa2.epsilonTrans(a.second));  // if yes, then do epsilonTrans only on second NFA
+      [=](myPair<State1, State2> a) -> pairVec {                                                                // epsilon transitions
+        if (nfa1.F(a.first))                                                                                    // check if first nfa has reached its accept state
+          return pairVec{myPair<myVector<State1>, myVector<State2>>({a.first}, {nfa2.epsilonTrans(a.second)})}; // if yes, then do epsilonTrans only on second NFA
         else
-          return myPair<State1, State2>(nfa1.epsilonTrans(a.first), a.second); // otherwise, do epsilonFunc only on nfa1
+          return pairVec{myPair<myVector<State1>, myVector<State2>>({nfa1.epsilonTrans(a.first)}, {a.second})}; // otherwise, do epsilonFunc only on nfa1
       },
       [=](myPair<State1, State2> a) -> bool { // accept states
-        return ((nfa1.F(a.first)) && (nfa2.F(a.second))); 
+        return ((nfa1.F(a.first)) && (nfa2.F(a.second)));
       });
 }
 
+/*
 NFA<myChar> kleeneStarNFA(NFA<myChar> nfa)
 {
   return NFA<myChar>(
-      nfa.name + " Kleene Star",
+      nfa.name + "*",
       [=](myChar a) -> bool { 
         if(a == myChar('|'))
           return true;
