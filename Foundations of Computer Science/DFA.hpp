@@ -2,10 +2,10 @@
 #define DFA_HPP
 
 #include <iostream>
+#include <vector>
 #include "oneString.hpp"
 #include "emptyString.hpp"
 #include "NFA.hpp"
-#include <vector>
 
 template <class State>
 class DFA
@@ -24,50 +24,6 @@ public:
   std::function<State(State, myChar)> transFunc; // transition function
   std::function<bool(State &)> F;                // accept states
 
-  DFA<myVector<State>>(NFA<State> nfa) // creates DFA from given NFA
-  {
-    this->name = nfa.name() + " in DFA form";
-    this->Q = [=](myVector<State> &a) -> bool {
-      for (State x : a)
-      {
-        if (!nfa.Q(x))
-          return false;
-      }
-      return true; // all elements of input vector are valid nfa states
-    };
-    this->alphabet = nfa.alphabet; // uses same alphabet as given nfa
-    this->q0 = {nfa.q0};
-    myVector<State> startStates = nfa.epsilonTrans(nfa.q0);
-    this->q0.insert(this->q0.end(), startStates.begin(), startStates.end()); // start state is nfa's start state and any epsi transitions
-    this->transFunc = [=](myVector<State> a, myChar b) -> myVector<State> {
-      myVector<State> tempVector;
-      myVector<State> epsilonStates;
-      myVector<State> newStates;
-
-      for (State x : a)
-      {
-        tempVector = nfa.epsilonTrans(x); // check whether there are epsilon transitions from current state
-        epsilonStates.insert(epsilonStates.end(), tempVector.begin(), tempVector.end());
-      }
-      a.insert(startStates.end(), epsilonStates.begin(), epsilonStates.end());
-
-      for (State x : a)
-      {
-        tempVector = transFunc(x, b); // generate new sets of states from input char w/ each current state
-        newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
-      }
-
-      return newStates; // return new state generated from the current state
-    };
-    this->F = [=](myVector<State> &a) -> bool {
-      for (State x : a)
-      {
-        if (!nfa.F(x)) // make states in vector are all accepted by the original nfa
-          return false;
-      }
-      return true;
-    };
-  }
 
   bool accepts(myString &inputString) // does DFA accept inputString?
   {

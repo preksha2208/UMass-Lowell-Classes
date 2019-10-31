@@ -36,6 +36,11 @@ public:
     v.clear();
   }
 
+  iter insert(iter position, const State &val)
+  {
+    return v.insert(position, val);
+  }
+
   iter begin()
   {
     return v.begin();

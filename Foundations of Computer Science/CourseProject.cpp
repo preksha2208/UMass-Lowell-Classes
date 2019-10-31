@@ -106,6 +106,69 @@ bool equalityDFA(DFA<State1> dfa1, DFA<State2> dfa2)
   return (!dfa3.acceptedString().first); // if dfa3 accepts nothing, then dfa1 = dfa2
 }
 
+template <class State>
+NFA<State> DFA2NFA(DFA<State> &inputDFA) // converts DFA to NFA
+{
+  return NFA<State>(
+      inputDFA.name,
+      inputDFA.Q,
+      inputDFA.alphabet,
+      inputDFA.q0,
+      [=](State a, myChar b) -> myVector<State> {
+        return myVector<State>{inputDFA.transFunc(a, b)};
+      },
+      [](State) -> myVector<State> { return myVector<State>{}; }, // epsilon transitions don't exist in DFAs
+      inputDFA.F);
+}
+
+template <class State>
+DFA<myVector<State>> NFA2DFA(NFA<State> nfa) // creates DFA from given NFA
+{
+  myVector<State> startStates{nfa.epsilonTrans(nfa.q0)};
+  startStates.insert(startStates.begin(), nfa.q0);
+
+  return DFA<myVector<State>>(
+      nfa.name() + " in DFA form",
+      [=](myVector<State> &a) -> bool {
+        for (State x : a)
+        {
+          if (!nfa.Q(x))
+            return false;
+        }
+        return true; // all elements of input vector are valid nfa states
+      },
+      nfa.alphabet, // uses same alphabet as given nfa
+      startStates,
+      [=](myVector<State> a, myChar b) -> myVector<State> {
+        myVector<State> tempVector;
+        myVector<State> epsilonStates;
+        myVector<State> newStates;
+
+        for (State x : a)
+        {
+          tempVector = nfa.epsilonTrans(x); // check whether there are epsilon transitions from current state
+          epsilonStates.insert(epsilonStates.end(), tempVector.begin(), tempVector.end());
+        }
+        a.insert(startStates.end(), epsilonStates.begin(), epsilonStates.end());
+
+        for (State x : a)
+        {
+          tempVector = transFunc(x, b); // generate new sets of states from input char w/ each current state
+          newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+        }
+
+        return newStates; // return new state generated from the current state
+      },
+      [=](myVector<State> &a) -> bool {
+        for (State x : a)
+        {
+          if (!nfa.F(x)) // make states in vector are all accepted by the original nfa
+            return false;
+        }
+        return true;
+      });
+}
+
 /*
 // creates a NFA that is the union of nfa1 and nfa2
 template <class State1, class State2>
@@ -1120,7 +1183,6 @@ int main()
     std::cout << "Would you like to keep going (type Y or N): ";
     std::cin >> repeat;
   } while (repeat == 'Y');
-
 
   return 0;
 }

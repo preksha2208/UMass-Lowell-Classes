@@ -19,21 +19,6 @@ public:
       : name(name), Q(Q), alphabet(alphabet), q0(q0), transFunc(transFunc),
         epsilonTrans(epsilonTrans), F(F) {}
 
-  /*
-  NFA<State>(DFA<State> &inputDFA) // converts DFA to NFA
-  {
-    this->name = inputDFA.name;
-    this->Q = inputDFA.Q;
-    this->alphabet = inputDFA.alphabet;
-    this->q0 = inputDFA.q0;
-    this->transFunc = [=](State a, myChar b) -> myVector<State> {
-      return myVector<State>{inputDFA.transFunc(a, b)};
-    };
-    this->epsilonTrans = [](State) -> myVector<State> { return myVector<State>{}; }; // epsilon transitions don't exist in DFAs
-    this->F = inputDFA.F;
-  } 
-  */
-
   std::string name;
   std::function<bool(State &)> Q; // list of possible states for this NFA
   myVector<myChar> alphabet;
