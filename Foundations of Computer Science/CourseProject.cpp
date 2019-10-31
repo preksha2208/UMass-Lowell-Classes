@@ -14,6 +14,7 @@
 #include "DFA.hpp"
 #include "myPair.hpp"
 #include "NFA.hpp"
+#include "myVector.hpp"
 
 // creates a DFA that only excepts a string of length one of just inputChar
 DFA<myChar> oneCharDFA(myChar inputChar)
@@ -106,16 +107,13 @@ bool equalityDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 }
 
 /*
-// creates a DFA that is the union of dfa1 and dfa2
+// creates a NFA that is the union of nfa1 and nfa2
 template <class State1, class State2>
 NFA<myPair<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
 {
   std::vector<myChar> a = nfa1.alphabet;
   std::vector<myChar> b = nfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both NFAs
-  std::sort(a.begin(), a.end(), [](myChar &a, myChar &b) {
-    return (a.getVal() < b.getVal());
-  });
 
   return NFA<myPair<State1, State2>>(
       "Union of " + nfa1.name + " and " + nfa2.name,
@@ -142,9 +140,6 @@ NFA<myPair<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2> nfa2)
   std::vector<myChar> a = nfa1.alphabet;
   std::vector<myChar> b = nfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both NFAs
-  std::sort(a.begin(), a.end(), [](myChar &a, myChar &b) {
-    return (a.getVal() < b.getVal());
-  });
 
   return NFA<myPair<State1, State2>>(
       "Union of " + nfa1.name + " and " + nfa2.name,
@@ -157,9 +152,10 @@ NFA<myPair<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2> nfa2)
         // check if nfa1 is in accept state
         if (nfa1.F(a.first)) 
         // if yes, then do transFunc only on nfa2
-          return  myPair<State1, State2>>{a.first, nfa2.transFunc(a.second, b)}; 
+          return std::vector<myPair<std::vector<State1>, std::vector<State2>>>{myPair(std::vector<State1>{a.first}, nfa2.transFunc(a.second, b))}; 
         else
-          return myPair<State1, State2>(nfa1.transFunc(a.first, b), a.second);  // otherwise, do transFunc only on nfa1
+          return std::vector<myPair<std::vector<State1>, std::vector<State2>>>{myPair(nfa1.transFunc(a.first, b), std::vector<State2>{a.second})}; 
+
       },
       [=](myPair<State1, State2> a) -> std::vector<myPair<State1, State2>> { // epsilon transitions
         if (nfa1.F(a.first))  // check if first nfa has reached its accept state
@@ -1000,7 +996,7 @@ void makeAndTestNFAs()
 
   //example traces
   oneString A = oneString('A', new emptyString);
-  oneString AA = onestring('A', new oneString('A', new emptyString));
+  oneString AA = oneString('A', new oneString('A', new emptyString));
   oneString ABCD = oneString('A', new oneString('B', new oneString('C', new oneString('D', new emptyString))));
   oneString ABCE = oneString('A', new oneString('B', new oneString('C', new oneString('E', new emptyString))));
   oneString HI = oneString('H', new oneString('I', new emptyString));
@@ -1013,10 +1009,15 @@ void makeAndTestNFAs()
   oneString D = oneString('D', new emptyString);
   oneString E = oneString('E', new emptyString);
 
-  //example trace trees for numZerosIsMultipleOfTwoOrThree
+  // trace tree for numZerosIsMultipleOfTwoOrThree with emptyString
   oneString ABD = oneString('A', new oneString('B', new oneString('D', new emptyString)));
+  // trace tree for numZerosIsMultipleOfTwoOrThree with ZZ
   oneString A_ABD_GCE = oneString('A', new oneString('-', new oneString('B', new oneString('D',
-               new oneString('-', new oneString('G', new oneString('C', new oneString('E', new emptyString))))))));                                                                                     
+               new oneString('-', new oneString('G', new oneString('C', new oneString('E', new emptyString)))))))); 
+  // trace tree for containsOZOorOO with OZZ 
+  oneString A_ABC_ACE = oneString('A', new oneString('-', new oneString('A', new oneString('B', new oneString('C',
+               new oneString('-', new oneString('A', new oneString('C', new oneString('E', new emptyString)))))))));
+  // trace tree for oneIsThirdFromEnd with                                                                                
 
   // tests for oneIsThirdFromEnd
   std::cout << std::boolalpha;
@@ -1066,19 +1067,24 @@ void makeAndTestNFAs()
   std::cout << "Is 'A' a valid trace of containsOZOorOO with emptyString? " << containsOZOorOO.oracle(epsi, A) << std::endl;
   std::cout << "Is 'ABCD' a valid trace of containsOZOorOO with OO? " << containsOZOorOO.oracle(OO, ABCD) << std::endl;
   std::cout << "Is 'ABCE' a valid trace of containsOZOorOO with OZZ? " << containsOZOorOO.oracle(OZZ, ABCE) << std::endl;
-  
   std::cout << "Is 'A' a valid trace of containsOZOorOO with OZZ? " << containsOZOorOO.oracle(OZZ, A) << std::endl;
 
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    Trace Tree Function Tests                      " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
 
-  std::cout << "Trace tree of numZerosIsMultipleOfTwoOrThree with ZZ: " << std::endl;
+  std::cout << "Trace tree of numZerosIsMultipleOfTwoOrThree with ZZ: ";
   numZerosIsMultipleOfTwoOrThree.traceTree(ZZ);
-  std::cout << "Trace tree of numZerosIsMultipleOfTwoOrThree with emptyString: " << std::endl;
+  std::cout << "Trace tree of numZerosIsMultipleOfTwoOrThree with emptyString: ";
   numZerosIsMultipleOfTwoOrThree.traceTree(epsi);
-  std::cout << "Trace tree of containsOZOorOO with OO: " << std::endl;
+  std::cout << "Trace tree of containsOZOorOO with OO: ";
   containsOZOorOO.traceTree(OO);
+  std::cout << "Trace tree of containsOZOorOO with OZZ: ";
+  containsOZOorOO.traceTree(OZZ);
+   std::cout << "Trace tree of oneIsThirdFromEnd with OZZ: ";
+  oneIsThirdFromEnd.traceTree(OZZ);
+  
+
 }
 
 void showMenu()
@@ -1115,6 +1121,7 @@ int main()
     std::cout << "Would you like to keep going (type Y or N): ";
     std::cin >> repeat;
   } while (repeat == 'Y');
+
 
   return 0;
 }

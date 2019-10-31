@@ -98,10 +98,13 @@ public:
     if (temp->isEmpty()) // inputString is the emptyString
     {
       tempVector = epsilonTrans(this->q0); // check for epsilon transitions from start state
-      currentStates.insert(currentStates.begin(), tempVector.begin(), tempVector.end());
+      currentStates.insert(currentStates.begin(), tempVector.begin(), tempVector.end()); 
+      std::cout << std::endl;
+      std::cout << this->q0 << std::endl;
+      for (auto x : currentStates)
+        std::cout << x << " ";
     }
-    for (auto x : currentStates)
-      std::cout << x << " ";
+
     std::cout << std::endl;
     // step through NFA with the input string
     while (temp->isEmpty() != true)
@@ -111,22 +114,25 @@ public:
 
       for (State x : currentStates)
       {
-        tempVector = epsilonTrans(x); // check whether there are epsilon transitions for current state
-        epsilonStates.insert(epsilonStates.end(), tempVector.begin(), tempVector.end());
-      }
-      currentStates.insert(currentStates.end(), epsilonStates.begin(), epsilonStates.end());
-
-      for (State x : currentStates)
-      {
         std::cout << x << " ";
         tempVector = transFunc(x, temp->charObject()); // generate new sets of states from input char w/ each current state
         newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
       }
-      std::cout << std::endl;
-      currentStates.clear();
-      currentStates = newStates;
+      std::cout << std::endl; // epsilon transitions from current states will be on next level of tree
+
+      for (State x : currentStates)
+      {
+        tempVector = epsilonTrans(x); // check whether there are epsilon transitions from current states
+        epsilonStates.insert(epsilonStates.end(), tempVector.begin(), tempVector.end());
+      }
+      for (State x : epsilonStates) // print all epsilon transitions
+        std::cout << x << " ";
+
+      currentStates = newStates;  // update current states for next iteration through
+      currentStates.insert(currentStates.end(), epsilonStates.begin(), epsilonStates.end());
       temp = temp->next(); // move to next character in the string
     }
+    std::cout << std::endl;
   }
 
   // returns whether or not the given trace is a valid execution of the NFA
