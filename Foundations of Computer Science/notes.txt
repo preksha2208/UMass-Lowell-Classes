@@ -27,7 +27,7 @@ TASK 26: Done. Wrote the trace in the form of myString objects
 TASK 27: Actually not done. Still bugs to work out.
 TASK 28: 
 TASK 29:
-TASK 30: Done. Prints out each level of the trace tree
+TASK 30: Nearly done. For some reason not printing last level of tree
 TASK 31: Done. Didn't write a dozen examples for each NFA, but made enough to know that they are functioning correctly.
 TASK 32: Done. Steps through input string character by character and runs transition function & checks for epsi transitions
 TASK 33: Nearly done
