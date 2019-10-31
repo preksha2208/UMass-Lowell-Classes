@@ -258,8 +258,8 @@ void makeAndTestDFAs()
         return ((a.getVal() == 'A') || (a.getVal() == 'B') || (a.getVal() == 'C'));
       },
       myVector<myChar>{myChar('0'), myChar('1')}, // alphabet
-      myChar('A'),                                   // start state
-      [](myChar a, myChar b) -> myChar {             // transition function
+      myChar('A'),                                // start state
+      [](myChar a, myChar b) -> myChar {          // transition function
         if ((a.getVal() == 'A') && ((b.getVal() == '0') || (b.getVal() == '1')))
           return myChar('B');
         else if ((a.getVal() == 'B') &&
@@ -852,8 +852,8 @@ void makeAndTestDFAs()
         return ((a.getVal() == 'A') || (a.getVal() == 'B'));
       },
       myVector<myChar>{myChar('1'), myChar('0')}, // alphabet
-      myChar('B'),                                   // start state
-      [](myChar a, myChar b) -> myChar {             // transition function
+      myChar('B'),                                // start state
+      [](myChar a, myChar b) -> myChar {          // transition function
         if ((a.getVal() == 'A' || a.getVal() == 'B') && ((b.getVal() == '0') || (b.getVal() == '1')))
           return myChar('A');
         else
@@ -868,7 +868,7 @@ void makeAndTestDFAs()
       [](myChar a) -> bool {     // state function
         return (a.getVal() == 'A');
       },
-      myVector<myChar>{},             // alphabet
+      myVector<myChar>{},                // alphabet
       myChar('A'),                       // start state
       [](myChar a, myChar b) -> myChar { // transition function
         return myChar('A');
@@ -898,9 +898,9 @@ void makeAndTestNFAs()
   NFA<myChar> oneIsThirdFromEnd("OneIsThirdFromEnd", // name
                                 [](myChar a) -> bool {
                                   return (a.getVal() == 'A' || a.getVal() == 'B' || a.getVal() == 'C' || a.getVal() == 'D' || a.getVal() == 'E');
-                                },                                              // states function
+                                },                                           // states function
                                 myVector<myChar>{myChar('0'), myChar('1')},  // alphabet
-                                myChar('A'),                                    // start state
+                                myChar('A'),                                 // start state
                                 [](myChar a, myChar b) -> myVector<myChar> { // transition function
                                   if (a.getVal() == 'A' && b.getVal() == '1')
                                     return myVector<myChar>{myChar('A'), myChar('B')};
@@ -925,9 +925,9 @@ void makeAndTestNFAs()
   NFA<myChar> numZerosIsMultipleOfTwoOrThree("NumZerosIsMultipleOfTwoOrThree", // name
                                              [](myChar a) -> bool {
                                                return (a.getVal() == 'A' || a.getVal() == 'B' || a.getVal() == 'C' || a.getVal() == 'D' || a.getVal() == 'E' || a.getVal() == 'F' || a.getVal() == 'G');
-                                             },                                              // states function
+                                             },                                           // states function
                                              myVector<myChar>{myChar('0')},               // alphabet
-                                             myChar('A'),                                    // start state
+                                             myChar('A'),                                 // start state
                                              [](myChar a, myChar b) -> myVector<myChar> { // transition function
                                                if (a.getVal() == 'B' && b.getVal() == '0')
                                                  return myVector<myChar>{myChar('C')};
@@ -955,9 +955,9 @@ void makeAndTestNFAs()
   NFA<myChar> containsOZOorOO("ContainsOZOorOO", // name
                               [](myChar a) -> bool {
                                 return (a.getVal() == 'A' || a.getVal() == 'B' || a.getVal() == 'C' || a.getVal() == 'D' || a.getVal() == 'E');
-                              },                                              // states function
+                              },                                           // states function
                               myVector<myChar>{myChar('0'), myChar('1')},  // alphabet
-                              myChar('A'),                                    // start state
+                              myChar('A'),                                 // start state
                               [](myChar a, myChar b) -> myVector<myChar> { // transition function
                                 if (a.getVal() == 'A' && b.getVal() == '1')
                                   return myVector<myChar>{myChar('A'), myChar('B')};
@@ -1013,11 +1013,11 @@ void makeAndTestNFAs()
   oneString ABD = oneString('A', new oneString('B', new oneString('D', new emptyString)));
   // trace tree for numZerosIsMultipleOfTwoOrThree with ZZ
   oneString A_ABD_GCE = oneString('A', new oneString('-', new oneString('B', new oneString('D',
-               new oneString('-', new oneString('G', new oneString('C', new oneString('E', new emptyString)))))))); 
-  // trace tree for containsOZOorOO with OZZ 
+                                                                                           new oneString('-', new oneString('G', new oneString('C', new oneString('E', new emptyString))))))));
+  // trace tree for containsOZOorOO with OZZ
   oneString A_ABC_ACE = oneString('A', new oneString('-', new oneString('A', new oneString('B', new oneString('C',
-               new oneString('-', new oneString('A', new oneString('C', new oneString('E', new emptyString)))))))));
-  // trace tree for oneIsThirdFromEnd with                                                                                
+                                                                                                              new oneString('-', new oneString('A', new oneString('C', new oneString('E', new emptyString)))))))));
+  // trace tree for oneIsThirdFromEnd with
 
   // tests for oneIsThirdFromEnd
   std::cout << std::boolalpha;
@@ -1081,10 +1081,8 @@ void makeAndTestNFAs()
   containsOZOorOO.traceTree(OO);
   std::cout << "Trace tree of containsOZOorOO with OZZ: ";
   containsOZOorOO.traceTree(OZZ);
-   std::cout << "Trace tree of oneIsThirdFromEnd with OZZ: ";
+  std::cout << "Trace tree of oneIsThirdFromEnd with OZZ: ";
   oneIsThirdFromEnd.traceTree(OZZ);
-  
-
 }
 
 void showMenu()
@@ -1096,6 +1094,7 @@ void showMenu()
 
 int main()
 {
+  /*
   int choice;
   char repeat;
   do
@@ -1121,7 +1120,7 @@ int main()
     std::cout << "Would you like to keep going (type Y or N): ";
     std::cin >> repeat;
   } while (repeat == 'Y');
-
+*/
 
   return 0;
 }
