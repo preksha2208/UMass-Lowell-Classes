@@ -16,7 +16,7 @@
 #include "NFA.hpp"
 #include "myVector.hpp"
 
-// creates a DFA that only excepts a string of length one of just inputChar
+// Creates DFA that only accepts a string of length one of the inputChar
 DFA<myChar> oneCharDFA(myChar inputChar)
 {
   return DFA<myChar>(
@@ -32,7 +32,7 @@ DFA<myChar> oneCharDFA(myChar inputChar)
       [](myChar a) -> bool { return (a == myChar('B')); });
 }
 
-// returns a DFA that is the complement of the inputDFA
+// Creates DFA that is the complement of given DFA
 template <class State>
 DFA<State> complementDFA(DFA<State> inputDFA)
 {
@@ -42,7 +42,7 @@ DFA<State> complementDFA(DFA<State> inputDFA)
                     });
 }
 
-// creates a DFA that is the union of dfa1 and dfa2
+// Creates DFA that is union of two DFAs
 template <class State1, class State2>
 DFA<myPair<State1, State2>> unionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 {
@@ -68,7 +68,7 @@ DFA<myPair<State1, State2>> unionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
       });
 }
 
-// creates a DFA that is the intersection of dfa1 and dfa2
+// Creates DFA that is intersection of two DFAs
 template <class State1, class State2>
 DFA<myPair<State1, State2>> intersectionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 {
@@ -91,7 +91,7 @@ DFA<myPair<State1, State2>> intersectionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
       });
 }
 
-// returns true/false to indicate whether dfa1 is a subset of dfa2
+// Returns whether first DFA is subset of the second DFA
 template <class State1, class State2>
 bool subsetDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 {
@@ -99,6 +99,7 @@ bool subsetDFA(DFA<State1> dfa1, DFA<State2> dfa2)
   return (!(dfa3.acceptedString().first)); // if dfa3 accepts nothing, then dfa is subset of dfa2
 }
 
+// Returns whether two DFAs are equivalent
 template <class State1, class State2>
 bool equalityDFA(DFA<State1> dfa1, DFA<State2> dfa2)
 {
@@ -106,8 +107,9 @@ bool equalityDFA(DFA<State1> dfa1, DFA<State2> dfa2)
   return (!dfa3.acceptedString().first); // if dfa3 accepts nothing, then dfa1 = dfa2
 }
 
+// Converts DFA -> NFA
 template <class State>
-NFA<State> DFA2NFA(DFA<State> &inputDFA) // converts DFA -> NFA
+NFA<State> DFA2NFA(DFA<State> &inputDFA)
 {
   return NFA<State>(
       inputDFA.name,
@@ -121,8 +123,9 @@ NFA<State> DFA2NFA(DFA<State> &inputDFA) // converts DFA -> NFA
       inputDFA.F);
 }
 
+// Converts NFA -> DFA
 template <class State>
-DFA<myVector<State>> NFA2DFA(NFA<State> nfa) // converts NFA -> DFA
+DFA<myVector<State>> NFA2DFA(NFA<State> nfa)
 {
   myVector<State> startStates{nfa.epsilonTrans(nfa.q0)};
   startStates.insert(startStates.begin(), nfa.q0);
@@ -169,7 +172,7 @@ DFA<myVector<State>> NFA2DFA(NFA<State> nfa) // converts NFA -> DFA
       });
 }
 
-// creates a NFA that is the union of nfa1 and nfa2
+// Creates NFA that is the union of two NFAs
 template <class State1, class State2>
 NFA<myPair<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
 {
@@ -196,6 +199,7 @@ NFA<myPair<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
       });
 }
 
+// Creates NFA that is the concatenation of two NFAs
 template <class State1, class State2>
 NFA<myPair<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2> nfa2)
 {
@@ -231,21 +235,21 @@ NFA<myPair<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2> nfa2)
       });
 }
 
-/*
+// Creates NFA that is the Kleene star of the given NFA
 NFA<myChar> kleeneStarNFA(NFA<myChar> nfa)
 {
   return NFA<myChar>(
       nfa.name + "*",
-      [=](myChar a) -> bool { 
-        if(a == myChar('|'))
+      [=](myChar a) -> bool {
+        if (a == myChar('|'))
           return true;
         else
-         return nfa.Q(a);
+          return nfa.Q(a);
       },
-      nfa.alphabet, myChar('|'),  // start state may have to be changed to something else
+      nfa.alphabet, myChar('|'), // start state may have to be changed to something else
       nfa.transFunc,
       [=](myChar a) -> myVector<myChar> {
-        if (a == myChar('|'))   // 
+        if (a == myChar('|'))
           return myVector<myChar>{nfa.q0};
         else if (nfa.F(a))
           return myVector<myChar>{nfa.q0};
@@ -259,29 +263,15 @@ NFA<myChar> kleeneStarNFA(NFA<myChar> nfa)
           return nfa.F(a);
       });
 }
-*/
 
 // generate nth string of alphabet's lexicographical ordering
 myString *lexi(int n, std::list<myChar> alphabet)
 {
-  int size = alphabet.size();
-  if (size == 0)
-    return new emptyString;
-
-  int i = alphabet.size();
-  while (i < n)
-  {
-    i = i * i;
-  }
-  std::cout << "i: " << i;
-
-  myString *l = new emptyString;
-
-  return l;
+  return NULL;
 }
 
-// takes in dfa, vector of test strings and expected values for the test strings on the given dfa
-// bool values are at same index in bool vector as their corresponding test string in the other vector
+// Takes in dfa, vector of test strings and expected values for the test strings on the given dfa
+// Boolean values are at same index in bool vector as their corresponding test string in the other vector
 template <class State>
 void DFAtester(DFA<State> &a, myVector<myString *> &testStrings, myVector<bool> &expected)
 {
@@ -311,7 +301,7 @@ void DFAtester(DFA<State> &a, myVector<myString *> &testStrings, myVector<bool> 
   std::cout << std::endl;
 }
 
-// creates DFAs and runs tests on them
+// Creates DFAs and runs tests on them
 void makeAndTestDFAs()
 {
   // Declarations of DFAs
