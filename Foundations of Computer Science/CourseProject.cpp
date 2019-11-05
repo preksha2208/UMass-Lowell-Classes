@@ -59,8 +59,8 @@ DFA<myPair<State1, State2>> unionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
         return (dfa1.Q(a.first) && dfa2.Q(a.second));
       },
       a,                                                                  // alphabet
-      myPair<State1, State2>(dfa1.q0, dfa2.q0),                           // start state, need to figure this one out
-      [=](myPair<State1, State2> a, myChar b) -> myPair<State1, State2> { // transition function; not correct as is
+      myPair<State1, State2>(dfa1.q0, dfa2.q0),                           // start state
+      [=](myPair<State1, State2> a, myChar b) -> myPair<State1, State2> { 
         return (myPair<State1, State2>(dfa1.transFunc(a.first, b), dfa2.transFunc(a.second, b)));
       },
       [=](myPair<State1, State2> a) -> bool { // accept states
@@ -82,7 +82,7 @@ DFA<myPair<State1, State2>> intersectionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
         return (dfa1.Q(a.first) && dfa2.Q(a.second));
       },
       a,                                        // alphabet
-      myPair<State1, State2>(dfa1.q0, dfa2.q0), // start state, need to figure this one out
+      myPair<State1, State2>(dfa1.q0, dfa2.q0), // start state
       [=](myPair<State1, State2> a, myChar b) -> myPair<State1, State2> {
         return (myPair<State1, State2>(dfa1.transFunc(a.first, b), dfa2.transFunc(a.second, b)));
       },
@@ -174,25 +174,25 @@ DFA<myVector<State>> NFA2DFA(NFA<State> nfa)
 
 // Creates NFA that is the union of two NFAs
 template <class State1, class State2>
-NFA<myPair<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
+NFA<myPair<myVector<State1>, myVector<State2>>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
 {
   typedef myVector<myPair<myVector<State1>, myVector<State2>>> pairVec;
   myVector<myChar> a = nfa1.alphabet;
   myVector<myChar> b = nfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both NFAs
 
-  return NFA<myPair<State1, State2>>(
+  return NFA<myPair<State 1, State2>>(
       "Union of " + nfa1.name + " and " + nfa2.name,
       [=](myPair<State1, State2> a) -> bool { // function for possible states
         return (nfa1.Q(a.first) && nfa2.Q(a.second));
       },
       a,                                                   // alphabet
-      myPair<State1, State2>(nfa1.q0, nfa2.q0),            // start state
-      [=](myPair<State1, State2> a, myChar b) -> pairVec { // transition function
-        return pairVec{myPair<myVector<State1>, myVector<State2>>({nfa1.transFunc(a.first, b)}, {nfa2.transFunc(a.second, b)})};
+      myPair<State1, State2>(nfa1.q0, nfa2.q0);            // start state
+      [=](myPair<State1, State2> a, myChar b) { // transition function
+        return myVector<myPair<myVector<State1>, myVector<State2>>>({{nfa1.transFunc(a.first, b)}, {nfa2.transFunc(a.second, b})});
       },
-      [=](myPair<State1, State2> a) -> pairVec {
-        return pairVec{myPair<myVector<State1>, myVector<State2>>({nfa1.epsilonTrans(a.first)}, {nfa2.epsilonTrans(a.second)})};
+      [=](myPair<State1, State2> a) {
+        return myVector<myPair<myVector<State1>, myVector<State2>>>({{nfa1.e(a.first, b)}, {nfa2.transFunc(a.second, b})});
       },
       [=](myPair<State1, State2> a) -> bool { // accept states
         return ((nfa1.F(a.first)) || (nfa2.F(a.second)));
@@ -1038,6 +1038,7 @@ void makeAndTestNFAs()
 
   // inputStrings
   oneString OZZ = oneString('1', new oneString('0', new oneString('0', new emptyString)));
+  oneString OZ = oneString('1', new oneString('0', new emptyString));
   oneString OO = oneString('1', new oneString('1', new emptyString));
   oneString OOZ = oneString('1', new oneString('1', new oneString('0', new emptyString)));
   oneString OOOZ = oneString('1', new oneString('1', new oneString('1', new oneString('0', new emptyString))));
@@ -1137,6 +1138,23 @@ void makeAndTestNFAs()
   containsOZOorOO.traceTree(OZZ);
   std::cout << "Trace tree of oneIsThirdFromEnd with OZZ: ";
   oneIsThirdFromEnd.traceTree(OZZ);
+
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "                    NFA Union Tests                     " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl;
+
+  NFA<myPair<myChar, myChar>> numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd = unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd);
+  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept the emptyString? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(epsi);
+  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept OO? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OO);
+  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept OZ? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OZ);
+
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "                    NFA Concatenation Tests                     " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl;
+
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "                    NFA Kleene Star Tests                     " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl;
 }
 
 void showMenu()
