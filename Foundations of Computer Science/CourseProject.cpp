@@ -131,7 +131,7 @@ DFA<myVector<State>> NFA2DFA(NFA<State> nfa)
   startStates.insert(startStates.begin(), nfa.q0);
 
   return DFA<myVector<State>>(
-      nfa.name() + " in DFA form",
+      nfa.name + " in DFA form",
       [=](myVector<State> &a) -> bool {
         for (State x : a)
         {
