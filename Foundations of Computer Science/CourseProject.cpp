@@ -59,9 +59,9 @@ DFA<myPair<State1, State2>> unionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
       [=](myPair<State1, State2> a) -> bool { // function for possible states
         return (dfa1.Q(a.first) && dfa2.Q(a.second));
       },
-      a,                                                                  // alphabet
-      myPair<State1, State2>(dfa1.q0, dfa2.q0),                           // start state
-      [=](myPair<State1, State2> a, myChar b) -> myPair<State1, State2> { 
+      a,                                        // alphabet
+      myPair<State1, State2>(dfa1.q0, dfa2.q0), // start state
+      [=](myPair<State1, State2> a, myChar b) -> myPair<State1, State2> {
         return (myPair<State1, State2>(dfa1.transFunc(a.first, b), dfa2.transFunc(a.second, b)));
       },
       [=](myPair<State1, State2> a) -> bool { // accept states
@@ -174,7 +174,7 @@ DFA<myVector<State>> NFA2DFA(NFA<State> nfa)
 }
 
 // Creates NFA that is the union of two NFAs
-template<class State1, class State2>
+template <class State1, class State2>
 NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
 {
   typedef NFAComboState<State1, State2> nfaState;
@@ -183,74 +183,71 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both NFAs
 
   return NFA<nfaState>(
-            "Union of " + nfa1.name + " and " + nfa2.name,
-            [=](nfaState a) -> bool {  // Q function
-              if (a.isStartState)
-                return true;
-              else if (a.isAcceptState)
-                return true;
-              else if(a.isFromX)
-                return nfa1.Q(a.fromX);
-              else
-                return nfa2.Q(a.fromY);
-            },
-            a,  // combined alphabets
-            nfaState(0),  // start state object
-            [=](nfaState a, myChar b) -> myVector<nfaState> {
-              if (a.isStartState)
-                return myVector<nfaState> {};  // start state has no transitions other than epsi transitions
-              else if (a.isAcceptState)
-               return myVector<nfaState> {};  // accept state has no transitions other than epsi transitions
-              else if(a.isFromX)
-              {
-                myVector<State1> xVec = nfa1.transFunc(a.fromX, b);
-                myVector<nfaState> xStateVec;
-                for (State1 x : xVec)  // create vector of nfaState objects out of State1 objects
-                  xStateVec.push_back(nfaState(x, 1));  
-                return xStateVec;
-              }
-              else
-              {
-                myVector<State2> yVec = nfa2.transFunc(a.fromY, b);
-                myVector<nfaState> yStateVec;
-                for (State2 y : yVec)  // create vector of nfaState objects out of State2 objects
-                  yStateVec.push_back(nfaState(1, y));
-                return yStateVec;
-              }
-            },
-            [=](nfaState a) -> myVector<nfaState> {  // epsilon transition function
-              if (a.isStartState)
-                return myVector<nfaState> {nfaState(nfa1.q0, 1), nfaState(1, nfa2.q0)};
-              else if (a.isAcceptState)
-               return myVector<nfaState> {};  // no epsi transitinos from accept state
-              else if(a.isFromX)
-              {
-                myVector<State1> xVec = nfa1.epsilonTrans(a.fromX);
-                myVector<nfaState> xStateVec;
-                for (State1 x : xVec)
-                  xStateVec.push_back(nfaState(x, 1));
-                if(nfa1.F(a.fromX))
-                  xStateVec.push_back(nfaState(1));  //nfa1's accept state epsi transitions to union NFA's accept state
-                return xStateVec;
-              }
-              else
-              {
-                myVector<State2> yVec = nfa2.epsilonTrans(a.fromY);
-                myVector<nfaState> yStateVec;
-                for (State2 y : yVec)
-                  yStateVec.push_back(nfaState(1, y));
-                if(nfa2.F(a.fromY))
-                  yStateVec.push_back(nfaState(1));  // nfa2's accept state epsi transitions to union NFA's accept state
-                return yStateVec;
-              }
-            },
-            [=](nfaState a) -> bool
-            {
-                return a.isAcceptState;
-            }
-  );
+      "Union of " + nfa1.name + " and " + nfa2.name,
+      [=](nfaState a) -> bool { // Q function
+        if (a.isStartState)
+          return true;
+        else if (a.isAcceptState)
+          return true;
+        else if (a.isFromX)
+          return nfa1.Q(a.fromX);
+        else
+          return nfa2.Q(a.fromY);
+      },
+      a,           // combined alphabets
+      nfaState(0), // start state object
+      [=](nfaState a, myChar b) -> myVector<nfaState> {
+        if (a.isStartState)
+          return myVector<nfaState>{}; // start state has no transitions other than epsi transitions
+        else if (a.isAcceptState)
+          return myVector<nfaState>{}; // accept state has no transitions other than epsi transitions
+        else if (a.isFromX)
+        {
+          myVector<State1> xVec = nfa1.transFunc(a.fromX, b);
+          myVector<nfaState> xStateVec;
+          for (State1 x : xVec) // create vector of nfaState objects out of State1 objects
+            xStateVec.push_back(nfaState(x, 1));
+          return xStateVec;
+        }
+        else
+        {
+          myVector<State2> yVec = nfa2.transFunc(a.fromY, b);
+          myVector<nfaState> yStateVec;
+          for (State2 y : yVec) // create vector of nfaState objects out of State2 objects
+            yStateVec.push_back(nfaState(1, y));
+          return yStateVec;
+        }
+      },
+      [=](nfaState a) -> myVector<nfaState> { // epsilon transition function
+        if (a.isStartState)
+          return myVector<nfaState>{nfaState(nfa1.q0, 1), nfaState(1, nfa2.q0)};
+        else if (a.isAcceptState)
+          return myVector<nfaState>{}; // no epsi transitinos from accept state
+        else if (a.isFromX)
+        {
+          myVector<State1> xVec = nfa1.epsilonTrans(a.fromX);
+          myVector<nfaState> xStateVec;
+          for (State1 x : xVec)
+            xStateVec.push_back(nfaState(x, 1));
+          if (nfa1.F(a.fromX))
+            xStateVec.push_back(nfaState(1)); //nfa1's accept state epsi transitions to union NFA's accept state
+          return xStateVec;
+        }
+        else
+        {
+          myVector<State2> yVec = nfa2.epsilonTrans(a.fromY);
+          myVector<nfaState> yStateVec;
+          for (State2 y : yVec)
+            yStateVec.push_back(nfaState(1, y));
+          if (nfa2.F(a.fromY))
+            yStateVec.push_back(nfaState(1)); // nfa2's accept state epsi transitions to union NFA's accept state
+          return yStateVec;
+        }
+      },
+      [=](nfaState a) -> bool {
+        return a.isAcceptState;
+      });
 }
-
 
 // Creates NFA that is the concatenation of two NFAs
 template <class State1, class State2>
@@ -262,68 +259,65 @@ NFA<myPair<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2> nfa2)
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both NFAs
 
   return NFA<nfaState>(
-    "Concatention of " + nfa1.name + " and " + nfa2.name,
-      [=](nfaState a) -> bool {  // Q function
-              if (a.isStartState)
-                return true;
-              else if (a.isAcceptState)
-                return true;
-              else if(a.isFromX)
-                return nfa1.Q(a.fromX);
-              else
-                return nfa2.Q(a.fromY);
-            },
-            a,  // combined alphabets
-            nfaState(nfa1.q0, 1),  // start state is first nfa's start state
-            [=](nfaState a, myChar b) -> myVector<nfaState> {
-              if(a.isFromX)  // the state is within nfa1
-              {
-                myVector<State1> xVec = nfa1.transFunc(a.fromX, b);
-                myVector<nfaState> xStateVec;
-                for (State1 x : xVec)  // create vector of nfaState objects out of State1 objects
-                  xStateVec.push_back(nfaState(x, 1));  
-                return xStateVec;
-              }
-              else  // the state is within nfa2
-              {
-                myVector<State2> yVec = nfa2.transFunc(a.fromY, b);
-                myVector<nfaState> yStateVec;
-                for (State2 y : yVec)
-                  yStateVec.push_back(nfaState(1, y));
-                return yStateVec;
-              }
-            },
-            [=](nfaState a) -> myVector<nfaState> {  // epsilon transition function
-              if(a.isFromX)
-              {
-                myVector<State1> xVec = nfa1.epsilonTrans(a.fromX);
-                myVector<nfaState> xStateVec;
-                for (State1 x : xVec)
-                  xStateVec.push_back(nfaState(x, 1));
-                if(nfa1.F(a.fromX)) 
-                  return xStateVec.push_back(nfaState(1, nfa2.q0));  // nfa1's accept state epsilon transitions to nfa2's start state
-                return xStateVec;
-              }
-              else if (a.isFromY)
-              {
-                myVector<State2> yVec = nfa2.epsilonTrans(a.fromY);
-                myVector<nfaState> yStateVec;
-                for (State2 y : yVec)
-                  yStateVec.push_back(nfaState(1, y));
-                return yStateVec;
-              }
-            },
-            [=](nfaState a) -> bool
-            {
-              if(a.isFromY)
-                return nfa2.F(a.fromY);
-              else
-                return false;          
-            }
-
+      "Concatention of " + nfa1.name + " and " + nfa2.name,
+      [=](nfaState a) -> bool { // Q function
+        if (a.isStartState)
+          return true;
+        else if (a.isAcceptState)
+          return true;
+        else if (a.isFromX)
+          return nfa1.Q(a.fromX);
+        else
+          return nfa2.Q(a.fromY);
+      },
+      a,                    // combined alphabets
+      nfaState(nfa1.q0, 1), // start state is first nfa's start state
+      [=](nfaState a, myChar b) -> myVector<nfaState> {
+        if (a.isFromX) // the state is within nfa1
+        {
+          myVector<State1> xVec = nfa1.transFunc(a.fromX, b);
+          myVector<nfaState> xStateVec;
+          for (State1 x : xVec) // create vector of nfaState objects out of State1 objects
+            xStateVec.push_back(nfaState(x, 1));
+          return xStateVec;
+        }
+        else // the state is within nfa2
+        {
+          myVector<State2> yVec = nfa2.transFunc(a.fromY, b);
+          myVector<nfaState> yStateVec;
+          for (State2 y : yVec)
+            yStateVec.push_back(nfaState(1, y));
+          return yStateVec;
+        }
+      },
+      [=](nfaState a) -> myVector<nfaState> { // epsilon transition function
+        if (a.isFromX)
+        {
+          myVector<State1> xVec = nfa1.epsilonTrans(a.fromX);
+          myVector<nfaState> xStateVec;
+          for (State1 x : xVec)
+            xStateVec.push_back(nfaState(x, 1));
+          if (nfa1.F(a.fromX))
+            return xStateVec.push_back(nfaState(1, nfa2.q0)); // nfa1's accept state epsilon transitions to nfa2's start state
+          return xStateVec;
+        }
+        else if (a.isFromY)
+        {
+          myVector<State2> yVec = nfa2.epsilonTrans(a.fromY);
+          myVector<nfaState> yStateVec;
+          for (State2 y : yVec)
+            yStateVec.push_back(nfaState(1, y));
+          return yStateVec;
+        }
+      },
+      [=](nfaState a) -> bool {
+        if (a.isFromY)
+          return nfa2.F(a.fromY);
+        else
+          return false;
+      }
 
   );
-
 }
 
 // Creates NFA that is the Kleene star of the given NFA
@@ -1233,12 +1227,15 @@ void makeAndTestNFAs()
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    NFA Union Tests                     " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
-/*
-  NFA<myPair<myChar, myChar>> numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd = unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd);
+
+  auto numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd = unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd);
   std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept the emptyString? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(epsi);
+  std::cout << std::endl;
   std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept OO? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OO);
+  std::cout << std::endl;
   std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept OZ? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OZ);
-*/
+  std::cout << std::endl;
+
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    NFA Concatenation Tests                     " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
