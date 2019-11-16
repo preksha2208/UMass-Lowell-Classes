@@ -15,6 +15,7 @@
 #include "myPair.hpp"
 #include "NFA.hpp"
 #include "myVector.hpp"
+#include "NFAUnionState.hpp"
 
 // Creates DFA that only accepts a string of length one of the inputChar
 DFA<myChar> oneCharDFA(myChar inputChar)
@@ -173,66 +174,89 @@ DFA<myVector<State>> NFA2DFA(NFA<State> nfa)
 }
 
 // Creates NFA that is the union of two NFAs
-template <class State1, class State2>
-NFA<myPair<myVector<State1>, myVector<State2>>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
+template<class State1, class State2>
+NFA<NFAUnionState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
 {
-  typedef myVector<myPair<myVector<State1>, myVector<State2>>> pairVec;
+  typedef NFAUnionState<State1, State2> nfaState;
   myVector<myChar> a = nfa1.alphabet;
   myVector<myChar> b = nfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both NFAs
 
-  return NFA<myPair<State 1, State2>>(
-      "Union of " + nfa1.name + " and " + nfa2.name,
-      [=](myPair<State1, State2> a) -> bool { // function for possible states
-        return (nfa1.Q(a.first) && nfa2.Q(a.second));
-      },
-      a,                                                   // alphabet
-      myPair<State1, State2>(nfa1.q0, nfa2.q0);            // start state
-      [=](myPair<State1, State2> a, myChar b) { // transition function
-        return myVector<myPair<myVector<State1>, myVector<State2>>>({{nfa1.transFunc(a.first, b)}, {nfa2.transFunc(a.second, b})});
-      },
-      [=](myPair<State1, State2> a) {
-        return myVector<myPair<myVector<State1>, myVector<State2>>>({{nfa1.e(a.first, b)}, {nfa2.transFunc(a.second, b})});
-      },
-      [=](myPair<State1, State2> a) -> bool { // accept states
-        return ((nfa1.F(a.first)) || (nfa2.F(a.second)));
-      });
+  return NFA<nfaState>(
+            "Union of " + nfa1.name + " and " + nfa2.name,
+            [=](nfaState a) -> bool {  // Q function
+              if (a.isStartState)
+                return true;
+              else if (a.isAcceptState)
+                return true;
+              else if(a.isFromX)
+                return nfa1.Q(a.fromX);
+              else
+                return nfa2.Q(a.fromY);
+            },
+            a,  // combined alphabets
+            nfaState(0),  // start state object
+            [=](nfaState a, myChar b) -> myVector<nfaState> {
+              if (a.isStartState)
+                return myVector<nfaState> {};  // start state has no transitions other than epsi transitions
+              else if (a.isAcceptState)
+               return myVector<nfaState> {};  // accept state has no transitions other than epsi transitions
+              else if(a.isFromX)
+              {
+                myVector<State1> xVec = nfa1.transFunc(a.fromX, b);
+                myVector<nfaState> xStateVec;
+                for (State1 x : xVec)  // create vector of nfaState objects out of State1 objects
+                  xStateVec.push_back(nfaState(x, 1));  
+                return xStateVec;
+              }
+              else
+              {
+                myVector<State2> yVec = nfa2.transFunc(a.fromY, b);
+                myVector<nfaState> yStateVec;
+                for (State2 y : yVec)  // create vector of nfaState objects out of State2 objects
+                  yStateVec.push_back(nfaState(1, y));
+                return yStateVec;
+              }
+            },
+            [=](nfaState a) -> myVector<nfaState> {  // epsilon transition function
+              if (a.isStartState)
+                return myVector<nfaState> {nfaState(nfa1.q0, 1), nfaState(1, nfa2.q0)};
+              else if (a.isAcceptState)
+               return myVector<nfaState> {};  // no epsi transitinos from accept state
+              else if(a.isFromX)
+              {
+                if(nfa1.F(a.fromX))
+                  return myVector<nfaState>{nfaState(1)};  //nfa1's accept state epsi transitions to union NFA's accept state
+                myVector<State1> xVec = nfa1.epsilonTrans(a.fromX);
+                myVector<nfaState> xStateVec;
+                for (State1 x : xVec)
+                  xStateVec.push_back(nfaState(x, 1));
+                return xStateVec;
+              }
+              else
+              {
+                if(nfa2.F(a.fromY))
+                  return myVector<nfaState>{nfaState(1)};  // nfa2's accept state epsi transitions to union NFA's accept state
+                myVector<State2> yVec = nfa2.epsilonTrans(a.fromY);
+                myVector<nfaState> yStateVec;
+                for (State2 y : yVec)
+                  yStateVec.push_back(nfaState(1, y));
+                return yStateVec;
+              }
+            },
+            [=](nfaState a) -> bool
+            {
+                return a.isAcceptState;
+            }
+  );
 }
+
 
 // Creates NFA that is the concatenation of two NFAs
 template <class State1, class State2>
 NFA<myPair<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2> nfa2)
 {
-  typedef myVector<myPair<myVector<State1>, myVector<State2>>> pairVec;
-  myVector<myChar> a = nfa1.alphabet;
-  myVector<myChar> b = nfa2.alphabet;
-  a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both NFAs
 
-  return NFA<myPair<State1, State2>>(
-      "Concatenation of " + nfa1.name + " and " + nfa2.name,
-      [=](myPair<State1, State2> a) -> bool { // function for possible states
-        return (nfa1.Q(a.first) && nfa2.Q(a.second));
-      },
-      a,                                                   // alphabet
-      myPair<State1, State2>(nfa1.q0, nfa2.q0),            // start state
-      [=](myPair<State1, State2> a, myChar b) -> pairVec { // transition function
-        // check if nfa1 is in accept state
-        if (nfa1.F(a.first))
-          // if yes, then do transFunc only on nfa2
-          return pairVec{myPair<myVector<State1>, myVector<State2>>({a.first}, {nfa2.transFunc(a.second, b)})};
-        else
-          return pairVec{myPair<myVector<State1>, myVector<State2>>({nfa1.transFunc(a.first, b)}, {a.second})};
-
-      },
-      [=](myPair<State1, State2> a) -> pairVec {                                                                // epsilon transitions
-        if (nfa1.F(a.first))                                                                                    // check if first nfa has reached its accept state
-          return pairVec{myPair<myVector<State1>, myVector<State2>>({a.first}, {nfa2.epsilonTrans(a.second)})}; // if yes, then do epsilonTrans only on second NFA
-        else
-          return pairVec{myPair<myVector<State1>, myVector<State2>>({nfa1.epsilonTrans(a.first)}, {a.second})}; // otherwise, do epsilonFunc only on nfa1
-      },
-      [=](myPair<State1, State2> a) -> bool { // accept states
-        return ((nfa1.F(a.first)) && (nfa2.F(a.second)));
-      });
 }
 
 // Creates NFA that is the Kleene star of the given NFA
@@ -1142,12 +1166,12 @@ void makeAndTestNFAs()
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    NFA Union Tests                     " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
-
+/*
   NFA<myPair<myChar, myChar>> numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd = unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd);
   std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept the emptyString? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(epsi);
   std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept OO? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OO);
   std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept OZ? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OZ);
-
+*/
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    NFA Concatenation Tests                     " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;

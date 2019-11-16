@@ -36,6 +36,11 @@ public:
     v.clear();
   }
 
+  void push_back(const State val)
+  {
+    v.push_back(val);
+  }
+
   iter insert(iter position, const State &val)
   {
     return v.insert(position, val);

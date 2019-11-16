@@ -30,10 +30,10 @@ TASK 29:
 TASK 30: Nearly done. For some reason not printing last level of tree
 TASK 31: Done. Didn't write a dozen examples for each NFA, but made enough to know that they are functioning correctly.
 TASK 32: Done. Steps through input string character by character and runs transition function & checks for epsi transitions
-TASK 33: Nearly done
-TASK 34: Nearly done
+TASK 33: 
+TASK 34: 
 TASK 35:
-TASK 36: Nearly done
+TASK 36: 
 TASK 37:
 TASK 38:
 TASK 39:
