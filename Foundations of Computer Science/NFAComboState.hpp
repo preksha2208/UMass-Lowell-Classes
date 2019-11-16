@@ -1,8 +1,8 @@
-#ifndef NFAUNIONSTATE_HPP
-#define NFAUNIONSTATE_HPP
+#ifndef NFACOMBOSTATE_HPP
+#define NFACOMBOSTATE_HPP
 
 template <class X, class Y>
-class NFAUnionState
+class NFAComboState
 {
 public:
     bool isStartState;
@@ -12,7 +12,7 @@ public:
     X fromX;
     Y fromY;
 
-    NFAUnionState<X, Y>(int i)
+    NFAComboState<X, Y>(int i)
     {
         if (i == 0) // create start state object
         {
@@ -27,7 +27,7 @@ public:
         isFromX = 0;
         isFromY = 0;
     }
-    NFAUnionState<X, Y>(X fromX, int i) // create state object for NFA of type X
+    NFAComboState<X, Y>(X fromX, int i) // create state object for NFA of type X
     {
         // need to initialize X variable
         this->fromX = fromX;
@@ -36,7 +36,7 @@ public:
         isFromX = 1;
         isFromY = 0;
     }
-    NFAUnionState<X, Y>(int i, Y fromY) // create state object for NFA of type Y
+    NFAComboState<X, Y>(int i, Y fromY) // create state object for NFA of type Y
     {
         // need to initialize Y variable
         this->fromY = fromY;
