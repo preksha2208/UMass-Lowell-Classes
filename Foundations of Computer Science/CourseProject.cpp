@@ -344,6 +344,7 @@ myString *lexi(int n, std::list<myChar> alphabet)
 void regexPrinter(regex &r)
 {
   r.print();
+  std::cout << std::endl;
 }
 
 // Takes in dfa, vector of test strings and expected values for the test strings on the given dfa
@@ -1238,9 +1239,31 @@ void makeAndTestNFAs()
 
 void makeAndTestRegex()
 {
-  unionRegex ZOUOZ = unionRegex(new concatRegex(new charRegex(myChar('0')), new charRegex(myChar('1'))),
-                                new concatRegex(new charRegex(myChar('1')), new charRegex(myChar('0'))));
-  regexPrinter(ZOUOZ);
+  unionRegex r1 = unionRegex(new concatRegex(new charRegex(myChar('0')), new charRegex(myChar('1'))),
+                             new concatRegex(new charRegex(myChar('1')), new charRegex(myChar('0'))));
+  regexPrinter(r1); // should print (01 U 10)
+
+  concatRegex r2 = concatRegex(new kleeneRegex(new charRegex(myChar('0'))),
+                               new concatRegex(new charRegex(myChar('1')), new kleeneRegex(new charRegex(myChar('0')))));
+  regexPrinter(r2); // should prnit (0)*1(0)*
+
+  concatRegex(r3) = concatRegex(new unionRegex(new charRegex(myChar('0')), new epsiRegex()),
+                                new kleeneRegex(new charRegex(myChar('1'))));
+  regexPrinter(r3); // should print (0 U _)(1)*
+
+  concatRegex r4 = concatRegex(new kleeneRegex(new charRegex(myChar('a'))), new concatRegex(new charRegex(myChar('0')),
+                                                                                            new concatRegex(new charRegex(myChar('0')), new concatRegex(new charRegex(myChar('1')), new kleeneRegex(new charRegex(myChar('b')))))));
+  regexPrinter(r4); // should print (a)*001(b)*
+
+  kleeneRegex r5 = kleeneRegex(new concatRegex(new charRegex(myChar('a')),
+                                               new concatRegex(new charRegex(myChar('b')), new charRegex(myChar('c')))));
+  regexPrinter(r5); // should print (abc)*
+
+  unionRegex r6 = unionRegex(new kleeneRegex(new concatRegex(new charRegex(myChar('a')),
+                                                             new concatRegex(new charRegex(myChar('b')), new charRegex(myChar('c'))))),
+                             new unionRegex(new concatRegex(new charRegex(myChar('0')), new charRegex(myChar('1'))),
+                                            new concatRegex(new charRegex(myChar('1')), new charRegex(myChar('0')))));
+  regexPrinter(r6);
 }
 
 void showMenu()
