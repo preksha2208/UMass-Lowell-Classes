@@ -1241,29 +1241,52 @@ void makeAndTestRegex()
 {
   unionRegex r1 = unionRegex(new concatRegex(new charRegex(myChar('0')), new charRegex(myChar('1'))),
                              new concatRegex(new charRegex(myChar('1')), new charRegex(myChar('0'))));
-  regexPrinter(r1); // should print (01 U 10)
+  regexPrinter(r1);                                                                        // should print (01 U 10)
+  oneString ZO = oneString('0', new oneString('1', new emptyString));                      // accepted; 01
+  oneString OZ = oneString('1', new oneString('0', new emptyString));                      // accepted; 10
+  oneString O = oneString('1', new emptyString);                                           // rejected; 1
+  oneString ZOZ = oneString('0', new oneString('1', new oneString('0', new emptyString))); // rejected; 010
 
   concatRegex r2 = concatRegex(new kleeneRegex(new charRegex(myChar('0'))),
                                new concatRegex(new charRegex(myChar('1')), new kleeneRegex(new charRegex(myChar('0')))));
   regexPrinter(r2); // should prnit (0)*1(0)*
+  // rejects ZO and OZ
+  // accepts ZOZ
+
+  oneString ZZOZ = oneString('0', new oneString('0', new oneString('1', new oneString('0', new emptyString)))); // accepted; 0010
 
   concatRegex(r3) = concatRegex(new unionRegex(new charRegex(myChar('0')), new epsiRegex()),
                                 new kleeneRegex(new charRegex(myChar('1'))));
-  regexPrinter(r3); // should print (0 U _)(1)*
+  regexPrinter(r3); // should print (0 U _)(1)*, which is equal to 01* U 1*
+  // accepts ZO and 1
+  // rejects ZOZ and OZ
+
+  oneString ZOO = oneString('0', new oneString('0', new oneString('1', new oneString('1', new emptyString)))); // accepted; 011
 
   concatRegex r4 = concatRegex(new kleeneRegex(new charRegex(myChar('a'))), new concatRegex(new charRegex(myChar('0')),
                                                                                             new concatRegex(new charRegex(myChar('0')), new concatRegex(new charRegex(myChar('1')), new kleeneRegex(new charRegex(myChar('b')))))));
   regexPrinter(r4); // should print (a)*001(b)*
+  // rejects ZOZ, O
+  oneString aZZOb = oneString('a', new oneString('0', new oneString('0', new oneString('1', new oneString('b', new emptyString)))));                                           // accepted; a001b
+  oneString aZZ = oneString('a', new oneString('0', new oneString('0', new emptyString)));                                                                                     // rejected; a00
+  oneString aaZZObb = oneString('a', new oneString('a', new oneString('0', new oneString('0', new oneString('1', new oneString('b', new oneString('b', new emptyString))))))); // accepted; aa001bb
+  oneString aZZObb = oneString('a', new oneString('0', new oneString('0', new oneString('1', new oneString('b', new oneString('b', new emptyString))))));                      // accepted; a001bb
 
   kleeneRegex r5 = kleeneRegex(new concatRegex(new charRegex(myChar('a')),
                                                new concatRegex(new charRegex(myChar('b')), new charRegex(myChar('c')))));
   regexPrinter(r5); // should print (abc)*
+  // rejects ZOZ, O, etc.
+  oneString abc = oneString('a', new oneString('b', new oneString('c', new emptyString)));                                                                // accepted; abc
+  oneString abcabc = oneString('a', new oneString('b', new oneString('c', new oneString('a', new oneString('b', new oneString('c', new emptyString)))))); // accepted; abcabc
 
   unionRegex r6 = unionRegex(new kleeneRegex(new concatRegex(new charRegex(myChar('a')),
                                                              new concatRegex(new charRegex(myChar('b')), new charRegex(myChar('c'))))),
                              new unionRegex(new concatRegex(new charRegex(myChar('0')), new charRegex(myChar('1'))),
                                             new concatRegex(new charRegex(myChar('1')), new charRegex(myChar('0')))));
-  regexPrinter(r6);
+  regexPrinter(r6); // should print ((abc)* U (01 U 10))
+  // accepts abc, abcabc, 01, 10
+  // rejects ZOZ, O, etc.
+  oneString abcZO  = oneString('a', new oneString('b', new oneString('c', new oneString('0', new oneString('1', new emptyString)))));  // rejected; abc01
 }
 
 void showMenu()
