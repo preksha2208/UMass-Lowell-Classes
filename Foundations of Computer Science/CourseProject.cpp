@@ -3,6 +3,21 @@
 
 #include "mainHeaders.hpp"
 
+// generate myString linked list from given std::string
+oneString genMyString(std::string &str)
+{
+  oneString finalStr = oneString(str[0], NULL);
+  myString* temp = &finalStr;
+
+  for(int i = 1; i < str.length(); i++)
+  {
+    temp->setNext(new oneString(str[i], NULL));
+    temp = temp->next();
+  }
+  temp->setNext(new emptyString);
+  return finalStr;
+}
+
 // Creates DFA that only accepts a string of length one of the inputChar
 DFA<myChar> oneCharDFA(myChar inputChar)
 {
@@ -1351,7 +1366,6 @@ void showMenu()
 
 int main()
 {
-
   int choice;
   char repeat;
   do
