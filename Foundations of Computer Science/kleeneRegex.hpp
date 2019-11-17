@@ -5,9 +5,25 @@
 
 class kleeneRegex : public regex
 {
- public:
-    kleeneRegex() : isEpsilon(0), isEmptySet(0), isCharacter(0), isUnion(0), isConcat(0), isKleene(1) {}
-    regex* next;
+public:
+    regex *next;
+    kleeneRegex(regex *next)
+    {
+        isEpsilon = 0;
+        isEmptySet = 0;
+        isCharacter = 0;
+        isUnion = 0;
+        isConcat = 0;
+        isKleene = 1;
+        this->next = next;
+    }
+    void print()
+    {
+        std::cout << "("; 
+        next->print();
+        std::cout << ")*";
+    }
+     
 };
 
 #endif

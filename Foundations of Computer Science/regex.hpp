@@ -6,13 +6,14 @@
 
 class regex
 {
- public:
+public:
     bool isEpsilon;
     bool isEmptySet;
     bool isCharacter;
     bool isUnion;
     bool isConcat;
     bool isKleene;
+    virtual void print() {}
 };
 
 #endif

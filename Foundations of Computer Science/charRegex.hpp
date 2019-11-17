@@ -6,9 +6,22 @@
 
 class charRegex : public regex
 {
- public:
-    charRegex(myChar c) : isEpsilon(0), isEmptySet(0), isCharacter(1), isUnion(0), isConcat(0), isKleene(0), c(c) {}
+public:
     myChar c;
+    charRegex(myChar c)
+    {
+        isEpsilon = 0;
+        isEmptySet = 0;
+        isCharacter = 1;
+        isUnion = 0;
+        isConcat = 0;
+        isKleene = 0;
+        this->c = c;
+    }
+    void print()
+    {
+        std::cout << c;
+    }
 };
 
 #endif

@@ -17,5 +17,11 @@
 #include "myVector.hpp"
 #include "NFAComboState.hpp"
 #include "regex.hpp"
+#include "emptySetRegex.hpp"
+#include "epsiRegex.hpp"
+#include "kleeneRegex.hpp"
+#include "unionRegex.hpp"
+#include "charRegex.hpp"
+#include "concatRegex.hpp"
 
 #endif

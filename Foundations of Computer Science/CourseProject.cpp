@@ -343,8 +343,7 @@ myString *lexi(int n, std::list<myChar> alphabet)
 
 void regexPrinter(regex &r)
 {
-
-
+  r.print();
 }
 
 // Takes in dfa, vector of test strings and expected values for the test strings on the given dfa
@@ -1237,11 +1236,19 @@ void makeAndTestNFAs()
   std::cout << "---------------------------------------------------------------" << std::endl;
 }
 
+void makeAndTestRegex()
+{
+  unionRegex ZOUOZ = unionRegex(new concatRegex(new charRegex(myChar('0')), new charRegex(myChar('1'))),
+                                new concatRegex(new charRegex(myChar('1')), new charRegex(myChar('0'))));
+  regexPrinter(ZOUOZ);
+}
+
 void showMenu()
 {
   std::cout << "1: Make and Test DFAs" << std::endl;
   std::cout << "2: Make and Test NFAs" << std::endl;
-  std::cout << "3: Exit" << std::endl;
+  std::cout << "3: Make and test Regex" << std::endl;
+  std::cout << "4: Exit" << std::endl;
 }
 
 int main()
@@ -1263,6 +1270,9 @@ int main()
       makeAndTestNFAs();
       break;
     case 3:
+      makeAndTestRegex();
+      break;
+    case 4:
       return 0;
     default:
       std::cout << "That is not a valid menu choice" << std::endl;
