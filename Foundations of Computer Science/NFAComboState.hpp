@@ -45,6 +45,20 @@ public:
         isFromX = 0;
         isFromY = 1;
     }
+
+    friend std::ostream &operator<<(std::ostream &os, const NFAComboState &n)
+    {
+        if (n.isStartState)
+            os << "<";
+        else if (n.isAcceptState)
+            os << ">";
+        else if(n.isFromX)
+            os << n.fromX;
+        else
+            os << n.fromY;
+     
+        return os;
+    }
 };
 
 #endif

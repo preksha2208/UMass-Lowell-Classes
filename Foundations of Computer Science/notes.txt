@@ -24,10 +24,10 @@ TASK 23: Done. I have a separate transition function for what a state transition
 TASK 24: Done. Just needed to set the values of the NFA equal to the values of the DFA
 TASK 25: Done. Didn't make a dozen example NFAs, but made enough to ensure that my data structure works correctly.
 TASK 26: Done. Wrote the trace in the form of myString objects
-TASK 27: Actually not done. Still bugs to work out.
-TASK 28: Done. Trace trees represented as myStrings, with a '-' to represent a transition to next level in tree
+TASK 27: 
+TASK 28: 
 TASK 29: 
-TASK 30: Nearly done. For some reason not printing last level of tree
+TASK 30: 
 TASK 31: Done. Didn't write a dozen examples for each NFA, but made enough to know that they are functioning correctly.
 TASK 32: Done. Steps through input string character by character and runs transition function & checks for epsi transitions
 TASK 33: 
