@@ -19,6 +19,10 @@ public:
     {
         std::cout << "_";
     }
+    myString* generator() 
+    {
+        return new emptyString;
+    }
 };
 
 #endif

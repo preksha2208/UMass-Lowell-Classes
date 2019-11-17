@@ -1286,7 +1286,59 @@ void makeAndTestRegex()
   regexPrinter(r6); // should print ((abc)* U (01 U 10))
   // accepts abc, abcabc, 01, 10
   // rejects ZOZ, O, etc.
-  oneString abcZO  = oneString('a', new oneString('b', new oneString('c', new oneString('0', new oneString('1', new emptyString)))));  // rejected; abc01
+  oneString abcZO = oneString('a', new oneString('b', new oneString('c', new oneString('0', new oneString('1', new emptyString))))); // rejected; abc01
+
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "                     REGEX GENERATOR Tests                     " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl;
+
+  myString *temp = r1.generator();
+  while (temp->isEmpty() == false)
+  {
+    std::cout << temp->charValue();
+    temp = temp->next();
+  }
+  std::cout << std::endl;
+
+  temp = r2.generator();
+  while (temp->isEmpty() == false)
+  {
+    std::cout << temp->charValue();
+    temp = temp->next();
+  }
+  std::cout << std::endl;
+
+  temp = r3.generator();
+  while (temp->isEmpty() == false)
+  {
+    std::cout << temp->charValue();
+    temp = temp->next();
+  }
+  std::cout << std::endl;
+
+  temp = r4.generator();
+  while (temp->isEmpty() == false)
+  {
+    std::cout << temp->charValue();
+    temp = temp->next();
+  }
+  std::cout << std::endl;
+
+  temp = r5.generator();
+  while (temp->isEmpty() == false)
+  {
+    std::cout << temp->charValue();
+    temp = temp->next();
+  }
+  std::cout << std::endl;
+
+  temp = r6.generator();
+  while (temp->isEmpty() == false)
+  {
+    std::cout << temp->charValue();
+    temp = temp->next();
+  }
+  std::cout << std::endl;
 }
 
 void showMenu()

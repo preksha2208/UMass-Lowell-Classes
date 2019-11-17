@@ -2,6 +2,8 @@
 #define REGEX_HPP
 
 #include <iostream>
+#include <stdlib.h>
+#include <time.h>
 #include "NFA.hpp"
 
 class regex
@@ -14,6 +16,7 @@ public:
     bool isConcat;
     bool isKleene;
     virtual void print() {}
+    virtual myString *generator() { return NULL; }
 };
 
 #endif

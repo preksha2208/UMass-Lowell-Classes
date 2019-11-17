@@ -24,6 +24,16 @@ public:
         left->print();
         right->print();
     }
+    myString *generator()
+    {
+        myString *leftStr = left->generator();  // get strings from respective generator functions
+        myString *rightStr = right->generator();
+        myString *temp = leftStr;
+        while (temp->next()->isEmpty() != true)  // move to end of first string
+            temp = temp->next();
+        temp->setNext(rightStr);  // concatenate the two string linked lists
+        return leftStr;
+    }
 };
 
 #endif

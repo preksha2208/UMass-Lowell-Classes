@@ -19,11 +19,20 @@ public:
     }
     void print()
     {
-        std::cout << "("; 
+        std::cout << "(";
         next->print();
         std::cout << ")*";
     }
-     
+    myString *generator()
+    {
+        int random = (rand() % 5) + 1;
+        myString* ret = next->generator();
+        myString *temp = ret;
+
+        for (int i = 1; i < random; i++)
+            temp->setNext(next->generator());
+        return ret;
+    }
 };
 
 #endif

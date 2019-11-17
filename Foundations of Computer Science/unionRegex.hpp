@@ -27,6 +27,16 @@ public:
         right->print();
         std::cout << ")";
     }
+    myString* generator()
+    {
+        int random = rand() % 2;  // randomly choose whether to call left or right branch
+        
+        if (random == 0)
+            return left->generator();
+        else
+            return right->generator();
+        
+    }
 };
 
 #endif

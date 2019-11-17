@@ -22,6 +22,10 @@ public:
     {
         std::cout << c;
     }
+    myString* generator()
+    {
+        return new oneString(c.getVal(), new emptyString);
+    }
 };
 
 #endif

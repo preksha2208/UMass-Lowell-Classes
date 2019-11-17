@@ -5,8 +5,8 @@
 
 class emptySetRegex : public regex
 {
- public:
-    emptySetRegex() 
+public:
+    emptySetRegex()
     {
         isEpsilon = 0;
         isEmptySet = 1;
@@ -16,6 +16,9 @@ class emptySetRegex : public regex
         isKleene = 0;
     }
     void print() {}
+    myString* generator() {
+        return new emptyString;
+    }
 };
 
 #endif
