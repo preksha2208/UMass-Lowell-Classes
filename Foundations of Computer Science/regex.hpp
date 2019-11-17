@@ -4,7 +4,6 @@
 #include <iostream>
 #include "NFA.hpp"
 
-template <class State>
 class regex
 {
  public:

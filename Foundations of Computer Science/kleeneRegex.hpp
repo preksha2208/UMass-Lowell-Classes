@@ -3,7 +3,6 @@
 
 #include "regex.hpp"
 
-template<class State>
 class kleeneRegex : public regex
 {
  public:

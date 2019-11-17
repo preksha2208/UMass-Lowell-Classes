@@ -1,21 +1,7 @@
 // Copyright Cameron Knopp 2019
 // Fall 2019 Foundations of Computer Science with Professor Jay McCarthy
 
-#include <functional> // for std::function
-#include <iostream>
-#include <iterator>
-#include <list>
-#include <string>
-#include <vector>
-#include <utility> // for std::pair
-#include <stack>
-#include <type_traits>
-#include <algorithm>
-#include "DFA.hpp"
-#include "myPair.hpp"
-#include "NFA.hpp"
-#include "myVector.hpp"
-#include "NFAComboState.hpp"
+#include "mainHeaders.hpp"
 
 // Creates DFA that only accepts a string of length one of the inputChar
 DFA<myChar> oneCharDFA(myChar inputChar)
@@ -353,6 +339,12 @@ NFA<myChar> kleeneStarNFA(NFA<myChar> nfa)
 myString *lexi(int n, std::list<myChar> alphabet)
 {
   return NULL;
+}
+
+void regexPrinter(regex &r)
+{
+
+
 }
 
 // Takes in dfa, vector of test strings and expected values for the test strings on the given dfa
