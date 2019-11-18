@@ -7,9 +7,9 @@
 oneString genMyString(std::string &str)
 {
   oneString finalStr = oneString(str[0], NULL);
-  myString* temp = &finalStr;
+  myString *temp = &finalStr;
 
-  for(int i = 1; i < str.length(); i++)
+  for (int i = 1; i < str.length(); i++)
   {
     temp->setNext(new oneString(str[i], NULL));
     temp = temp->next();
@@ -204,7 +204,7 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
           return myVector<nfaState>{}; // accept state has no transitions other than epsi transitions
         else if (a.isFromX)
         {
-          myVector<State1> xVec = nfa1.transFunc(a.fromX, b);  // get State1 objects from nfa1's transition function
+          myVector<State1> xVec = nfa1.transFunc(a.fromX, b); // get State1 objects from nfa1's transition function
           myVector<nfaState> xStateVec;
           for (State1 x : xVec) // create vector of nfaState objects out of State1 objects
             xStateVec.push_back(nfaState(x, 1));
@@ -212,7 +212,7 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
         }
         else
         {
-          myVector<State2> yVec = nfa2.transFunc(a.fromY, b);  // get State2 objects from nfa2's transition function
+          myVector<State2> yVec = nfa2.transFunc(a.fromY, b); // get State2 objects from nfa2's transition function
           myVector<nfaState> yStateVec;
           for (State2 y : yVec) // create vector of nfaState objects out of State2 objects
             yStateVec.push_back(nfaState(1, y));
@@ -226,7 +226,7 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
           return myVector<nfaState>{}; // no epsi transitinos from accept state
         else if (a.isFromX)
         {
-          myVector<State1> xVec = nfa1.epsilonTrans(a.fromX);  // get State1 objects from nfa1's epsiTrans function
+          myVector<State1> xVec = nfa1.epsilonTrans(a.fromX); // get State1 objects from nfa1's epsiTrans function
           myVector<nfaState> xStateVec;
           for (State1 x : xVec)
             xStateVec.push_back(nfaState(x, 1));
@@ -236,7 +236,7 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
         }
         else
         {
-          myVector<State2> yVec = nfa2.epsilonTrans(a.fromY);   // get State2 objects from nfa2's epsiTrans function
+          myVector<State2> yVec = nfa2.epsilonTrans(a.fromY); // get State2 objects from nfa2's epsiTrans function
           myVector<nfaState> yStateVec;
           for (State2 y : yVec)
             yStateVec.push_back(nfaState(1, y));
@@ -1242,6 +1242,7 @@ void makeAndTestNFAs()
   std::cout << std::endl;
   std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept OZ? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OZ);
   std::cout << std::endl;
+  numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.traceTree(OZ);
 
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    NFA Concatenation Tests                     " << std::endl;
@@ -1252,9 +1253,47 @@ void makeAndTestNFAs()
   oneString OZZZZ = genMyString(s1);
   std::cout << "Does concatOneThirdFromEndAndNumZerosMultTwoOrThree accept 10000? " << concatOneThirdFromEndAndNumZerosMultTwoOrThree.accepts(OZZZZ);
   std::cout << std::endl;
+  concatOneThirdFromEndAndNumZerosMultTwoOrThree.traceTree(OZZZZ);
+
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    NFA Kleene Star Tests                     " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
+
+  std::string s2 = "100100";
+  oneString OZZOZZ = genMyString(s2);
+  std::string s3 = "100100100";
+  oneString OZZOZZOZZ = genMyString(s3);
+  NFA<myChar> kleeneOneThirdFromEnd = kleeneStarNFA(oneIsThirdFromEnd);
+  std::cout << "Does (oneIsThirdFromEnd)* accept 100100? " << kleeneOneThirdFromEnd.accepts(OZZOZZ); // should return true
+  std::cout << std::endl;
+  std::cout << "Does (oneIsThirdFromEnd)* accept emptyString? " << kleeneOneThirdFromEnd.accepts(epsi); // should return true
+  std::cout << std::endl;
+  std::cout << "Does (oneIsThirdFromEnd)* accept ABCD? " << kleeneOneThirdFromEnd.accepts(ABCD); // should return false
+  std::cout << std::endl;
+  std::cout << "Does (oneIsThirdFromEnd)* accept 0000? " << kleeneOneThirdFromEnd.accepts(ZZZ); // should return false
+  std::cout << std::endl;
+  std::cout << "Does (oneIsThirdFromEnd)* accept 100? " << kleeneOneThirdFromEnd.accepts(OZZ); // should return true
+  std::cout << std::endl;
+  std::cout << "Does (oneIsThirdFromEnd)* accept 100100100? " << kleeneOneThirdFromEnd.accepts(OZZOZZOZZ); // should return true
+  std::cout << std::endl;
+  std::cout << std::endl;
+
+  NFA<myChar> kleeneContainsOZOorOO = kleeneStarNFA(containsOZOorOO);
+  std::string s4 = "10111";
+  oneString OZOOO = genMyString(s4);
+  std::cout << "Does (containsOZOorOO)* accept 10111?" << kleeneContainsOZOorOO.accepts(OZOOO); // should return true
+  std::cout << std::endl;
+  std::string s5 = "11101";
+  oneString OOOZO = genMyString(s5);
+  std::cout << "Does (containsOZOorOO)* accept 11101?" << kleeneContainsOZOorOO.accepts(OOOZO); // should return true
+  std::cout << std::endl;
+  std::string s6 = "101123";
+  oneString OZOO23 = genMyString(s6);
+  std::cout << "Does (containsOZOorOO)* accept 101123?" << kleeneContainsOZOorOO.accepts(OZOO23); // should return false
+  std::cout << std::endl;
+  std::cout << "Does (containsOZOorOO)* accept emptyString?" << kleeneContainsOZOorOO.accepts(epsi); // should return true
+  std::cout << std::endl;
+  
 }
 
 void makeAndTestRegex()
