@@ -204,7 +204,7 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
           return myVector<nfaState>{}; // accept state has no transitions other than epsi transitions
         else if (a.isFromX)
         {
-          myVector<State1> xVec = nfa1.transFunc(a.fromX, b);
+          myVector<State1> xVec = nfa1.transFunc(a.fromX, b);  // get State1 objects from nfa1's transition function
           myVector<nfaState> xStateVec;
           for (State1 x : xVec) // create vector of nfaState objects out of State1 objects
             xStateVec.push_back(nfaState(x, 1));
@@ -212,7 +212,7 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
         }
         else
         {
-          myVector<State2> yVec = nfa2.transFunc(a.fromY, b);
+          myVector<State2> yVec = nfa2.transFunc(a.fromY, b);  // get State2 objects from nfa2's transition function
           myVector<nfaState> yStateVec;
           for (State2 y : yVec) // create vector of nfaState objects out of State2 objects
             yStateVec.push_back(nfaState(1, y));
@@ -226,7 +226,7 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
           return myVector<nfaState>{}; // no epsi transitinos from accept state
         else if (a.isFromX)
         {
-          myVector<State1> xVec = nfa1.epsilonTrans(a.fromX);
+          myVector<State1> xVec = nfa1.epsilonTrans(a.fromX);  // get State1 objects from nfa1's epsiTrans function
           myVector<nfaState> xStateVec;
           for (State1 x : xVec)
             xStateVec.push_back(nfaState(x, 1));
@@ -236,7 +236,7 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
         }
         else
         {
-          myVector<State2> yVec = nfa2.epsilonTrans(a.fromY);
+          myVector<State2> yVec = nfa2.epsilonTrans(a.fromY);   // get State2 objects from nfa2's epsiTrans function
           myVector<nfaState> yStateVec;
           for (State2 y : yVec)
             yStateVec.push_back(nfaState(1, y));
@@ -252,7 +252,7 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
 
 // Creates NFA that is the concatenation of two NFAs
 template <class State1, class State2>
-NFA<myPair<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2> nfa2)
+NFA<NFAComboState<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2> nfa2)
 {
   typedef NFAComboState<State1, State2> nfaState;
   myVector<myChar> a = nfa1.alphabet;
@@ -260,7 +260,7 @@ NFA<myPair<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2> nfa2)
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both NFAs
 
   return NFA<nfaState>(
-      "Concatention of " + nfa1.name + " and " + nfa2.name,
+      "Concatenation of " + nfa1.name + " and " + nfa2.name,
       [=](nfaState a) -> bool { // Q function
         if (a.isStartState)
           return true;
@@ -299,10 +299,10 @@ NFA<myPair<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2> nfa2)
           for (State1 x : xVec)
             xStateVec.push_back(nfaState(x, 1));
           if (nfa1.F(a.fromX))
-            return xStateVec.push_back(nfaState(1, nfa2.q0)); // nfa1's accept state epsilon transitions to nfa2's start state
+            xStateVec.push_back(nfaState(1, nfa2.q0)); // nfa1's accept state epsilon transitions to nfa2's start state
           return xStateVec;
         }
-        else if (a.isFromY)
+        else
         {
           myVector<State2> yVec = nfa2.epsilonTrans(a.fromY);
           myVector<nfaState> yStateVec;
@@ -1247,6 +1247,11 @@ void makeAndTestNFAs()
   std::cout << "                    NFA Concatenation Tests                     " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
 
+  NFA<NFAComboState<myChar, myChar>> concatOneThirdFromEndAndNumZerosMultTwoOrThree = concatenationNFA(oneIsThirdFromEnd, numZerosIsMultipleOfTwoOrThree);
+  std::string s1 = "10000";
+  oneString OZZZZ = genMyString(s1);
+  std::cout << "Does concatOneThirdFromEndAndNumZerosMultTwoOrThree accept 10000? " << concatOneThirdFromEndAndNumZerosMultTwoOrThree.accepts(OZZZZ);
+  std::cout << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    NFA Kleene Star Tests                     " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
