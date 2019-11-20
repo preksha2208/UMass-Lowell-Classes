@@ -52,11 +52,11 @@ public:
             os << "<";
         else if (n.isAcceptState)
             os << ">";
-        else if(n.isFromX)
+        else if (n.isFromX)
             os << n.fromX;
         else
             os << n.fromY;
-     
+
         return os;
     }
 };

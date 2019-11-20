@@ -59,9 +59,9 @@ public:
     return v.insert(aBegin, bBegin, bEnd);
   }
 
-  friend bool operator==(const myVector &a, const myVector &b)
+  bool operator==(const myVector& rhs) const
   {
-    return a == b; // use std::vector overloaded == operator
+    return this->v == rhs.v;
   }
 
   const State operator[](int index)

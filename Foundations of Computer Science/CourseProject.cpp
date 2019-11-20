@@ -129,8 +129,9 @@ NFA<State> DFA2NFA(DFA<State> &inputDFA)
 template <class State>
 DFA<myVector<State>> NFA2DFA(NFA<State> nfa)
 {
-  myVector<State> startStates{nfa.epsilonTrans(nfa.q0)};
-  startStates.insert(startStates.begin(), nfa.q0);
+  myVector<State> startStates{nfa.q0};
+  myVector<State> epsiFromStart = nfa.epsilonTrans(nfa.q0);
+  startStates.insert(startStates.end(), epsiFromStart.begin(), epsiFromStart.end());
 
   return DFA<myVector<State>>(
       nfa.name + " in DFA form",
@@ -144,33 +145,37 @@ DFA<myVector<State>> NFA2DFA(NFA<State> nfa)
       },
       nfa.alphabet, // uses same alphabet as given nfa
       startStates,
-      [=](myVector<State> a, myChar b) -> myVector<State> {
+      [=](myVector<State> a, myChar b) -> myVector<State> { // transition function
         myVector<State> tempVector;
-        myVector<State> epsilonStates;
         myVector<State> newStates;
+        myVector<State> currentStates;
+        myVector<State> epsilonStates;
 
-        for (State x : a)
+        for (State x : a) // check whether there are epsilon transitions from current state
         {
-          tempVector = nfa.epsilonTrans(x); // check whether there are epsilon transitions from current state
+          tempVector = nfa.epsilonTrans(x);
           epsilonStates.insert(epsilonStates.end(), tempVector.begin(), tempVector.end());
         }
-        a.insert(startStates.end(), epsilonStates.begin(), epsilonStates.end());
+        currentStates.insert(currentStates.end(), epsilonStates.begin(), epsilonStates.end());
+        currentStates.insert(currentStates.end(), a.begin(), a.end());
 
-        for (State x : a)
+        for (State x : currentStates) // generate new sets of states from input char w/ each current state
         {
-          tempVector = transFunc(x, b); // generate new sets of states from input char w/ each current state
+          tempVector = nfa.transFunc(x, b);
           newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
         }
+        currentStates.clear();
+        currentStates.insert(currentStates.end(), newStates.begin(), newStates.end());
 
-        return newStates; // return new state generated from the current state
+        return currentStates; // return new state generated from the current state
       },
       [=](myVector<State> &a) -> bool {
         for (State x : a)
         {
-          if (!nfa.F(x)) // make states in vector are all accepted by the original nfa
-            return false;
+          if (nfa.F(x)) // make states in vector are all accepted by the original nfa
+            return true;
         }
-        return true;
+        return false;
       });
 }
 
@@ -191,7 +196,7 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
         else if (a.isAcceptState)
           return true;
         else if (a.isFromX)
-          return nfa1.Q(a.fromX);
+          return nfa1.Q(a.fromX); // need to check whether this state actually exists in nfa1
         else
           return nfa2.Q(a.fromY);
       },
@@ -1168,28 +1173,30 @@ void makeAndTestNFAs()
 
   // tests for oneIsThirdFromEnd
   std::cout << std::boolalpha;
-  std::cout << "Does oneIsThirdFromEnd accept OZZ? " << oneIsThirdFromEnd.accepts(OZZ) << std::endl;
-  std::cout << "Does oneIsThirdFromEnd accept OOZ? " << oneIsThirdFromEnd.accepts(OOZ) << std::endl;
-  std::cout << "Does oneIsThirdFromEnd accept OOOZ? " << oneIsThirdFromEnd.accepts(OOOZ) << std::endl;
-  std::cout << "Does oneIsThirdFromEnd accept OZOO? " << oneIsThirdFromEnd.accepts(OZOO) << std::endl;
-  std::cout << "Does oneIsThirdFromEnd accept the empty string? " << oneIsThirdFromEnd.accepts(epsi) << std::endl;
+  std::cout << "Does oneIsThirdFromEnd accept OZZ (should be true)? " << oneIsThirdFromEnd.accepts(OZZ) << std::endl;
+  std::cout << "Does oneIsThirdFromEnd accept OOZ (should be true)? " << oneIsThirdFromEnd.accepts(OOZ) << std::endl;
+  std::cout << "Does oneIsThirdFromEnd accept OOOZ (should be true)? " << oneIsThirdFromEnd.accepts(OOOZ) << std::endl;
+  std::cout << "Does oneIsThirdFromEnd accept OZOO (should be false)? " << oneIsThirdFromEnd.accepts(OZOO) << std::endl;
+  std::cout << "Does oneIsThirdFromEnd accept the empty string (should be false)? " << oneIsThirdFromEnd.accepts(epsi) << std::endl;
   std::cout << std::endl;
 
   // tests for numZerosIsMultipleOfTwoOrThree
-  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept the empty string? " << numZerosIsMultipleOfTwoOrThree.accepts(epsi) << std::endl;
-  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept ZZ? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZ) << std::endl;
-  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept ZZZ? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZZ) << std::endl;
-  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept ZZZZZ? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZZZZ) << std::endl;
-  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept OOZ? " << numZerosIsMultipleOfTwoOrThree.accepts(OOZ) << std::endl;
-  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept OZOO? " << numZerosIsMultipleOfTwoOrThree.accepts(OZOO) << std::endl;
+  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept the empty string (should be true)? " << numZerosIsMultipleOfTwoOrThree.accepts(epsi) << std::endl;
+  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept ZZ (should be true)? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZ) << std::endl;
+  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept ZZZ (should be true)? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZZ) << std::endl;
+  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept ZZZZZ (should be false)? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZZZZ) << std::endl;
+  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept OOZ (should be false)? " << numZerosIsMultipleOfTwoOrThree.accepts(OOZ) << std::endl;
+  std::cout << "Does numZerosIsMultipleOfTwoOrThree accept OZOO (should be false)? " << numZerosIsMultipleOfTwoOrThree.accepts(OZOO) << std::endl;
+  std::cout << std::endl;
 
   // tests for containsOZOorOO
-  std::cout << "Does containsOZOorOO accept the empty string? " << containsOZOorOO.accepts(epsi) << std::endl;
-  std::cout << "Does containsOZOorOO accept OZOO? " << containsOZOorOO.accepts(OZOO) << std::endl;
-  std::cout << "Does containsOZOorOO accept ZZZ? " << containsOZOorOO.accepts(ZZZ) << std::endl;
-  std::cout << "Does containsOZOorOO accept OOOZ? " << containsOZOorOO.accepts(OOOZ) << std::endl;
-  std::cout << "Does containsOZOorOO accept OOZOO? " << containsOZOorOO.accepts(OOZOO) << std::endl;
-  std::cout << "Does containsOZOorOO accept OO? " << containsOZOorOO.accepts(OO) << std::endl;
+  std::cout << "Does containsOZOorOO accept the empty string (should be false)? " << containsOZOorOO.accepts(epsi) << std::endl;
+  std::cout << "Does containsOZOorOO accept OZOO (should be true)? " << containsOZOorOO.accepts(OZOO) << std::endl;
+  std::cout << "Does containsOZOorOO accept ZZZ (should be false)? " << containsOZOorOO.accepts(ZZZ) << std::endl;
+  std::cout << "Does containsOZOorOO accept OOOZ (should be true)? " << containsOZOorOO.accepts(OOOZ) << std::endl;
+  std::cout << "Does containsOZOorOO accept OOZOO (should be true)? " << containsOZOorOO.accepts(OOZOO) << std::endl;
+  std::cout << "Does containsOZOorOO accept OO (should be true)? " << containsOZOorOO.accepts(OO) << std::endl;
+  std::cout << std::endl;
 
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    Oracle Function Tests                      " << std::endl;
@@ -1200,6 +1207,7 @@ void makeAndTestNFAs()
   std::cout << "Is 'ABCD' a valid trace of oneIsThirdFromEnd with OZZ? " << oneIsThirdFromEnd.oracle(OZZ, ABCD) << std::endl;
   std::cout << "Is 'ABC' a valid trace of oneIsThirdFromEnd with OZZ? " << oneIsThirdFromEnd.oracle(OZZ, ABC) << std::endl;
   std::cout << "Is 'A' a valid trace of oneIsThirdFromEnd with OZZ? " << oneIsThirdFromEnd.oracle(OZZ, A) << std::endl;
+  std::cout << std::endl;
 
   // oracle tests for numZerosIsMultipleOfTwoOrThree
   std::cout << "Is 'A' a valid trace of numZerosIsMultipleOfTwoOrThree with emptyString? " << numZerosIsMultipleOfTwoOrThree.oracle(epsi, A) << std::endl;
@@ -1209,12 +1217,14 @@ void makeAndTestNFAs()
   std::cout << "Is 'ABCB' a valid trace of numZerosIsMultipleOfTwoOrThree with ZZ? " << numZerosIsMultipleOfTwoOrThree.oracle(ZZ, ABCB) << std::endl;
   std::cout << "Is 'ADEFD' a valid trace of numZerosIsMultipleOfTwoOrThree with ZZZ? " << numZerosIsMultipleOfTwoOrThree.oracle(OZZ, ADEFD) << std::endl;
   std::cout << "Is 'A' a valid trace of numZerosIsMultipleOfTwoOrThree with OZZ? " << numZerosIsMultipleOfTwoOrThree.oracle(OZZ, A) << std::endl;
+  std::cout << std::endl;
 
   // oracle tests for containsOZOorOO
   std::cout << "Is 'A' a valid trace of containsOZOorOO with emptyString? " << containsOZOorOO.oracle(epsi, A) << std::endl;
   std::cout << "Is 'ABCD' a valid trace of containsOZOorOO with OO? " << containsOZOorOO.oracle(OO, ABCD) << std::endl;
   std::cout << "Is 'ABCE' a valid trace of containsOZOorOO with OZZ? " << containsOZOorOO.oracle(OZZ, ABCE) << std::endl;
   std::cout << "Is 'A' a valid trace of containsOZOorOO with OZZ? " << containsOZOorOO.oracle(OZZ, A) << std::endl;
+  std::cout << std::endl;
 
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    Trace Tree Function Tests                      " << std::endl;
@@ -1236,11 +1246,11 @@ void makeAndTestNFAs()
   std::cout << "---------------------------------------------------------------" << std::endl;
 
   auto numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd = unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd);
-  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept the emptyString? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(epsi);
+  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept the emptyString (should be true)? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(epsi);
   std::cout << std::endl;
-  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept OO? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OO);
+  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept OO (should be true)? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OO);
   std::cout << std::endl;
-  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept OZ? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OZ);
+  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept OZ (should be false)? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OZ);
   std::cout << std::endl;
   numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.traceTree(OZ);
 
@@ -1251,7 +1261,7 @@ void makeAndTestNFAs()
   NFA<NFAComboState<myChar, myChar>> concatOneThirdFromEndAndNumZerosMultTwoOrThree = concatenationNFA(oneIsThirdFromEnd, numZerosIsMultipleOfTwoOrThree);
   std::string s1 = "10000";
   oneString OZZZZ = genMyString(s1);
-  std::cout << "Does concatOneThirdFromEndAndNumZerosMultTwoOrThree accept 10000? " << concatOneThirdFromEndAndNumZerosMultTwoOrThree.accepts(OZZZZ);
+  std::cout << "Does concatOneThirdFromEndAndNumZerosMultTwoOrThree accept 10000 (should be true)? " << concatOneThirdFromEndAndNumZerosMultTwoOrThree.accepts(OZZZZ);
   std::cout << std::endl;
   concatOneThirdFromEndAndNumZerosMultTwoOrThree.traceTree(OZZZZ);
 
@@ -1264,36 +1274,153 @@ void makeAndTestNFAs()
   std::string s3 = "100100100";
   oneString OZZOZZOZZ = genMyString(s3);
   NFA<myChar> kleeneOneThirdFromEnd = kleeneStarNFA(oneIsThirdFromEnd);
-  std::cout << "Does (oneIsThirdFromEnd)* accept 100100? " << kleeneOneThirdFromEnd.accepts(OZZOZZ); // should return true
+  std::cout << "Does (oneIsThirdFromEnd)* accept 100100 (should be true)? " << kleeneOneThirdFromEnd.accepts(OZZOZZ); // should return true
   std::cout << std::endl;
-  std::cout << "Does (oneIsThirdFromEnd)* accept emptyString? " << kleeneOneThirdFromEnd.accepts(epsi); // should return true
+  std::cout << "Does (oneIsThirdFromEnd)* accept emptyString (should be true)? " << kleeneOneThirdFromEnd.accepts(epsi); // should return true
   std::cout << std::endl;
-  std::cout << "Does (oneIsThirdFromEnd)* accept ABCD? " << kleeneOneThirdFromEnd.accepts(ABCD); // should return false
+  std::cout << "Does (oneIsThirdFromEnd)* accept ABCD (should be false)? " << kleeneOneThirdFromEnd.accepts(ABCD); // should return false
   std::cout << std::endl;
-  std::cout << "Does (oneIsThirdFromEnd)* accept 0000? " << kleeneOneThirdFromEnd.accepts(ZZZ); // should return false
+  std::cout << "Does (oneIsThirdFromEnd)* accept 0000 (should be false)? " << kleeneOneThirdFromEnd.accepts(ZZZ); // should return false
   std::cout << std::endl;
-  std::cout << "Does (oneIsThirdFromEnd)* accept 100? " << kleeneOneThirdFromEnd.accepts(OZZ); // should return true
+  std::cout << "Does (oneIsThirdFromEnd)* accept 100 (should be true)? " << kleeneOneThirdFromEnd.accepts(OZZ); // should return true
   std::cout << std::endl;
-  std::cout << "Does (oneIsThirdFromEnd)* accept 100100100? " << kleeneOneThirdFromEnd.accepts(OZZOZZOZZ); // should return true
+  std::cout << "Does (oneIsThirdFromEnd)* accept 100100100 (should be true)? " << kleeneOneThirdFromEnd.accepts(OZZOZZOZZ); // should return true
   std::cout << std::endl;
   std::cout << std::endl;
 
   NFA<myChar> kleeneContainsOZOorOO = kleeneStarNFA(containsOZOorOO);
   std::string s4 = "10111";
   oneString OZOOO = genMyString(s4);
-  std::cout << "Does (containsOZOorOO)* accept 10111?" << kleeneContainsOZOorOO.accepts(OZOOO); // should return true
+  std::cout << "Does (containsOZOorOO)* accept 10111 (should be true)?" << kleeneContainsOZOorOO.accepts(OZOOO); // should return true
   std::cout << std::endl;
   std::string s5 = "11101";
   oneString OOOZO = genMyString(s5);
-  std::cout << "Does (containsOZOorOO)* accept 11101?" << kleeneContainsOZOorOO.accepts(OOOZO); // should return true
+  std::cout << "Does (containsOZOorOO)* accept 11101 (should be true)?" << kleeneContainsOZOorOO.accepts(OOOZO); // should return true
   std::cout << std::endl;
   std::string s6 = "101123";
   oneString OZOO23 = genMyString(s6);
-  std::cout << "Does (containsOZOorOO)* accept 101123?" << kleeneContainsOZOorOO.accepts(OZOO23); // should return false
+  std::cout << "Does (containsOZOorOO)* accept 101123 (should be false)?" << kleeneContainsOZOorOO.accepts(OZOO23); // should return false
   std::cout << std::endl;
-  std::cout << "Does (containsOZOorOO)* accept emptyString?" << kleeneContainsOZOorOO.accepts(epsi); // should return true
+  std::cout << "Does (containsOZOorOO)* accept emptyString (should be true)?" << kleeneContainsOZOorOO.accepts(epsi); // should return true
   std::cout << std::endl;
-  
+
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "                    NFA2DFA Tests                     " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl;
+
+  DFA<myVector<myChar>> dfa1 = NFA2DFA(containsOZOorOO);
+  std::cout << "Does dfa containsOZOorOO accept the empty string (should be false)? " << dfa1.accepts(epsi) << std::endl;
+  std::cout << "Does dfa containsOZOorOO accept OZOO (should be true)? " << dfa1.accepts(OZOO) << std::endl;
+  std::cout << "Does dfa containsOZOorOO accept ZZZ (should be false)? " << dfa1.accepts(ZZZ) << std::endl;
+  std::cout << "Does dfa containsOZOorOO accept OOOZ (should be true)? " << dfa1.accepts(OOOZ) << std::endl;
+  std::cout << "Does dfa containsOZOorOO accept OOZOO (should be true)? " << dfa1.accepts(OOZOO) << std::endl;
+  std::cout << "Does dfa containsOZOorOO accept OO (should be true)? " << dfa1.accepts(OO) << std::endl;
+  std::cout << std::endl;
+
+  DFA<myVector<myChar>> dfa2 = NFA2DFA(oneIsThirdFromEnd);
+  std::cout << "Does dfa oneIsThirdFromEnd accept OZZ (should be true)? " << dfa2.accepts(OZZ) << std::endl;
+  std::cout << "Does dfa oneIsThirdFromEnd accept OOZ (should be true)? " << dfa2.accepts(OOZ) << std::endl;
+  std::cout << "Does dfa oneIsThirdFromEnd accept OOOZ (should be true)? " << dfa2.accepts(OOOZ) << std::endl;
+  std::cout << "Does dfa oneIsThirdFromEnd accept OZOO (should be false)? " << dfa2.accepts(OZOO) << std::endl;
+  std::cout << "Does dfa oneIsThirdFromEnd accept the empty string (should be false)? " << dfa2.accepts(epsi) << std::endl;
+  std::cout << std::endl;
+
+  DFA<myVector<myChar>> dfa3 = NFA2DFA(numZerosIsMultipleOfTwoOrThree);
+  std::cout << "Does dfa numZerosIsMultipleOfTwoOrThree accept the empty string (should be true)? " << dfa3.accepts(epsi) << std::endl;
+  std::cout << "Does dfa numZerosIsMultipleOfTwoOrThree accept ZZ (should be true)? " << dfa3.accepts(ZZ) << std::endl;
+  std::cout << "Does dfa numZerosIsMultipleOfTwoOrThree accept ZZZ (should be true)? " << dfa3.accepts(ZZZ) << std::endl;
+  std::cout << "Does dfa numZerosIsMultipleOfTwoOrThree accept ZZZZZ (should be false)? " << dfa3.accepts(ZZZZZ) << std::endl;
+  std::cout << "Does dfa numZerosIsMultipleOfTwoOrThree accept OOZ (should be false)? " << dfa3.accepts(OOZ) << std::endl;
+  std::cout << "Does dfa numZerosIsMultipleOfTwoOrThree accept OZOO (should be false)? " << dfa3.accepts(OZOO) << std::endl;
+  std::cout << std::endl;
+
+  NFA<myChar> textbookExampleNFA("NFA txtbook example to convert to DFA", // name
+                                 [](myChar a) -> bool {
+                                   return (a.getVal() == '1' || a.getVal() == '2' || a.getVal() == '3');
+                                 },                                           // states function
+                                 myVector<myChar>{myChar('a'), myChar('b')},  // alphabet
+                                 myChar('1'),                                 // start state
+                                 [](myChar a, myChar b) -> myVector<myChar> { // transition function
+                                   if (a.getVal() == '1' && b.getVal() == 'b')
+                                     return myVector<myChar>{myChar('2')};
+                                   else if (a.getVal() == '2' && b.getVal() == 'a')
+                                     return myVector<myChar>{myChar('2'), myChar('3')};
+                                   else if (a.getVal() == '2' && b.getVal() == 'b')
+                                     return myVector<myChar>{myChar('3')};
+                                   else if (a.getVal() == '3' && b.getVal() == 'a')
+                                     return myVector<myChar>{myChar('1')};
+                                   else
+                                     return myVector<myChar>{};
+                                 },
+                                 [](myChar a) -> myVector<myChar> { // epsilon transition
+                                   if (a.getVal() == '1')
+                                     return myVector<myChar>{myChar('3')};
+                                   else
+                                     return myVector<myChar>{};
+                                 },
+                                 [](myChar a) -> bool { // accept states
+                                   return (a.getVal() == '1');
+                                 });
+
+  // textbookExampleNFA converted manually to a DFA
+  DFA<myVector<myChar>> manuallyConvertedDFA(
+      "textbookExampleNFA -> DFA",
+      [](myVector<myChar> &a) -> bool {
+        if (a == myVector<myChar>{})
+          return true;
+        else if (a == myVector<myChar>{myChar('1'), myChar('3')})
+          return true;
+        else if (a == myVector<myChar>{myChar('2')})
+          return true;
+        else if (a == myVector<myChar>{myChar('3')})
+          return true;
+        else if (a == myVector<myChar>{myChar('2'), myChar('3')})
+          return true;
+        else if (a == myVector<myChar>{myChar('1'), myChar('2'), myChar('3')})
+          return true;
+        else
+          return false;
+      },
+      myVector<myChar>{myChar('a'), myChar('b')},  // alphabet
+      myVector<myChar>{myChar('1'), myChar('3')},  // start state
+      [](myVector<myChar> a, myChar b) -> myVector<myChar> {
+        if (a == myVector<myChar>{} && (b.getVal() == 'a' || b.getVal() == 'b'))
+          return a;
+        else if (a == myVector<myChar>{myChar('2')} && b.getVal() == 'a')
+          return myVector<myChar>{myChar('2'), myChar('3')};
+        else if (a == myVector<myChar>{myChar('2')} && b.getVal() == 'b')
+          return myVector<myChar>{myChar('3')};
+        else if (a == myVector<myChar>{myChar('3')} && b.getVal() == 'b')
+          return myVector<myChar>{};
+        else if (a == myVector<myChar>{myChar('3')} && b.getVal() == 'a')
+          return myVector<myChar>{myChar('1'), myChar('3')};
+        else if (a == myVector<myChar>{myChar('2'), myChar('3')} && b.getVal() == 'b')
+          return myVector<myChar>{myChar('3')};
+        else if (a == myVector<myChar>{myChar('2'), myChar('3')} && b.getVal() == 'a')
+          return myVector<myChar>{myChar('1'), myChar('2'), myChar('3')};
+        else if (a == myVector<myChar>{myChar('1'), myChar('2'), myChar('3')} && b.getVal() == 'a')
+          return a;
+        else if (a == myVector<myChar>{myChar('1'), myChar('2'), myChar('3')} && b.getVal() == 'b')
+          return myVector<myChar>{myChar('2'), myChar('3')};
+        else if (a == myVector<myChar>{myChar('1'), myChar('3')} && b.getVal() == 'a')
+          return a;
+        else if (a == myVector<myChar>{myChar('1'), myChar('3')} && b.getVal() == 'b')
+          return myVector<myChar>{myChar('2')};
+        else
+          return a;
+      },
+      [](myVector<myChar> &a) -> bool {
+        return (a == myVector<myChar>{myChar('1'), myChar('3')} || a == myVector<myChar>{myChar('1'), myChar('2'), myChar('3')});
+      });
+  // convert textbookExampleNFA to DFA using function
+  std::string babStr = "bab";
+  oneString bab = genMyString(babStr);
+  std::cout << "test 1 (should be true): " << textbookExampleNFA.accepts(bab);
+  std::cout << std::endl;
+  std::cout << "test 2 (should be true): " << manuallyConvertedDFA.accepts(bab);
+  auto convertedTextbookNFA = NFA2DFA(textbookExampleNFA);
+  std::cout << "Is manually converted NFA == function-converted NFA (should be true)? " << equalityDFA(convertedTextbookNFA, manuallyConvertedDFA);
+  std::cout << std::endl;
 }
 
 void makeAndTestRegex()
