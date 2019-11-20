@@ -204,9 +204,9 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
       nfaState(0), // start state object
       [=](nfaState a, myChar b) -> myVector<nfaState> {
         if (a.isStartState)
-          return myVector<nfaState>{}; // start state has no transitions other than epsi transitions
+          return myVector<nfaState>{a};
         else if (a.isAcceptState)
-          return myVector<nfaState>{}; // accept state has no transitions other than epsi transitions
+          return myVector<nfaState>{a};
         else if (a.isFromX)
         {
           myVector<State1> xVec = nfa1.transFunc(a.fromX, b); // get State1 objects from nfa1's transition function
@@ -273,11 +273,13 @@ NFA<NFAComboState<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2
           return true;
         else if (a.isFromX)
           return nfa1.Q(a.fromX);
-        else
+        else if(a.isFromY)
           return nfa2.Q(a.fromY);
+        else
+          return false;
       },
       a,                    // combined alphabets
-      nfaState(nfa1.q0, 1), // start state is first nfa's start state
+      nfaState(nfa1.q0, 1), // nfa 1's start state is first nfa's start state
       [=](nfaState a, myChar b) -> myVector<nfaState> {
         if (a.isFromX) // the state is within nfa1
         {
@@ -301,13 +303,13 @@ NFA<NFAComboState<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2
         {
           myVector<State1> xVec = nfa1.epsilonTrans(a.fromX);
           myVector<nfaState> xStateVec;
-          for (State1 x : xVec)
-            xStateVec.push_back(nfaState(x, 1));
           if (nfa1.F(a.fromX))
             xStateVec.push_back(nfaState(1, nfa2.q0)); // nfa1's accept state epsilon transitions to nfa2's start state
+          for (State1 x : xVec)
+            xStateVec.push_back(nfaState(x, 1));
           return xStateVec;
         }
-        else
+        else if (a.isFromY)
         {
           myVector<State2> yVec = nfa2.epsilonTrans(a.fromY);
           myVector<nfaState> yStateVec;
@@ -315,6 +317,8 @@ NFA<NFAComboState<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2
             yStateVec.push_back(nfaState(1, y));
           return yStateVec;
         }
+        else
+          return myVector<nfaState>{};
       },
       [=](nfaState a) -> bool {
         if (a.isFromY)
@@ -322,7 +326,6 @@ NFA<NFAComboState<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2
         else
           return false;
       }
-
   );
 }
 
@@ -1381,8 +1384,8 @@ void makeAndTestNFAs()
         else
           return false;
       },
-      myVector<myChar>{myChar('a'), myChar('b')},  // alphabet
-      myVector<myChar>{myChar('1'), myChar('3')},  // start state
+      myVector<myChar>{myChar('a'), myChar('b')}, // alphabet
+      myVector<myChar>{myChar('1'), myChar('3')}, // start state
       [](myVector<myChar> a, myChar b) -> myVector<myChar> {
         if (a == myVector<myChar>{} && (b.getVal() == 'a' || b.getVal() == 'b'))
           return a;
@@ -1413,13 +1416,13 @@ void makeAndTestNFAs()
         return (a == myVector<myChar>{myChar('1'), myChar('3')} || a == myVector<myChar>{myChar('1'), myChar('2'), myChar('3')});
       });
   // convert textbookExampleNFA to DFA using function
-  std::string babStr = "bab";
-  oneString bab = genMyString(babStr);
-  std::cout << "test 1 (should be true): " << textbookExampleNFA.accepts(bab);
+  std::string baaStr = "baa";
+  oneString baa = genMyString(baaStr);
+  std::cout << "test 1 (should be true): " << textbookExampleNFA.accepts(baa);
   std::cout << std::endl;
-  std::cout << "test 2 (should be true): " << manuallyConvertedDFA.accepts(bab);
-  auto convertedTextbookNFA = NFA2DFA(textbookExampleNFA);
-  std::cout << "Is manually converted NFA == function-converted NFA (should be true)? " << equalityDFA(convertedTextbookNFA, manuallyConvertedDFA);
+  std::cout << "test 2 (should be true): " << manuallyConvertedDFA.accepts(baa);
+  DFA<myVector<myChar>> convertedTextbookNFA = NFA2DFA(textbookExampleNFA);
+  //std::cout << "Is manually converted NFA == function-converted NFA (should be true)? " << equalityDFA(convertedTextbookNFA, manuallyConvertedDFA);
   std::cout << std::endl;
 }
 
