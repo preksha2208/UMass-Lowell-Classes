@@ -1188,7 +1188,7 @@ void makeAndTestNFAs()
   std::cout << "Does numZerosIsMultipleOfTwoOrThree accept OOZ (should be false)? " << numZerosIsMultipleOfTwoOrThree.accepts(OOZ) << std::endl;
   std::cout << "Does numZerosIsMultipleOfTwoOrThree accept OZOO (should be false)? " << numZerosIsMultipleOfTwoOrThree.accepts(OZOO) << std::endl;
   std::cout << std::endl;
-  
+
   // tests for containsOZOorOO
   std::cout << "Does containsOZOorOO accept the empty string (should be false)? " << containsOZOorOO.accepts(epsi) << std::endl;
   std::cout << "Does containsOZOorOO accept OZOO (should be true)? " << containsOZOorOO.accepts(OZOO) << std::endl;
@@ -1319,9 +1319,6 @@ void makeAndTestNFAs()
 
   DFA<myVector<myChar>> dfa2 = NFA2DFA(oneIsThirdFromEnd);
   std::cout << "Does dfa oneIsThirdFromEnd accept OZZ (should be true)? " << dfa2.accepts(OZZ) << std::endl;
-  std::cout << "Trace for OZZ: " << std::endl;
-  dfa2.trace(OZZ);
-  std::cout << std::endl;
   std::cout << "Does dfa oneIsThirdFromEnd accept OOZ (should be true)? " << dfa2.accepts(OOZ) << std::endl;
   std::cout << "Does dfa oneIsThirdFromEnd accept OOOZ (should be true)? " << dfa2.accepts(OOOZ) << std::endl;
   std::cout << "Does dfa oneIsThirdFromEnd accept OZOO (should be false)? " << dfa2.accepts(OZOO) << std::endl;
@@ -1333,9 +1330,96 @@ void makeAndTestNFAs()
   std::cout << "Does dfa numZerosIsMultipleOfTwoOrThree accept ZZ (should be true)? " << dfa3.accepts(ZZ) << std::endl;
   std::cout << "Does dfa numZerosIsMultipleOfTwoOrThree accept ZZZ (should be true)? " << dfa3.accepts(ZZZ) << std::endl;
   std::cout << "Does dfa numZerosIsMultipleOfTwoOrThree accept ZZZZZ (should be false)? " << dfa3.accepts(ZZZZZ) << std::endl;
-  dfa3.trace(ZZZZZ);
   std::cout << "Does dfa numZerosIsMultipleOfTwoOrThree accept OOZ (should be false)? " << dfa3.accepts(OOZ) << std::endl;
   std::cout << "Does dfa numZerosIsMultipleOfTwoOrThree accept OZOO (should be false)? " << dfa3.accepts(OZOO) << std::endl;
+  std::cout << std::endl;
+
+  NFA<myChar> textbookExampleNFA("NFA txtbook example to convert to DFA", // name
+                                 [](myChar a) -> bool {
+                                   return (a.getVal() == '1' || a.getVal() == '2' || a.getVal() == '3');
+                                 },                                           // states function
+                                 myVector<myChar>{myChar('a'), myChar('b')},  // alphabet
+                                 myChar('1'),                                 // start state
+                                 [](myChar a, myChar b) -> myVector<myChar> { // transition function
+                                   if (a.getVal() == '1' && b.getVal() == 'b')
+                                     return myVector<myChar>{myChar('2')};
+                                   else if (a.getVal() == '2' && b.getVal() == 'a')
+                                     return myVector<myChar>{myChar('2'), myChar('3')};
+                                   else if (a.getVal() == '2' && b.getVal() == 'b')
+                                     return myVector<myChar>{myChar('3')};
+                                   else if (a.getVal() == '3' && b.getVal() == 'a')
+                                     return myVector<myChar>{myChar('1')};
+                                   else
+                                     return myVector<myChar>{};
+                                 },
+                                 [](myChar a) -> myVector<myChar> { // epsilon transition
+                                   if (a.getVal() == '1')
+                                     return myVector<myChar>{myChar('3')};
+                                   else
+                                     return myVector<myChar>{};
+                                 },
+                                 [](myChar a) -> bool { // accept states
+                                   return (a.getVal() == '1');
+                                 });
+
+  // textbookExampleNFA converted manually to a DFA
+  DFA<myVector<myChar>> manuallyConvertedDFA(
+      "textbookExampleNFA -> DFA",
+      [](myVector<myChar> &a) -> bool {
+        if (a == myVector<myChar>{})
+          return true;
+        else if (a == myVector<myChar>{myChar('1'), myChar('3')})
+          return true;
+        else if (a == myVector<myChar>{myChar('2')})
+          return true;
+        else if (a == myVector<myChar>{myChar('3')})
+          return true;
+        else if (a == myVector<myChar>{myChar('2'), myChar('3')})
+          return true;
+        else if (a == myVector<myChar>{myChar('1'), myChar('2'), myChar('3')})
+          return true;
+        else
+          return false;
+      },
+      myVector<myChar>{myChar('a'), myChar('b')},  // alphabet
+      myVector<myChar>{myChar('1'), myChar('3')},  // start state
+      [](myVector<myChar> a, myChar b) -> myVector<myChar> {
+        if (a == myVector<myChar>{} && (b.getVal() == 'a' || b.getVal() == 'b'))
+          return a;
+        else if (a == myVector<myChar>{myChar('2')} && b.getVal() == 'a')
+          return myVector<myChar>{myChar('2'), myChar('3')};
+        else if (a == myVector<myChar>{myChar('2')} && b.getVal() == 'b')
+          return myVector<myChar>{myChar('3')};
+        else if (a == myVector<myChar>{myChar('3')} && b.getVal() == 'b')
+          return myVector<myChar>{};
+        else if (a == myVector<myChar>{myChar('3')} && b.getVal() == 'a')
+          return myVector<myChar>{myChar('1'), myChar('3')};
+        else if (a == myVector<myChar>{myChar('2'), myChar('3')} && b.getVal() == 'b')
+          return myVector<myChar>{myChar('3')};
+        else if (a == myVector<myChar>{myChar('2'), myChar('3')} && b.getVal() == 'a')
+          return myVector<myChar>{myChar('1'), myChar('2'), myChar('3')};
+        else if (a == myVector<myChar>{myChar('1'), myChar('2'), myChar('3')} && b.getVal() == 'a')
+          return a;
+        else if (a == myVector<myChar>{myChar('1'), myChar('2'), myChar('3')} && b.getVal() == 'b')
+          return myVector<myChar>{myChar('2'), myChar('3')};
+        else if (a == myVector<myChar>{myChar('1'), myChar('3')} && b.getVal() == 'a')
+          return a;
+        else if (a == myVector<myChar>{myChar('1'), myChar('3')} && b.getVal() == 'b')
+          return myVector<myChar>{myChar('2')};
+        else
+          return a;
+      },
+      [](myVector<myChar> &a) -> bool {
+        return (a == myVector<myChar>{myChar('1'), myChar('3')} || a == myVector<myChar>{myChar('1'), myChar('2'), myChar('3')});
+      });
+  // convert textbookExampleNFA to DFA using function
+  std::string babStr = "bab";
+  oneString bab = genMyString(babStr);
+  std::cout << "test 1 (should be true): " << textbookExampleNFA.accepts(bab);
+  std::cout << std::endl;
+  std::cout << "test 2 (should be true): " << manuallyConvertedDFA.accepts(bab);
+  auto convertedTextbookNFA = NFA2DFA(textbookExampleNFA);
+  std::cout << "Is manually converted NFA == function-converted NFA (should be true)? " << equalityDFA(convertedTextbookNFA, manuallyConvertedDFA);
   std::cout << std::endl;
 }
 
