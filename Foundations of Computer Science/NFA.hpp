@@ -36,10 +36,10 @@ public:
     myVector<State> epsilonStates;
     myString *temp = &inputString;
 
-    if (temp->isEmpty()) // inputString is the emptyString
+    for (int i = 0; i < currentStates.size(); i++)
     {
-      tempVector = epsilonTrans(this->q0); // check for epsilon transitions from start state
-      currentStates.insert(currentStates.begin(), tempVector.begin(), tempVector.end());
+      tempVector = epsilonTrans(currentStates[i]);
+      currentStates.insert(currentStates.end(), tempVector.begin(), tempVector.end());
     }
 
     // step through NFA with the input string
@@ -50,22 +50,40 @@ public:
 
       for (State x : currentStates)
       {
-        tempVector = epsilonTrans(x); // check whether there are epsilon transitions for current state
-        epsilonStates.insert(epsilonStates.end(), tempVector.begin(), tempVector.end());
-      }
-      currentStates.insert(currentStates.end(), epsilonStates.begin(), epsilonStates.end());
-
-      for (State x : currentStates)
-      {
         tempVector = transFunc(x, temp->charObject()); // generate new sets of states from input char w/ each current state
         newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
       }
-
-      currentStates.clear();
       currentStates = newStates;
+
+      for (int i = 0; i < currentStates.size(); i++)
+      {
+        tempVector = epsilonTrans(currentStates[i]);
+        currentStates.insert(currentStates.end(), tempVector.begin(), tempVector.end());
+      }
+
       temp = temp->next(); // move to next character in the string
     }
-
+    /*
+    std::cout << "current states before final epsi: (";
+    for (State x : currentStates)
+    {
+      std::cout << x << " ";
+    }
+    std::cout << ") " << std::endl;
+*/
+    for (int i = 0; i < currentStates.size(); i++)
+    {
+      tempVector = epsilonTrans(currentStates[i]);
+      currentStates.insert(currentStates.end(), tempVector.begin(), tempVector.end());
+    }
+/*
+    std::cout << "current states after final epsi: (";
+    for (State x : currentStates)
+    {
+      std::cout << x << " ";
+    }
+    std::cout << ") " << std::endl;
+*/
     for (State x : currentStates)
     {
       if (F(x))      // check whether any of the set of current states is an accept state
@@ -139,22 +157,22 @@ public:
     myVector<State> newStates;
     myVector<State> epsilonStates;
     myString *temp = &inputString;
-    
+
     if (tempTrace == NULL)
       return false;
 
     if (tempTrace->state != this->q0)
-      return false;  // first state in trace must be the NFA's start state
+      return false; // first state in trace must be the NFA's start state
     tempTrace = tempTrace->next;
 
     if (temp->isEmpty()) // inputString is empty
     {
-      while (tempTrace != NULL)  // check that the trace is an epsi transition from teh start state
+      while (tempTrace != NULL) // check that the trace is an epsi transition from teh start state
       {
         newStates.clear();
         for (State x : currentStates)
         {
-          tempVector = this->epsilonTrans(x);  // check for epsilon transitions
+          tempVector = this->epsilonTrans(x); // check for epsilon transitions
           newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
         }
 
@@ -166,12 +184,12 @@ public:
         if (isValid)
         {
           currentStates = newStates;
-          tempTrace = tempTrace->next;  // move to next state in trace
+          tempTrace = tempTrace->next; // move to next state in trace
         }
         else
-          return false;  // trace state does not match any of the epsi transitions
+          return false; // trace state does not match any of the epsi transitions
       }
-      return true;   // trace matches one of the epsilon transitions from the NFA's start state
+      return true; // trace matches one of the epsilon transitions from the NFA's start state
     }
 
     tempVector = epsilonTrans(this->q0); // check whether there are epsilon transitions from start state
@@ -187,27 +205,27 @@ public:
     }
     currentStates.insert(currentStates.end(), epsilonStates.begin(), epsilonStates.end());
 
-    for (State x : currentStates)   // generate new states using transFunc and each current state
+    for (State x : currentStates) // generate new states using transFunc and each current state
+    {
+      tempVector = transFunc(x, temp->charObject());
+      newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+    }
+    for (State x : newStates) // compare newly-generated states with trace
+    {
+      if (x == tempTrace->state && tempTrace->input == temp->charObject())
       {
-        tempVector = transFunc(x, temp->charObject()); 
-        newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+        std::cout << "matched trace with one of new states" << std::endl;
+        isValid = true;
+        tempTrace = tempTrace->next;
+        break;
       }
-    for (State x : newStates)  // compare newly-generated states with trace
-      {
-        if (x == tempTrace->state && tempTrace->input == temp->charObject())
-        {
-          std::cout << "matched trace with one of new states" << std::endl;
-          isValid = true;
-          tempTrace = tempTrace->next;
-          break;
-        }
-      }
-      if (isValid == false)
-        return false;
-      currentStates = newStates;  // update current states
-      std::cout << "trace node before while loop: " << *tempTrace << std::endl;
+    }
+    if (isValid == false)
+      return false;
+    currentStates = newStates; // update current states
+    std::cout << "trace node before while loop: " << *tempTrace << std::endl;
 
-      temp = temp->next(); // move to next character in the string
+    temp = temp->next(); // move to next character in the string
     int i = 0;
     // step through NFA with the input string and at each step compare with trace
     while (temp->isEmpty() != true && tempTrace != NULL)
@@ -216,7 +234,7 @@ public:
       std::cout << "iteration: " << i << std::endl;
       std::cout << "current letter: " << temp->charValue() << std::endl;
       std::cout << "current trace node: " << *tempTrace << std::endl;
-      isValid = false;  // starts off false at beginning of each loop
+      isValid = false;   // starts off false at beginning of each loop
       newStates.clear(); // prepare to get new set of states from transFunc
       epsilonStates.clear();
 
@@ -244,17 +262,16 @@ public:
       std::cout << "finished checking epsi transitions" << std::endl;
       std::cout << "current trace node: " << *tempTrace << std::endl;
       std::cout << "isValid?: " << isValid << std::endl;
-      if (isValid == false)  // if none of the current states are in the trace, then return false
+      if (isValid == false) // if none of the current states are in the trace, then return false
         return false;
-      isValid = false;  // reset isValid to false and now time to check the regular transitions from these states
+      isValid = false; // reset isValid to false and now time to check the regular transitions from these states
 
-      
-      for (State x : currentStates)   // generate new states using transFunc and each current state
+      for (State x : currentStates) // generate new states using transFunc and each current state
       {
-        tempVector = transFunc(x, temp->charObject()); 
+        tempVector = transFunc(x, temp->charObject());
         newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
       }
-      for (State x : newStates)  // compare newly-generated states with trace
+      for (State x : newStates) // compare newly-generated states with trace
       {
         if (x == tempTrace->state && tempTrace->input == temp->charObject())
         {
@@ -264,7 +281,7 @@ public:
           break;
         }
       }
-      currentStates = newStates;  // prepare for next iteration through loop
+      currentStates = newStates; // prepare for next iteration through loop
       std::cout << "current trace node: " << *tempTrace << std::endl;
 
       temp = temp->next(); // move to next character in the string
