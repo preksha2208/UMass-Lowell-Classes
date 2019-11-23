@@ -23,5 +23,6 @@
 #include "unionRegex.hpp"
 #include "charRegex.hpp"
 #include "concatRegex.hpp"
+#include "tracePairNode.hpp"
 
 #endif
