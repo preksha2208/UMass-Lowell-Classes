@@ -18,6 +18,7 @@ oneString genMyString(std::string &str)
   return finalStr;
 }
 
+
 // Creates DFA that only accepts a string of length one of the inputChar
 DFA<myChar> oneCharDFA(myChar inputChar)
 {
@@ -1149,21 +1150,7 @@ void makeAndTestNFAs()
   oneString ZZZ = oneString('0', new oneString('0', new oneString('0', new emptyString)));
   oneString ZZZZZ = oneString('0', new oneString('0', new oneString('0', new oneString('0', new oneString('0', new emptyString)))));
 
-  //example traces
-  oneString A = oneString('A', new emptyString);
-  oneString AA = oneString('A', new oneString('A', new emptyString));
-  oneString ABCD = oneString('A', new oneString('B', new oneString('C', new oneString('D', new emptyString))));
-  oneString ABCE = oneString('A', new oneString('B', new oneString('C', new oneString('E', new emptyString))));
-  oneString HI = oneString('H', new oneString('I', new emptyString));
-  oneString ABCB = oneString('A', new oneString('B', new oneString('C', new oneString('B', new emptyString))));
-  oneString ABC = oneString('A', new oneString('B', new oneString('C', new emptyString)));
-  oneString ADEFD = oneString('A', new oneString('D', new oneString('E', new oneString('F', new oneString('D', new emptyString)))));
-  oneString AD = oneString('A', new oneString('D', new emptyString));
-  oneString AB = oneString('A', new oneString('B', new emptyString));
-  oneString B = oneString('B', new emptyString);
-  oneString D = oneString('D', new emptyString);
-  oneString E = oneString('E', new emptyString);
-
+  
   // trace tree for numZerosIsMultipleOfTwoOrThree with emptyString
   oneString ABD = oneString('A', new oneString('B', new oneString('D', new emptyString)));
   // trace tree for numZerosIsMultipleOfTwoOrThree with ZZ
@@ -1204,7 +1191,10 @@ void makeAndTestNFAs()
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    Oracle Function Tests                      " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
-
+  typedef tracePairNode<myChar> tpNode;  // NOTE: constructor is tracePairNode<State>(State state, myChar input, tracePairNode* next)
+  // example traces for oneIsThirdFromEnd
+ 
+/*
   // oracle tests for oneIsThirdFromEnd
   std::cout << "Is 'A' a valid trace of oneIsThirdFromEnd with emptyString? " << oneIsThirdFromEnd.oracle(epsi, A) << std::endl;
   std::cout << "Is 'ABCD' a valid trace of oneIsThirdFromEnd with OZZ? " << oneIsThirdFromEnd.oracle(OZZ, ABCD) << std::endl;
@@ -1228,7 +1218,7 @@ void makeAndTestNFAs()
   std::cout << "Is 'ABCE' a valid trace of containsOZOorOO with OZZ? " << containsOZOorOO.oracle(OZZ, ABCE) << std::endl;
   std::cout << "Is 'A' a valid trace of containsOZOorOO with OZZ? " << containsOZOorOO.oracle(OZZ, A) << std::endl;
   std::cout << std::endl;
-
+*/
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    Trace Tree Function Tests                      " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
@@ -1281,7 +1271,7 @@ void makeAndTestNFAs()
   std::cout << std::endl;
   std::cout << "Does (oneIsThirdFromEnd)* accept emptyString (should be true)? " << kleeneOneThirdFromEnd.accepts(epsi); // should return true
   std::cout << std::endl;
-  std::cout << "Does (oneIsThirdFromEnd)* accept ABCD (should be false)? " << kleeneOneThirdFromEnd.accepts(ABCD); // should return false
+  //std::cout << "Does (oneIsThirdFromEnd)* accept ABCD (should be false)? " << kleeneOneThirdFromEnd.accepts(ABCD); // should return false
   std::cout << std::endl;
   std::cout << "Does (oneIsThirdFromEnd)* accept 0000 (should be false)? " << kleeneOneThirdFromEnd.accepts(ZZZ); // should return false
   std::cout << std::endl;
@@ -1424,6 +1414,11 @@ void makeAndTestNFAs()
   DFA<myVector<myChar>> convertedTextbookNFA = NFA2DFA(textbookExampleNFA);
   //std::cout << "Is manually converted NFA == function-converted NFA (should be true)? " << equalityDFA(convertedTextbookNFA, manuallyConvertedDFA);
   std::cout << std::endl;
+
+   tpNode trace1 = tpNode(myChar('A'), myChar('/'), new tpNode(myChar('B'), myChar('1'), 
+    new tpNode(myChar('C'), myChar('0'), new tpNode(myChar('D'), myChar('0'), NULL))));  // with OZZ
+  std::cout << "testing oracle function (should return true): " << oneIsThirdFromEnd.oracle(OZZ, trace1) << std::endl;
+
 }
 
 void makeAndTestRegex()

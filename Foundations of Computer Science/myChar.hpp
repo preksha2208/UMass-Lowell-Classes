@@ -20,6 +20,10 @@ public:
   {
     return (a.c == b.c);
   }
+  friend bool operator!=(const myChar &a, const myChar &b)
+  {
+    return (a.c != b.c);
+  }
   friend std::ostream &operator<<(std::ostream &os, const myChar &dt)
   {
     os << dt.c;
