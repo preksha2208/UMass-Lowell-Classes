@@ -18,7 +18,6 @@ oneString genMyString(std::string &str)
   return finalStr;
 }
 
-
 // Creates DFA that only accepts a string of length one of the inputChar
 DFA<myChar> oneCharDFA(myChar inputChar)
 {
@@ -274,7 +273,7 @@ NFA<NFAComboState<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2
           return true;
         else if (a.isFromX)
           return nfa1.Q(a.fromX);
-        else if(a.isFromY)
+        else if (a.isFromY)
           return nfa2.Q(a.fromY);
         else
           return false;
@@ -305,17 +304,33 @@ NFA<NFAComboState<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2
           myVector<State1> xVec = nfa1.epsilonTrans(a.fromX);
           myVector<nfaState> xStateVec;
           if (nfa1.F(a.fromX))
+          {
+            std::cout << a << " is an accept states of nfa1";
             xStateVec.push_back(nfaState(1, nfa2.q0)); // nfa1's accept state epsilon transitions to nfa2's start state
+          }
+          std::cout << a << "'s epsi tranition results: (";
           for (State1 x : xVec)
+          {
+            std::cout << x << " ";
             xStateVec.push_back(nfaState(x, 1));
+          }
+          std::cout << ")" << std::endl;
           return xStateVec;
         }
         else if (a.isFromY)
         {
+          std::cout << std::endl;
+          std::cout << "epsilon transition: " << a << " is fromY" << std::endl;
           myVector<State2> yVec = nfa2.epsilonTrans(a.fromY);
+          std::cout << a << "'s epsi tranition results: (";
+
           myVector<nfaState> yStateVec;
           for (State2 y : yVec)
+          {
+            std::cout << y << " ";
             yStateVec.push_back(nfaState(1, y));
+          }
+          std::cout << ")" << std::endl;
           return yStateVec;
         }
         else
@@ -326,8 +341,7 @@ NFA<NFAComboState<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2
           return nfa2.F(a.fromY);
         else
           return false;
-      }
-  );
+      });
 }
 
 // Creates NFA that is the Kleene star of the given NFA
@@ -1068,7 +1082,7 @@ void makeAndTestNFAs()
                                   else if (a.getVal() == 'D' && (b.getVal() == '1' || b.getVal() == '0'))
                                     return myVector<myChar>{myChar('A')};
                                   else
-                                    return myVector<myChar>{myChar('E')}; // may need to change this
+                                    return myVector<myChar>{a}; // may need to change this
                                 },
                                 [](myChar a) -> myVector<myChar> { // epsilon transition
                                   return myVector<myChar>{};
@@ -1095,7 +1109,7 @@ void makeAndTestNFAs()
                                                else if (a.getVal() == 'F' && b.getVal() == '0')
                                                  return myVector<myChar>{myChar('D')};
                                                else
-                                                 return myVector<myChar>{myChar('G')}; // may need to change this
+                                                 return myVector<myChar>{a}; // may need to change this
                                              },
                                              [](myChar a) -> myVector<myChar> { // epsilon transition
                                                if (a.getVal() == 'A')
@@ -1150,7 +1164,6 @@ void makeAndTestNFAs()
   oneString ZZZ = oneString('0', new oneString('0', new oneString('0', new emptyString)));
   oneString ZZZZZ = oneString('0', new oneString('0', new oneString('0', new oneString('0', new oneString('0', new emptyString)))));
 
-  
   // trace tree for numZerosIsMultipleOfTwoOrThree with emptyString
   oneString ABD = oneString('A', new oneString('B', new oneString('D', new emptyString)));
   // trace tree for numZerosIsMultipleOfTwoOrThree with ZZ
@@ -1191,10 +1204,10 @@ void makeAndTestNFAs()
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    Oracle Function Tests                      " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
-  typedef tracePairNode<myChar> tpNode;  // NOTE: constructor is tracePairNode<State>(State state, myChar input, tracePairNode* next)
+  typedef tracePairNode<myChar> tpNode; // NOTE: constructor is tracePairNode<State>(State state, myChar input, tracePairNode* next)
   // example traces for oneIsThirdFromEnd
- 
-/*
+
+  /*
   // oracle tests for oneIsThirdFromEnd
   std::cout << "Is 'A' a valid trace of oneIsThirdFromEnd with emptyString? " << oneIsThirdFromEnd.oracle(epsi, A) << std::endl;
   std::cout << "Is 'ABCD' a valid trace of oneIsThirdFromEnd with OZZ? " << oneIsThirdFromEnd.oracle(OZZ, ABCD) << std::endl;
@@ -1241,9 +1254,9 @@ void makeAndTestNFAs()
   auto numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd = unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd);
   std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept the emptyString (should be true)? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(epsi);
   std::cout << std::endl;
-  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept OO (should be true)? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OO);
+  // std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept OO (should be true)? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OO);
   std::cout << std::endl;
-  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept OZ (should be false)? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OZ);
+  //  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept OZ (should be false)? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OZ);
   std::cout << std::endl;
   numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.traceTree(OZ);
 
@@ -1256,7 +1269,7 @@ void makeAndTestNFAs()
   oneString OZZZZ = genMyString(s1);
   std::cout << "Does concatOneThirdFromEndAndNumZerosMultTwoOrThree accept 10000 (should be true)? " << concatOneThirdFromEndAndNumZerosMultTwoOrThree.accepts(OZZZZ);
   std::cout << std::endl;
-  concatOneThirdFromEndAndNumZerosMultTwoOrThree.traceTree(OZZZZ);
+  //concatOneThirdFromEndAndNumZerosMultTwoOrThree.traceTree(OZZZZ);
 
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    NFA Kleene Star Tests                     " << std::endl;
@@ -1415,10 +1428,8 @@ void makeAndTestNFAs()
   //std::cout << "Is manually converted NFA == function-converted NFA (should be true)? " << equalityDFA(convertedTextbookNFA, manuallyConvertedDFA);
   std::cout << std::endl;
 
-   tpNode trace1 = tpNode(myChar('A'), myChar('/'), new tpNode(myChar('B'), myChar('1'), 
-    new tpNode(myChar('C'), myChar('0'), new tpNode(myChar('D'), myChar('0'), NULL))));  // with OZZ
+  tpNode trace1 = tpNode(myChar('A'), myChar('/'), new tpNode(myChar('B'), myChar('1'), new tpNode(myChar('C'), myChar('0'), new tpNode(myChar('D'), myChar('0'), NULL)))); // with OZZ
   std::cout << "testing oracle function (should return true): " << oneIsThirdFromEnd.oracle(OZZ, trace1) << std::endl;
-
 }
 
 void makeAndTestRegex()
