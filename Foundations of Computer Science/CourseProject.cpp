@@ -176,8 +176,8 @@ DFA<myVector<State>> NFA2DFA(NFA<State> nfa)
           tempVector = nfa.epsilonTrans(currentStates[i]);
           currentStates.insert(currentStates.end(), tempVector.begin(), tempVector.end());
         }
-        std::sort(currentStates.v.begin(), currentStates.v.end(), [](const myChar &lhs, const myChar &rhs) {
-          return (lhs.getVal() < rhs.getVal());
+        std::sort(currentStates.v.begin(), currentStates.v.end(), [](const State &lhs, const State &rhs) {
+          return (lhs < rhs);
         });
         currentStates.v.erase(std::unique(currentStates.v.begin(), currentStates.v.end()), currentStates.v.end());
 
@@ -187,8 +187,8 @@ DFA<myVector<State>> NFA2DFA(NFA<State> nfa)
           newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
         }
 
-        std::sort(newStates.v.begin(), newStates.v.end(), [](const myChar &lhs, const myChar &rhs) {
-          return (lhs.getVal() < rhs.getVal());
+        std::sort(newStates.v.begin(), newStates.v.end(), [](const State &lhs, const State &rhs) {
+          return (lhs < rhs);
         });
         newStates.v.erase(std::unique(newStates.v.begin(), newStates.v.end()), newStates.v.end());
 
@@ -237,6 +237,11 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
         else if (a.isFromX)
         {
           myVector<State1> xVec = nfa1.transFunc(a.fromX, b); // get State1 objects from nfa1's transition function
+          std::sort(xVec.v.begin(), xVec.v.end(), [](const State1 &lhs, const State1 &rhs) {
+            return (lhs < rhs);
+          });
+          xVec.v.erase(std::unique(xVec.v.begin(), xVec.v.end()), xVec.v.end());
+
           myVector<nfaState> xStateVec;
           for (State1 x : xVec) // create vector of nfaState objects out of State1 objects
             xStateVec.push_back(nfaState(x, 1));
@@ -245,6 +250,11 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
         else
         {
           myVector<State2> yVec = nfa2.transFunc(a.fromY, b); // get State2 objects from nfa2's transition function
+          std::sort(yVec.v.begin(), yVec.v.end(), [](const State2 &lhs, const State2 &rhs) {
+            return (lhs < rhs);
+          });
+          yVec.v.erase(std::unique(yVec.v.begin(), yVec.v.end()), yVec.v.end());
+
           myVector<nfaState> yStateVec;
           for (State2 y : yVec) // create vector of nfaState objects out of State2 objects
             yStateVec.push_back(nfaState(1, y));
@@ -257,9 +267,12 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
         else if (a.isFromX)
         {
           myVector<State1> xVec = nfa1.epsilonTrans(a.fromX); // get State1 objects from nfa1's epsiTrans function
+          std::sort(xVec.v.begin(), xVec.v.end(), [](const State1 &lhs, const State1 &rhs) {
+            return (lhs < rhs);
+          });
+          xVec.v.erase(std::unique(xVec.v.begin(), xVec.v.end()), xVec.v.end());
+
           myVector<nfaState> xStateVec;
-          // if (nfa1.F(a.fromX))
-          //  xStateVec.push_back(nfaState(1)); //nfa1's accept state epsi transitions to union NFA's accept state
           for (State1 x : xVec)
             xStateVec.push_back(nfaState(x, 1));
           return xStateVec;
@@ -267,9 +280,12 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
         else
         {
           myVector<State2> yVec = nfa2.epsilonTrans(a.fromY); // get State2 objects from nfa2's epsiTrans function
+          std::sort(yVec.v.begin(), yVec.v.end(), [](const State2 &lhs, const State2 &rhs) {
+            return (lhs < rhs);
+          });
+          yVec.v.erase(std::unique(yVec.v.begin(), yVec.v.end()), yVec.v.end());
+
           myVector<nfaState> yStateVec;
-          // if (nfa2.F(a.fromY))
-          // yStateVec.push_back(nfaState(1)); //nfa2's accept state epsi transitions to union NFA's accept state
           for (State2 y : yVec)
             yStateVec.push_back(nfaState(1, y));
           return yStateVec;
@@ -1562,11 +1578,6 @@ void makeAndTestNFAs()
         return (a == myVector<myChar>{myChar('1'), myChar('3')} || a == myVector<myChar>{myChar('1'), myChar('2'), myChar('3')});
       });
   // convert textbookExampleNFA to DFA using function
-  std::string baaStr = "baa";
-  oneString baa = genMyString(baaStr);
-  std::cout << "test 1 (should be true): " << textbookExampleNFA.accepts(baa);
-  std::cout << std::endl;
-  std::cout << "test 2 (should be true): " << manuallyConvertedDFA.accepts(baa);
   DFA<myVector<myChar>> convertedTextbookNFA = NFA2DFA(textbookExampleNFA);
   std::cout << "Is manually converted NFA == function-converted NFA (should be true)? " << equalityDFA(convertedTextbookNFA, manuallyConvertedDFA);
   std::cout << std::endl;

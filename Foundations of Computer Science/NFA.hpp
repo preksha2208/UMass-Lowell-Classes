@@ -54,36 +54,44 @@ public:
         newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
       }
       currentStates = newStates;
+      std::sort(currentStates.v.begin(), currentStates.v.end(), [](const State &lhs, const State &rhs) {
+        return (lhs < rhs);
+      });
+      currentStates.v.erase(std::unique(currentStates.v.begin(), currentStates.v.end()), currentStates.v.end());
 
       for (int i = 0; i < currentStates.size(); i++)
       {
         tempVector = epsilonTrans(currentStates[i]);
         currentStates.insert(currentStates.end(), tempVector.begin(), tempVector.end());
       }
+      std::sort(newStates.v.begin(), newStates.v.end(), [](const State &lhs, const State &rhs) {
+        return (lhs < rhs);
+      });
+      newStates.v.erase(std::unique(newStates.v.begin(), newStates.v.end()), newStates.v.end());
 
       temp = temp->next(); // move to next character in the string
     }
-    /*
+
     std::cout << "current states before final epsi: (";
     for (State x : currentStates)
     {
       std::cout << x << " ";
     }
     std::cout << ") " << std::endl;
-*/
+
     for (int i = 0; i < currentStates.size(); i++)
     {
       tempVector = epsilonTrans(currentStates[i]);
       currentStates.insert(currentStates.end(), tempVector.begin(), tempVector.end());
     }
-/*
+
     std::cout << "current states after final epsi: (";
     for (State x : currentStates)
     {
       std::cout << x << " ";
     }
     std::cout << ") " << std::endl;
-*/
+
     for (State x : currentStates)
     {
       if (F(x))      // check whether any of the set of current states is an accept state

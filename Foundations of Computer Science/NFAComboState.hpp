@@ -45,6 +45,53 @@ public:
         isFromX = 0;
         isFromY = 1;
     }
+    bool operator<(const NFAComboState<X, Y> &rhs) const  // used to sort vector of NFAComboState objects
+    {
+        if (this->isStartState && (rhs.isFromX || rhs.isFromY || rhs.isAcceptState))
+            return true;
+        else if ((this->isFromX || this->isFromY || this->isAcceptState) && rhs.isStartState)
+            return false;
+        else if (this->isFromX && rhs.isFromX)
+            return this->fromX < rhs.fromX;
+        else if (this->isFromY && rhs.isFromY)
+            return this->fromY < rhs.fromY;
+        else if (this->isFromX && rhs.isFromY)
+            return true;
+        else if (this->isFromY && rhs.isFromX)
+            return false;
+        else if (this->isAcceptState && (rhs.isFromX || rhs.isFromY))
+            return false;
+        else if ((this->isFromX || this->isFromY) && rhs.isAcceptState)
+            return true;
+        else
+            return false;
+    }
+
+    bool operator==(const NFAComboState<X, Y> &rhs) const // used to sort vector of NFAComboState objects
+    {
+        if (this->isStartState && (rhs.isFromX || rhs.isFromY || rhs.isAcceptState))
+            return false;
+        else if (this->isStartState && rhs.isStartState)
+            return true;
+        else if (this->isAcceptState && rhs.isAcceptState)
+            return true;
+        else if ((this->isFromX || this->isFromY || this->isAcceptState) && rhs.isStartState)
+            return false;
+        else if (this->isFromX && rhs.isFromX)
+            return this->fromX == rhs.fromX;
+        else if (this->isFromY && rhs.isFromY)
+            return this->fromY == rhs.fromY;
+        else if (this->isFromX && rhs.isFromY)
+            return false;
+        else if (this->isFromY && rhs.isFromX)
+            return false;
+        else if (this->isAcceptState && (rhs.isFromX || rhs.isFromY))
+            return false;
+        else if ((this->isFromX || this->isFromY) && rhs.isAcceptState)
+            return false;
+        else
+            return false;
+    }
 
     friend std::ostream &operator<<(std::ostream &os, const NFAComboState &n)
     {

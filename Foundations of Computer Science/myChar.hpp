@@ -10,15 +10,19 @@ public:
   myChar() {}
   myChar(const myChar &charB) { c = charB.c; }
   void print() { std::cout << c; }
-  char getVal() const { return c; } 
+  char getVal() const { return c; }
   myChar &operator=(const myChar &charB)
   {
     c = charB.c;
     return *this;
   }
-  friend bool operator==(const myChar &a, const myChar &b)
+  bool operator<(const myChar &rhs) const
   {
-    return (a.c == b.c);
+    return this->c < rhs.getVal();
+  }
+  bool operator==(const myChar &b) const
+  {
+    return (this->c == b.getVal());
   }
   friend bool operator!=(const myChar &a, const myChar &b)
   {
