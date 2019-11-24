@@ -2,12 +2,14 @@
 #define UNIONREGEX_HPP
 
 #include "regex.hpp"
+#include "NFAComboState.hpp"
 
 class unionRegex : public regex
 {
-public:
+ public:
     regex *left;
     regex *right;
+
     unionRegex(regex *left, regex *right)
     {
         isEpsilon = 0;
@@ -35,7 +37,6 @@ public:
             return left->generator();
         else
             return right->generator();
-        
     }
 };
 

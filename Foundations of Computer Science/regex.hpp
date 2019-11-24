@@ -15,6 +15,10 @@ public:
     bool isUnion;
     bool isConcat;
     bool isKleene;
+    regex* right;
+    regex* left;
+    myChar c;
+    regex() {}
     virtual void print() {}
     virtual myString *generator() { return NULL; }
 };

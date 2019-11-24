@@ -7,7 +7,6 @@
 class charRegex : public regex
 {
 public:
-    myChar c;
     charRegex(myChar c)
     {
         isEpsilon = 0;
@@ -22,7 +21,7 @@ public:
     {
         std::cout << c;
     }
-    myString* generator()
+    myString *generator()
     {
         return new oneString(c.getVal(), new emptyString);
     }

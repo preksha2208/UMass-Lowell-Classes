@@ -16,7 +16,8 @@ public:
         isKleene = 0;
     }
     void print() {}
-    myString* generator() {
+    myString *generator()
+    {
         return new emptyString;
     }
 };

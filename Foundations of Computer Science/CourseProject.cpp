@@ -3,6 +3,21 @@
 
 #include "mainHeaders.hpp"
 
+template <class State>
+NFA<State> regex2NFA(regex *r);
+template <class State1, class State2>
+NFA<NFAComboState<State1, State2>> concatRegex2NFA(regex *r);
+template <class State1, class State2>
+NFA<NFAComboState<State1, State2>> unionRegex2NFA(regex *r);
+template <class State>
+NFA<State> kleeneStarRegex2NFA(regex *r);
+
+NFA<myChar> emptySetRegex2NFA();
+
+NFA<myChar> epsilonRegex2NFA();
+
+NFA<myChar> charRegex2NFA(regex *r);
+
 // generate myString linked list from given std::string
 oneString genMyString(std::string &str)
 {
@@ -395,6 +410,105 @@ void regexPrinter(regex &r)
 {
   r.print();
   std::cout << std::endl;
+}
+
+template <class State>
+NFA<State> regex2NFA(regex *r)
+{
+  // checks what the regex type is for regex pointer r
+  if (r->isCharacter)
+    return charRegex2NFA(r);
+  else if (r->isEmptySet)
+    return emptySetRegex2NFA();
+  else if (r->isEpsilon)
+    return epsilonRegex2NFA();
+  else if (r->isUnion)
+    return unionRegex2NFA<State>(r);
+  else if (r->isConcat)
+    return concatRegex2NFA<State>(r);
+  else
+    return kleeneStarRegex2NFA<State>(r);
+}
+
+NFA<myChar> charRegex2NFA(regex *r)
+{
+  return NFA<myChar>("charRegex2NFA", // name
+                     [=](myChar a) -> bool {
+                       return (a.getVal() == 'A' || a.getVal() == 'B');
+                     },                                            // states function
+                     myVector<myChar>{r->c},                       // alphabet
+                     myChar('A'),                                  // start state
+                     [=](myChar a, myChar b) -> myVector<myChar> { // transition function
+                       if (a.getVal() == 'A' && b.getVal() == r->c.getVal())
+                         return myVector<myChar>{myChar('B')};
+                       else
+                         return myVector<myChar>{}; // may not be correct
+                     },
+                     [](myChar a) -> myVector<myChar> { // epsilon transition
+                       return myVector<myChar>{};
+                     },
+                     [=](myChar a) -> bool { // accept states
+                       return (a.getVal() == 'B');
+                     });
+}
+
+NFA<myChar> emptySetRegex2NFA()
+{
+  return NFA<myChar>("only accepts epsilon", // name
+                     [](myChar a) -> bool {
+                       return (a.getVal() == 'A' || a.getVal() == 'B');
+                     },                                           // states function
+                     myVector<myChar>{},                          // alphabet
+                     myChar('A'),                                 // start state
+                     [](myChar a, myChar b) -> myVector<myChar> { // transition function
+                       return myVector<myChar>{};
+                     },
+                     [](myChar a) -> myVector<myChar> { // epsilon transition
+                       return myVector<myChar>{};
+                     },
+                     [](myChar a) -> bool { // accept states
+                       return false;
+                     });
+}
+
+NFA<myChar> epsilonRegex2NFA()
+{
+  return NFA<myChar>("only accepts epsilon", // name
+                     [](myChar a) -> bool {
+                       return (a.getVal() == 'A' || a.getVal() == 'B');
+                     },                                           // states function
+                     myVector<myChar>{},                          // alphabet
+                     myChar('A'),                                 // start state
+                     [](myChar a, myChar b) -> myVector<myChar> { // transition function
+                       return myVector<myChar>{};
+                     },
+                     [](myChar a) -> myVector<myChar> { // epsilon transition
+                       if (a.getVal() == 'A')
+                         return myVector<myChar>{myChar('B')};
+                       else
+                         return myVector<myChar>{};
+                     },
+                     [](myChar a) -> bool { // accept states
+                       return (a.getVal() == 'B');
+                     });
+}
+
+template <class State1, class State2>
+NFA<NFAComboState<State1, State2>> concatRegex2NFA(regex *r)
+{
+  return concatenationNFA(regex2NFA<State1>(r->left), regex2NFA<State2>(r->right));
+}
+
+template <class State1, class State2>
+NFA<NFAComboState<State1, State2>> unionRegex2NFA(regex *r)
+{
+  return unionNFA(regex2NFA<State1>(r->left), regex2NFA<State2>(r->right));
+}
+
+template <class State>
+NFA<State> kleeneStarRegex2NFA(regex *r)
+{
+  return kleeneStarNFA(regex2NFA<State>(r));
 }
 
 // Takes in dfa, vector of test strings and expected values for the test strings on the given dfa
@@ -1220,6 +1334,8 @@ void makeAndTestNFAs()
   std::cout << "---------------------------------------------------------------" << std::endl;
   typedef tracePairNode<myChar> tpNode; // NOTE: constructor is tracePairNode<State>(State state, myChar input, tracePairNode* next)
   // example traces for oneIsThirdFromEnd
+  tpNode trace1 = tpNode(myChar('A'), myChar('/'), new tpNode(myChar('B'), myChar('1'), new tpNode(myChar('C'), myChar('0'), new tpNode(myChar('D'), myChar('0'), NULL)))); // with OZZ
+  std::cout << "testing oracle function (should return true): " << oneIsThirdFromEnd.oracle(OZZ, trace1) << std::endl;
 
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    Trace Tree Function Tests                      " << std::endl;
@@ -1357,7 +1473,7 @@ void makeAndTestNFAs()
   std::cout << std::endl;
   std::cout << "Does dfa1 == dfa2? " << equalityDFA(dfa1, dfa2) << std::endl;
   std::cout << "Does dfa2 == dfa3? " << equalityDFA(dfa2, dfa3) << std::endl;
-  std::cout << "Does dfa2 == dfa2? " << equalityDFA(dfa2, dfa2) << std::endl;
+  // std::cout << "Does dfa2 == dfa2? " << equalityDFA(dfa2, dfa2) << std::endl;
   NFA<myChar> textbookExampleNFA("NFA txtbook example to convert to DFA", // name
                                  [](myChar a) -> bool {
                                    return (a.getVal() == '1' || a.getVal() == '2' || a.getVal() == '3');
@@ -1445,9 +1561,6 @@ void makeAndTestNFAs()
   DFA<myVector<myChar>> convertedTextbookNFA = NFA2DFA(textbookExampleNFA);
   //std::cout << "Is manually converted NFA == function-converted NFA (should be true)? " << equalityDFA(convertedTextbookNFA, manuallyConvertedDFA);
   std::cout << std::endl;
-
-  tpNode trace1 = tpNode(myChar('A'), myChar('/'), new tpNode(myChar('B'), myChar('1'), new tpNode(myChar('C'), myChar('0'), new tpNode(myChar('D'), myChar('0'), NULL)))); // with OZZ
-  std::cout << "testing oracle function (should return true): " << oneIsThirdFromEnd.oracle(OZZ, trace1) << std::endl;
 }
 
 void makeAndTestRegex()
@@ -1552,6 +1665,12 @@ void makeAndTestRegex()
     temp = temp->next();
   }
   std::cout << std::endl;
+
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "                     REGEX -> NFA Tests                        " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  regex *r5temp = &r5;
+  // NFA<myChar> r2n1 = regex2NFA<NFAComboState<myChar, NFAComboState<myChar, myChar>>>(r5temp);
 }
 
 void showMenu()
