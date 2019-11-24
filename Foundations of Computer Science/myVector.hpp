@@ -46,6 +46,11 @@ public:
     return v.insert(position, val);
   }
 
+  iter erase(iter first, iter last)
+  {
+    v.erase(first, last);
+  }
+
   iter begin()
   {
     return v.begin();

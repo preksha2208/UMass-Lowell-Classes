@@ -51,9 +51,10 @@ DFA<myPair<State1, State2>> unionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
   myVector<myChar> a = dfa1.alphabet;
   myVector<myChar> b = dfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both DFAs
-  std::sort(a.begin(), a.end(), [](myChar &a, myChar &b) {
-    return (a.getVal() < b.getVal());
+  std::sort(a.v.begin(), a.v.end(), [](const myChar &lhs, const myChar &rhs) {
+    return (lhs.getVal() < rhs.getVal());
   });
+  a.v.erase(std::unique(a.v.begin(), a.v.end()), a.v.end());
 
   return DFA<myPair<State1, State2>>(
       "Union of " + dfa1.name + " and " + dfa2.name,
@@ -77,6 +78,10 @@ DFA<myPair<State1, State2>> intersectionDFA(DFA<State1> dfa1, DFA<State2> dfa2)
   myVector<myChar> a = dfa1.alphabet;
   myVector<myChar> b = dfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both DFAs
+  std::sort(a.v.begin(), a.v.end(), [](const myChar &lhs, const myChar &rhs) {
+    return (lhs.getVal() < rhs.getVal());
+  });
+  a.v.erase(std::unique(a.v.begin(), a.v.end()), a.v.end());
 
   return DFA<myPair<State1, State2>>(
       "Union of " + dfa1.name + " and " + dfa2.name,
@@ -148,26 +153,22 @@ DFA<myVector<State>> NFA2DFA(NFA<State> nfa)
       [=](myVector<State> a, myChar b) -> myVector<State> { // transition function
         myVector<State> tempVector;
         myVector<State> newStates;
-        myVector<State> currentStates;
+        myVector<State> currentStates = a;
         myVector<State> epsilonStates;
 
-        for (State x : a) // check whether there are epsilon transitions from current state
+        for (int i = 0; i < currentStates.size(); i++)
         {
-          tempVector = nfa.epsilonTrans(x);
-          epsilonStates.insert(epsilonStates.end(), tempVector.begin(), tempVector.end());
+          tempVector = nfa.epsilonTrans(currentStates[i]);
+          currentStates.insert(currentStates.end(), tempVector.begin(), tempVector.end());
         }
-        currentStates.insert(currentStates.end(), epsilonStates.begin(), epsilonStates.end());
-        currentStates.insert(currentStates.end(), a.begin(), a.end());
 
         for (State x : currentStates) // generate new sets of states from input char w/ each current state
         {
           tempVector = nfa.transFunc(x, b);
           newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
         }
-        currentStates.clear();
-        currentStates.insert(currentStates.end(), newStates.begin(), newStates.end());
 
-        return currentStates; // return new state generated from the current state
+        return newStates; // return new state generated from the current state
       },
       [=](myVector<State> &a) -> bool {
         for (State x : a)
@@ -187,6 +188,10 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
   myVector<myChar> a = nfa1.alphabet;
   myVector<myChar> b = nfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both NFAs
+  std::sort(a.v.begin(), a.v.end(), [](const myChar &lhs, const myChar &rhs) {
+    return (lhs.getVal() < rhs.getVal());
+  });
+  a.v.erase(std::unique(a.v.begin(), a.v.end()), a.v.end());
 
   return NFA<nfaState>(
       "Union of " + nfa1.name + " and " + nfa2.name,
@@ -270,6 +275,10 @@ NFA<NFAComboState<State1, State2>> concatenationNFA(NFA<State1> nfa1, NFA<State2
   myVector<myChar> a = nfa1.alphabet;
   myVector<myChar> b = nfa2.alphabet;
   a.insert(a.end(), b.begin(), b.end()); // combine the alphabets of both NFAs
+  std::sort(a.v.begin(), a.v.end(), [](const myChar &lhs, const myChar &rhs) {
+    return (lhs.getVal() < rhs.getVal());
+  });
+  a.v.erase(std::unique(a.v.begin(), a.v.end()), a.v.end());
 
   return NFA<nfaState>(
       "Concatenation of " + nfa1.name + " and " + nfa2.name,
@@ -1212,31 +1221,6 @@ void makeAndTestNFAs()
   typedef tracePairNode<myChar> tpNode; // NOTE: constructor is tracePairNode<State>(State state, myChar input, tracePairNode* next)
   // example traces for oneIsThirdFromEnd
 
-  /*
-  // oracle tests for oneIsThirdFromEnd
-  std::cout << "Is 'A' a valid trace of oneIsThirdFromEnd with emptyString? " << oneIsThirdFromEnd.oracle(epsi, A) << std::endl;
-  std::cout << "Is 'ABCD' a valid trace of oneIsThirdFromEnd with OZZ? " << oneIsThirdFromEnd.oracle(OZZ, ABCD) << std::endl;
-  std::cout << "Is 'ABC' a valid trace of oneIsThirdFromEnd with OZZ? " << oneIsThirdFromEnd.oracle(OZZ, ABC) << std::endl;
-  std::cout << "Is 'A' a valid trace of oneIsThirdFromEnd with OZZ? " << oneIsThirdFromEnd.oracle(OZZ, A) << std::endl;
-  std::cout << std::endl;
-
-  // oracle tests for numZerosIsMultipleOfTwoOrThree
-  std::cout << "Is 'A' a valid trace of numZerosIsMultipleOfTwoOrThree with emptyString? " << numZerosIsMultipleOfTwoOrThree.oracle(epsi, A) << std::endl;
-  std::cout << "Is 'B' a valid trace of numZerosIsMultipleOfTwoOrThree with emptyString? " << numZerosIsMultipleOfTwoOrThree.oracle(epsi, B) << std::endl;
-  std::cout << "Is 'D' a valid trace of numZerosIsMultipleOfTwoOrThree with emptyString? " << numZerosIsMultipleOfTwoOrThree.oracle(epsi, D) << std::endl;
-  std::cout << "Is 'E' a valid trace of numZerosIsMultipleOfTwoOrThree with emptyString? " << numZerosIsMultipleOfTwoOrThree.oracle(epsi, E) << std::endl;
-  std::cout << "Is 'ABCB' a valid trace of numZerosIsMultipleOfTwoOrThree with ZZ? " << numZerosIsMultipleOfTwoOrThree.oracle(ZZ, ABCB) << std::endl;
-  std::cout << "Is 'ADEFD' a valid trace of numZerosIsMultipleOfTwoOrThree with ZZZ? " << numZerosIsMultipleOfTwoOrThree.oracle(OZZ, ADEFD) << std::endl;
-  std::cout << "Is 'A' a valid trace of numZerosIsMultipleOfTwoOrThree with OZZ? " << numZerosIsMultipleOfTwoOrThree.oracle(OZZ, A) << std::endl;
-  std::cout << std::endl;
-
-  // oracle tests for containsOZOorOO
-  std::cout << "Is 'A' a valid trace of containsOZOorOO with emptyString? " << containsOZOorOO.oracle(epsi, A) << std::endl;
-  std::cout << "Is 'ABCD' a valid trace of containsOZOorOO with OO? " << containsOZOorOO.oracle(OO, ABCD) << std::endl;
-  std::cout << "Is 'ABCE' a valid trace of containsOZOorOO with OZZ? " << containsOZOorOO.oracle(OZZ, ABCE) << std::endl;
-  std::cout << "Is 'A' a valid trace of containsOZOorOO with OZZ? " << containsOZOorOO.oracle(OZZ, A) << std::endl;
-  std::cout << std::endl;
-*/
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    Trace Tree Function Tests                      " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;

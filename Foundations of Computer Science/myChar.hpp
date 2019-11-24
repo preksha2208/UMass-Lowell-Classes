@@ -10,7 +10,7 @@ public:
   myChar() {}
   myChar(const myChar &charB) { c = charB.c; }
   void print() { std::cout << c; }
-  char getVal() { return c; }
+  char getVal() const { return c; } 
   myChar &operator=(const myChar &charB)
   {
     c = charB.c;

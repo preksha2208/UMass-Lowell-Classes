@@ -25,7 +25,6 @@ public:
   std::function<State(State, myChar)> transFunc; // transition function
   std::function<bool(State &)> F;                // accept states
 
-
   bool accepts(myString &inputString) // does DFA accept inputString?
   {
     State qi = this->q0;
@@ -93,15 +92,12 @@ private:
   bool acceptedStringRecursive(State qi, std::list<State> &visitedStates, std::stack<myChar> &stringStack)
   {
     if (F(qi) == true)
-    {
       return true; // current state is accept state
-    }
+
     for (auto x : visitedStates)
     {
       if (qi == x) // current state has already been visited
-      {
         return false;
-      }
     }
     visitedStates.push_back(qi);
 
