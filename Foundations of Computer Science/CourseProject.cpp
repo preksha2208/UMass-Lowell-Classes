@@ -149,9 +149,9 @@ NFA<State> DFA2NFA(DFA<State> &inputDFA)
 template <class State>
 DFA<myVector<State>> NFA2DFA(NFA<State> nfa)
 {
-  myVector<State> startStates{nfa.q0};
-  myVector<State> epsiFromStart = nfa.epsilonTrans(nfa.q0);
-  startStates.insert(startStates.end(), epsiFromStart.begin(), epsiFromStart.end());
+  myVector<State> start{nfa.q0};
+  myVector<State> epsiStart = nfa.epsilonTrans(nfa.q0);
+  start.insert(start.end(), epsiStart.begin(), epsiStart.end());
 
   return DFA<myVector<State>>(
       nfa.name + " in DFA form",
@@ -164,7 +164,7 @@ DFA<myVector<State>> NFA2DFA(NFA<State> nfa)
         return true; // all elements of input vector are valid nfa states
       },
       nfa.alphabet, // uses same alphabet as given nfa
-      startStates,
+      start,
       [=](myVector<State> a, myChar b) -> myVector<State> { // transition function
         myVector<State> tempVector;
         myVector<State> newStates;
@@ -176,12 +176,21 @@ DFA<myVector<State>> NFA2DFA(NFA<State> nfa)
           tempVector = nfa.epsilonTrans(currentStates[i]);
           currentStates.insert(currentStates.end(), tempVector.begin(), tempVector.end());
         }
+        std::sort(currentStates.v.begin(), currentStates.v.end(), [](const myChar &lhs, const myChar &rhs) {
+          return (lhs.getVal() < rhs.getVal());
+        });
+        currentStates.v.erase(std::unique(currentStates.v.begin(), currentStates.v.end()), currentStates.v.end());
 
         for (State x : currentStates) // generate new sets of states from input char w/ each current state
         {
           tempVector = nfa.transFunc(x, b);
           newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
         }
+
+        std::sort(newStates.v.begin(), newStates.v.end(), [](const myChar &lhs, const myChar &rhs) {
+          return (lhs.getVal() < rhs.getVal());
+        });
+        newStates.v.erase(std::unique(newStates.v.begin(), newStates.v.end()), newStates.v.end());
 
         return newStates; // return new state generated from the current state
       },
@@ -1473,7 +1482,7 @@ void makeAndTestNFAs()
   std::cout << std::endl;
   std::cout << "Does dfa1 == dfa2? " << equalityDFA(dfa1, dfa2) << std::endl;
   std::cout << "Does dfa2 == dfa3? " << equalityDFA(dfa2, dfa3) << std::endl;
-  // std::cout << "Does dfa2 == dfa2? " << equalityDFA(dfa2, dfa2) << std::endl;
+  std::cout << "Does dfa2 == dfa2? " << equalityDFA(dfa2, dfa2) << std::endl;
   NFA<myChar> textbookExampleNFA("NFA txtbook example to convert to DFA", // name
                                  [](myChar a) -> bool {
                                    return (a.getVal() == '1' || a.getVal() == '2' || a.getVal() == '3');
@@ -1559,7 +1568,7 @@ void makeAndTestNFAs()
   std::cout << std::endl;
   std::cout << "test 2 (should be true): " << manuallyConvertedDFA.accepts(baa);
   DFA<myVector<myChar>> convertedTextbookNFA = NFA2DFA(textbookExampleNFA);
-  //std::cout << "Is manually converted NFA == function-converted NFA (should be true)? " << equalityDFA(convertedTextbookNFA, manuallyConvertedDFA);
+  std::cout << "Is manually converted NFA == function-converted NFA (should be true)? " << equalityDFA(convertedTextbookNFA, manuallyConvertedDFA);
   std::cout << std::endl;
 }
 

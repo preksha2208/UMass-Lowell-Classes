@@ -3,10 +3,13 @@
 
 #include <iostream>
 #include <vector>
+#include <unistd.h>
 #include "oneString.hpp"
 #include "emptyString.hpp"
 #include "myVector.hpp"
 #include "NFA.hpp"
+#include <thread>
+#include <chrono>
 
 template <class State>
 class DFA
