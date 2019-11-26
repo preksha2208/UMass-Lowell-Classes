@@ -1393,7 +1393,7 @@ void makeAndTestNFAs()
   std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept 1000 (should be true)? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OZZZ);
   std::cout << std::endl;
   std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept 100000 (should be false)? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(ZZZZZ);
-  numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.traceTree(ZZZZZ);
+  //numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.traceTree(ZZZZZ);
   std::cout << std::endl
             << std::endl;
 

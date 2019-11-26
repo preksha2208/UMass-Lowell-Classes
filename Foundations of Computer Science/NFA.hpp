@@ -100,58 +100,98 @@ public:
     return false; // NFA does not accept the input string
   }
 
+  /*
+Trace tree function prints each layer of the tree on a new line.
+All epsilon transitions from current states are printed within square brackets []
+Regular transitions from current states are printed within curly brackets {}
+The output format for an epsilon transition is <previous state>/<new state>
+The output format for a regular transition is <previous state>/<input>/<new state>
+The last line in the output displays the final states in the format <state>/<accepting? YES or NO> 
+*/
   void traceTree(myString &inputString) // creates tree of all possible traces
   {
-    myVector<State> currentStates{this->q0}; // keeps track of current states
+    myVector<State> currentStates{this->q0}; // keeps track of current states. Initial state is always q0
     myVector<State> tempVector;
     myVector<State> newStates;
     myVector<State> epsilonStates;
     myString *temp = &inputString;
-
-    if (temp->isEmpty()) // inputString is the emptyString
-    {
-      tempVector = epsilonTrans(this->q0); // check for epsilon transitions from start state
-      currentStates.insert(currentStates.begin(), tempVector.begin(), tempVector.end());
-      std::cout << std::endl;
-      std::cout << this->q0 << std::endl;
-      for (auto x : currentStates)
-        std::cout << x << " ";
-    }
+    myChar c;
 
     std::cout << std::endl;
+    std::cout << "{" << this->q0 << "} [";
+    for (int i = 0; i < currentStates.size(); i++) // first need to check for any epsilon transition from current state
+    {
+      tempVector = epsilonTrans(currentStates[i]);
+      if (tempVector.size() != 0) // if there exists an epsi transition from the current state
+      {
+        if (i != 0)
+          std::cout << ", ";
+        std::cout << currentStates[i] << "/" << tempVector; // prints as <old state>/<new state>
+        currentStates.insert(currentStates.end(), tempVector.begin(), tempVector.end());
+      }
+    }
+    std::cout << "]" << std::endl;
+
     // step through NFA with the input string
     while (temp->isEmpty() != true)
     {
       newStates.clear(); // prepare to get new set of states from transFunc
       epsilonStates.clear();
+      c = temp->charObject(); // stored for more efficient reference
 
-      for (State x : currentStates)
+      std::cout << "{";
+    
+      for (int i = 0, j =0; i < currentStates.size(); i++) // check for all epsilon transition from current state
       {
-        std::cout << x << " ";
-        tempVector = transFunc(x, temp->charObject()); // generate new sets of states from input char w/ each current state
-        newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+        tempVector = transFunc(currentStates[i], c); // generate new sets of states from input char w/ each current state
+        if (tempVector.size() != 0)                  // if there exists are a transition from the current state
+        {
+          if (i != 0 && j>0)
+            std::cout << ", ";
+          j++;  // incremented when there is a return of more than 0 elements from transition func; used to determine whether or not to put a comma before an a given element in output
+          std::cout << currentStates[i] << "/" << c << "/" << tempVector; // prints as <old state>/<input>/<new state>
+          newStates.insert(newStates.end(), tempVector.begin(), tempVector.end());
+        }
       }
-      std::cout << std::endl; // epsilon transitions from current states will be on next level of tree
+      std::cout << "}";
+      currentStates = newStates; // update newStates
+      std::sort(currentStates.v.begin(), currentStates.v.end(), [](const State &lhs, const State &rhs) {
+        return (lhs < rhs);
+      });
+      currentStates.v.erase(std::unique(currentStates.v.begin(), currentStates.v.end()), currentStates.v.end()); // get rid of duplicates
 
-      for (State x : currentStates)
+      std::cout << " [";
+      for (int i = 0, j = 0; i < currentStates.size(); i++) // check for all epsilon transition from current state
       {
-        tempVector = epsilonTrans(x); // check whether there are epsilon transitions from current states
-        epsilonStates.insert(epsilonStates.end(), tempVector.begin(), tempVector.end());
+        tempVector = epsilonTrans(currentStates[i]);
+        if (tempVector.size() != 0) // if there exists an epsi transition from the current state
+        {
+          if (i != 0 && j>0)
+            std::cout << ", ";
+          j++;
+          std::cout << currentStates[i] << "/" << tempVector;
+          currentStates.insert(currentStates.end(), tempVector.begin(), tempVector.end());
+        }
       }
-      if (epsilonStates.size() > 0)
-      {
-        for (State x : epsilonStates) // print all epsilon transitions
-          std::cout << x << " ";
-        std::cout << std::endl;
-      }
+      std::cout << "]" << std::endl;
+      std::sort(newStates.v.begin(), newStates.v.end(), [](const State &lhs, const State &rhs) {
+        return (lhs < rhs);
+      });
+      newStates.v.erase(std::unique(newStates.v.begin(), newStates.v.end()), newStates.v.end()); // get rid of duplicate states
 
-      currentStates = newStates; // update current states for next iteration through
-      currentStates.insert(currentStates.end(), epsilonStates.begin(), epsilonStates.end());
       temp = temp->next(); // move to next character in the string
     }
+
+    std::cout << "{";
     for (State x : currentStates)
-      std::cout << x << " ";
-    std::cout << std::endl;
+    {
+      std::cout << " " << x << "/";
+      if (F(x))
+        std::cout << "YES "; //
+      else                   //else
+        std::cout << "NO ";
+    }
+    std::cout << "}" << std::endl << std::endl;
   }
 
   // returns whether or not the given trace is a valid execution of the NFA

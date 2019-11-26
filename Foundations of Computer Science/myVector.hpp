@@ -76,10 +76,10 @@ public:
 
   friend std::ostream &operator<<(std::ostream &os, const myVector &p)
   {
-    os << "{"; // signifies start of vector when printing
+    os << "("; // signifies start of vector when printing
     for (auto x : p.v)
       os << x;
-    os << "}"; // signfiies end of vector when printing
+    os << ")"; // signfiies end of vector when printing
     return os;
   }
 };
