@@ -1358,9 +1358,76 @@ void makeAndTestNFAs()
   std::cout << "                    Oracle Function Tests                      " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
   typedef tracePairNode<myChar> tpNode; // NOTE: constructor is tracePairNode<State>(State state, myChar input, tracePairNode* next)
-  // example traces for oneIsThirdFromEnd
-  tpNode trace1 = tpNode(myChar('A'), myChar('/'), new tpNode(myChar('B'), myChar('1'), new tpNode(myChar('C'), myChar('0'), new tpNode(myChar('D'), myChar('0'), NULL)))); // with OZZ
-  std::cout << "testing oracle function (should return true): " << oneIsThirdFromEnd.oracle(OZZ, trace1) << std::endl;
+
+  // traces
+  tpNode tp1 = tpNode(myChar('A'), NULL);
+  tpNode tp2 = tpNode(myChar('A'), new tpNode(myChar('A'), myChar('_'), myChar('B'), NULL));
+  tpNode tp3 = tpNode(myChar('A'), new tpNode(myChar('A'), myChar('_'), myChar('B'), new tpNode(myChar('B'), myChar('_'), myChar('C'), NULL)));
+  tpNode tp4 = tpNode(myChar('A'), new tpNode(myChar('A'), myChar('_'), myChar('B'),
+                                              new tpNode(myChar('B'), myChar('0'), myChar('C'),
+                                                         new tpNode(myChar('C'), myChar('0'), myChar('B'), NULL))));
+  tpNode tp5 = tpNode(myChar('A'), new tpNode(myChar('A'), myChar('_'), myChar('D'),
+                                              new tpNode(myChar('D'), myChar('0'), myChar('E'),
+                                                         new tpNode(myChar('E'), myChar('0'), myChar('F'), NULL))));
+  tpNode tp6 = tpNode(myChar('A'), new tpNode(myChar('A'), myChar('1'), myChar('A'),
+                                              new tpNode(myChar('A'), myChar('1'), myChar('A'),
+                                                         new tpNode(myChar('A'), myChar('1'), myChar('A'), NULL))));
+  tpNode tp7 = tpNode(myChar('A'), new tpNode(myChar('A'), myChar('1'), myChar('B'),
+                                              new tpNode(myChar('B'), myChar('0'), myChar('C'),
+                                                         new tpNode(myChar('C'), myChar('0'), myChar('D'), NULL))));
+  tpNode tp8 = tpNode(myChar('A'), new tpNode(myChar('A'), myChar('1'), myChar('B'),
+                                              new tpNode(myChar('B'), myChar('0'), myChar('C'),
+                                                         new tpNode(myChar('C'), myChar('0'), myChar('D'),
+                                                                    new tpNode(myChar('D'), myChar('1'), myChar('A'),
+                                                                               new tpNode(myChar('A'), myChar('1'), myChar('A'), new tpNode(myChar('A'), myChar('1'), myChar('A'), NULL)))))));
+  tpNode tp9 = tpNode(myChar('A'), new tpNode(myChar('A'), myChar('1'), myChar('A'), new tpNode(myChar('A'), myChar('1'), myChar('A'), NULL)));
+  tpNode tp10 = tpNode(myChar('A'), new tpNode(myChar('A'), myChar('1'), myChar('B'),
+                                               new tpNode(myChar('B'), myChar('0'), myChar('C'),
+                                                          new tpNode(myChar('C'), myChar('1'), myChar('D'), NULL))));
+  tpNode tp11 = tpNode(myChar('A'), new tpNode(myChar('A'), myChar('1'), myChar('B'),
+                                               new tpNode(myChar('B'), myChar('_'), myChar('C'),
+                                                          new tpNode(myChar('C'), myChar('1'), myChar('D'), NULL))));
+  tpNode tp12 = tpNode(myChar('A'), new tpNode(myChar('A'), myChar('1'), myChar('B'),
+                                               new tpNode(myChar('B'), myChar('0'), myChar('C'), NULL)));
+  std::string s000 = "111";
+  oneString OOO = genMyString(s000);
+  std::string sOZZOOO = "100111";
+  oneString OZZOOO = genMyString(sOZZOOO);
+  std::string sOZO = "101";
+  oneString OZO = genMyString(sOZO);
+
+  std::cout << "testing oracle with numZerosIsMultipleOfTwoOrThree, input of emptyString, and trace A (should return true) " << numZerosIsMultipleOfTwoOrThree.oracle(epsi, tp1);
+  std::cout << std::endl;
+  std::cout << "testing oracle with numZerosIsMultipleOfTwoOrThree, input of emptyString, and trace AB (should return true) " << numZerosIsMultipleOfTwoOrThree.oracle(epsi, tp2);
+  std::cout << std::endl;
+  std::cout << "testing oracle with numZerosIsMultipleOfTwoOrThree, input of emptyString, and trace ABC (should return false) " << numZerosIsMultipleOfTwoOrThree.oracle(epsi, tp3);
+  std::cout << std::endl;
+  std::cout << "testing oracle with numZerosIsMultipleOfTwoOrThree, input of 00, and trace ABCB (should return true) " << numZerosIsMultipleOfTwoOrThree.oracle(ZZ, tp4);
+  std::cout << std::endl;
+  std::cout << "testing oracle with numZerosIsMultipleOfTwoOrThree, input of 00, and trace ADEF (should return true) " << numZerosIsMultipleOfTwoOrThree.oracle(ZZ, tp5);
+  std::cout << std::endl;
+  std::cout << "testing oracle with numZerosIsMultipleOfTwoOrThree, input of 00000, and trace ADEF (should return false) " << numZerosIsMultipleOfTwoOrThree.oracle(ZZZZZ, tp5);
+  std::cout << std::endl;
+  std::cout << "testing oracle with oneIsThirdFromEnd, input of 111, and trace AAAA (should return true) " << oneIsThirdFromEnd.oracle(OOO, tp6);
+  std::cout << std::endl;
+  std::cout << "testing oracle with oneIsThirdFromEnd, input of 100, and trace ABCD (should return true) " << oneIsThirdFromEnd.oracle(OZZ, tp7);
+  std::cout << std::endl;
+  std::cout << "testing oracle with oneIsThirdFromEnd, input of 100, and trace AB (should return false) " << oneIsThirdFromEnd.oracle(OZZ, tp2);
+  std::cout << std::endl;
+  std::cout << "testing oracle with oneIsThirdFromEnd, input of 100111, and trace ABCDAAA (should return true) " << oneIsThirdFromEnd.oracle(OZZOOO, tp8);
+  std::cout << std::endl;
+  std::cout << "testing oracle with oneIsThirdFromEnd, input of 100111, and trace AB (should return false) " << oneIsThirdFromEnd.oracle(OZZOOO, tp2);
+  std::cout << std::endl;
+  std::cout << "testing oracle with oneIsThirdFromEnd, input of 100111, and trace ABCD (should return false) " << oneIsThirdFromEnd.oracle(OZZOOO, tp7);
+  std::cout << std::endl;
+  std::cout << "testing oracle with containsOZOorOO, input of 11, and trace AAA (should return true) " << containsOZOorOO.oracle(OO, tp9);
+  std::cout << std::endl;
+  std::cout << "testing oracle with containsOZOorOO, input of 11, and trace ABCD (should return true) " << containsOZOorOO.oracle(OO, tp11);
+  std::cout << std::endl;
+  std::cout << "testing oracle with containsOZOorOO, input of 101, and trace ABCD (should return true) " << containsOZOorOO.oracle(OZO, tp10);
+  std::cout << std::endl;
+  std::cout << "testing oracle with containsOZOorOO, input of 10, and trace ABC (should return true) " << containsOZOorOO.oracle(OZ, tp12);
+  std::cout << std::endl;
 
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    Trace Tree Function Tests                      " << std::endl;
