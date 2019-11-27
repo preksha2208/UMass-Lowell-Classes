@@ -25,9 +25,9 @@ TASK 24: Done. Just needed to set the values of the NFA equal to the values of t
 TASK 25: Done. Didn't make a dozen example NFAs, but made enough to ensure that my data structure works correctly.
 TASK 26: Done. Wrote the traces in the form of linked list tracePairNodes. These are defined and described in tracePairNode.hpp
 TASK 27: Done. Compares trace nodes to generated states with each character of inputted string in NFA.
-TASK 28: Done. Trace trees represented by myStrings
-TASK 29: 
-TASK 30: 
+TASK 28: Done. Trace trees represented by strings. 
+TASK 29: Done. Trace trees written in the form of strings at the top of the section entitled "Trace Tree Function Tests"
+TASK 30: Done. Trace tree prints out each level of the tree. Regular transitions are in form  {<last state>/<input>/<new state>} and epsi transitions in the form [<last state>/<new state>]. The last is in the form { <state>/<accepting YES or NO>}
 TASK 31: Done. Didn't write a dozen examples for each NFA, but made enough to know that they are functioning correctly.
 TASK 32: Done. Steps through input string character by character and runs transition function & checks for epsi transitions
 TASK 33: 

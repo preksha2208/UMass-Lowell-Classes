@@ -1441,16 +1441,33 @@ void makeAndTestNFAs()
   oneString O = genMyString(sO);
   std::string sZOZZ = "0100";
   oneString ZOZZ = genMyString(sZOZZ);
-  std::string tree1str = "{A} [A/(BD)] -> {A/NO B/YES D/NO}"; // numZerosIsMultipleOfTwoOrThree with emptyString
-  oneString tree1 = genMyString(tree1str);
-  std::string tree2str = "{A} [A/(BD)] -> {B/0/C, D/0/E} [] -> {C/NO E/NO}"; // numZerosIsMultipleOfTwoOrThree with 0
-  oneString tree2 = genMyString(tree2str);
-  std::string tree3str = "{A} [A/(BD)] -> {B/0/C, D/0/E} [] -> {C/0/B E/0/F} [] -> {B/NO F/NO}"; // numZerosIsMultipleOfTwoOrThree with 00
-  oneString tree3 = genMyString(tree3str);
-  std::string tree4str = "{A} [A/(BD)] -> {B/0/C, D/0/E} [] -> {C/0/B E/0/F} [] -> {B/0/C, F/0/D} [] -> {C/NO D/YES}"; // numZerosIsMultipleOfTwoOrThree with 000
-  oneString tree4 = genMyString(tree4str);
-  std::string tree5str = "{A} [A/(BD)] -> {B/0/C, D/0/E} [] -> {C/0/B E/0/F} [] -> {B/0/C, F/0/D} [] -> {C/0/B, D/0/E} [] -> {B/NO E/YES}"; // numZerosIsMultipleOfTwoOrThree with 0000
-  oneString tree5 = genMyString(tree5Str);
+
+  // example trace trees
+  std::string tree1 = "{A} [A/(BD)] -> {A/NO B/YES D/NO}"; // numZerosIsMultipleOfTwoOrThree with emptyString
+
+  std::string tree2 = "{A} [A/(BD)] -> {B/0/C, D/0/E} [] -> {C/NO E/NO}"; // numZerosIsMultipleOfTwoOrThree with 0
+
+  std::string tree3 = "{A} [A/(BD)] -> {B/0/C, D/0/E} [] -> {C/0/B E/0/F} [] -> {B/NO F/NO}"; // numZerosIsMultipleOfTwoOrThree with 00
+
+  std::string tree4 = "{A} [A/(BD)] -> {B/0/C, D/0/E} [] -> {C/0/B E/0/F} [] -> {B/0/C, F/0/D} [] -> {C/NO D/YES}"; // numZerosIsMultipleOfTwoOrThree with 000
+
+  std::string tree5 = "{A} [A/(BD)] -> {B/0/C, D/0/E} [] -> {C/0/B E/0/F} [] -> {B/0/C, F/0/D} [] -> {C/0/B, D/0/E} [] -> {B/NO E/YES}"; // numZerosIsMultipleOfTwoOrThree with 0000
+
+  std::string tree6 = "{A} [] -> {A/NO}"; // containsOZOorOO with emptyString
+
+  std::string tree7 = "{A} -> {A/1/(AB)} [B/C] -> {A/1/(AB), C/1/D} [B/C] { A/NO B/NO C/NO D/YES }"; // containsOZOorOO with 11
+
+  std::string tree8 = "{A} -> {A/1/(AB)} [B/C] -> {A/0/A, B/0/C} [] -> {A/0/A} [] { A/NO }"; // containsOZOorOO with 100
+
+  std::string tree9 = "{A} -> {A/1/(AB)} [B/C] -> {A/0/A, B/0/C} [] -> {A/1(AB), C/1/D} [B/C] { A/NO B/NO C/NO D/YES }"; // containsOZOorOO with 101
+
+  std::string tree10 = "{A} [] -> {A/NO}"; // oneIsThirdFromEnd with emptyString
+
+  std::string tree11 = "{A} [] -> {A/0/A} [] -> {A/1/(AB)} [] -> {A/0/A, B/0/C} [] -> {A/0/A, C/0/D} [] -> { A/NO D/YES }"; // oneIsThirdFromEnd with 0100
+
+  std::string tree12 = "{A} [] -> {A/1/AB} [] -> { A/NO B/NO }"; // oneIsThirdFromEnd with 1
+
+  std::string tree13 = "{A} [] -> {A/0/A} [] -> { A/NO }"; // oneIsThirdFromEnd with 0
 
   std::cout << "Trace tree of numZerosIsMultipleOfTwoOrThree with emptyString: ";
   numZerosIsMultipleOfTwoOrThree.traceTree(epsi);
