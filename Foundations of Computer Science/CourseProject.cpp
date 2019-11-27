@@ -1433,16 +1433,51 @@ void makeAndTestNFAs()
   std::cout << "                    Trace Tree Function Tests                      " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
 
-  std::cout << "Trace tree of numZerosIsMultipleOfTwoOrThree with ZZ: ";
-  numZerosIsMultipleOfTwoOrThree.traceTree(ZZ);
+  std::string sZZZZ = "0000";
+  oneString ZZZZ = genMyString(sZZZZ);
+  std::string sZ = "0";
+  oneString Z = genMyString(sZ);
+  std::string sO = "1";
+  oneString O = genMyString(sO);
+  std::string sZOZZ = "0100";
+  oneString ZOZZ = genMyString(sZOZZ);
+  std::string tree1str = "{A} [A/(BD)] -> {A/NO B/YES D/NO}"; // numZerosIsMultipleOfTwoOrThree with emptyString
+  oneString tree1 = genMyString(tree1str);
+  std::string tree2str = "{A} [A/(BD)] -> {B/0/C, D/0/E} [] -> {C/NO E/NO}"; // numZerosIsMultipleOfTwoOrThree with 0
+  oneString tree2 = genMyString(tree2str);
+  std::string tree3str = "{A} [A/(BD)] -> {B/0/C, D/0/E} [] -> {C/0/B E/0/F} [] -> {B/NO F/NO}"; // numZerosIsMultipleOfTwoOrThree with 00
+  oneString tree3 = genMyString(tree3str);
+  std::string tree4str = "{A} [A/(BD)] -> {B/0/C, D/0/E} [] -> {C/0/B E/0/F} [] -> {B/0/C, F/0/D} [] -> {C/NO D/YES}"; // numZerosIsMultipleOfTwoOrThree with 000
+  oneString tree4 = genMyString(tree4str);
+  std::string tree5str = "{A} [A/(BD)] -> {B/0/C, D/0/E} [] -> {C/0/B E/0/F} [] -> {B/0/C, F/0/D} [] -> {C/0/B, D/0/E} [] -> {B/NO E/YES}"; // numZerosIsMultipleOfTwoOrThree with 0000
+  oneString tree5 = genMyString(tree5Str);
+
   std::cout << "Trace tree of numZerosIsMultipleOfTwoOrThree with emptyString: ";
   numZerosIsMultipleOfTwoOrThree.traceTree(epsi);
-  std::cout << "Trace tree of containsOZOorOO with OO: ";
+  std::cout << "Trace tree of numZerosIsMultipleOfTwoOrThree with 0: ";
+  numZerosIsMultipleOfTwoOrThree.traceTree(Z);
+  std::cout << "Trace tree of numZerosIsMultipleOfTwoOrThree with 00: ";
+  numZerosIsMultipleOfTwoOrThree.traceTree(ZZ);
+  std::cout << "Trace tree of numZerosIsMultipleOfTwoOrThree with 000: ";
+  numZerosIsMultipleOfTwoOrThree.traceTree(ZZZ);
+  std::cout << "Trace tree of numZerosIsMultipleOfTwoOrThree with 0000: ";
+  numZerosIsMultipleOfTwoOrThree.traceTree(ZZZZ);
+  std::cout << "Trace tree of containsOZOorOO with emptyString: ";
+  containsOZOorOO.traceTree(epsi);
+  std::cout << "Trace tree of containsOZOorOO with 11: ";
   containsOZOorOO.traceTree(OO);
-  std::cout << "Trace tree of containsOZOorOO with OZZ: ";
+  std::cout << "Trace tree of containsOZOorOO with 100: ";
   containsOZOorOO.traceTree(OZZ);
-  std::cout << "Trace tree of oneIsThirdFromEnd with OZZ: ";
-  oneIsThirdFromEnd.traceTree(OZZ);
+  std::cout << "Trace tree of containsOZOorOO with 101: ";
+  containsOZOorOO.traceTree(OZO);
+  std::cout << "Trace tree of oneIsThirdFromEnd with emptyString: ";
+  oneIsThirdFromEnd.traceTree(epsi);
+  std::cout << "Trace tree of oneIsThirdFromEnd with 0100: ";
+  oneIsThirdFromEnd.traceTree(ZOZZ);
+  std::cout << "Trace tree of oneIsThirdFromEnd with 1: ";
+  oneIsThirdFromEnd.traceTree(O);
+  std::cout << "Trace tree of oneIsThirdFromEnd with 0: ";
+  oneIsThirdFromEnd.traceTree(Z);
 
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    NFA Union Tests                     " << std::endl;
