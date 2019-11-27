@@ -1684,7 +1684,8 @@ void makeAndTestNFAs()
   std::cout << "Does dfa numZerosIsMultipleOfTwoOrThree accept ZZZZZ (should be false)? " << dfa3.accepts(ZZZZZ) << std::endl;
   std::cout << "Does dfa numZerosIsMultipleOfTwoOrThree accept OOZ (should be false)? " << dfa3.accepts(OOZ) << std::endl;
   std::cout << "Does dfa numZerosIsMultipleOfTwoOrThree accept OZOO (should be false)? " << dfa3.accepts(OZOO) << std::endl;
-  std::cout << std::endl;
+  std::cout << std::endl << std::endl;
+  
   std::cout << "Does dfa1 == dfa2? " << equalityDFA(dfa1, dfa2) << std::endl;
   std::cout << "Does dfa2 == dfa3? " << equalityDFA(dfa2, dfa3) << std::endl;
   std::cout << "Does dfa2 == dfa2? " << equalityDFA(dfa2, dfa2) << std::endl;
