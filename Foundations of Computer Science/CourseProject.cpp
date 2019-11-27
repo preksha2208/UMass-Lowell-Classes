@@ -1685,11 +1685,8 @@ void makeAndTestNFAs()
   std::cout << "Does dfa numZerosIsMultipleOfTwoOrThree accept OOZ (should be false)? " << dfa3.accepts(OOZ) << std::endl;
   std::cout << "Does dfa numZerosIsMultipleOfTwoOrThree accept OZOO (should be false)? " << dfa3.accepts(OZOO) << std::endl;
   std::cout << std::endl << std::endl;
-  
-  std::cout << "Does dfa1 == dfa2? " << equalityDFA(dfa1, dfa2) << std::endl;
-  std::cout << "Does dfa2 == dfa3? " << equalityDFA(dfa2, dfa3) << std::endl;
-  std::cout << "Does dfa2 == dfa2? " << equalityDFA(dfa2, dfa2) << std::endl;
-  NFA<myChar> textbookExampleNFA("NFA txtbook example to convert to DFA", // name
+
+  NFA<myChar> exampleNFA1("NFA txtbook example to convert to DFA", // name
                                  [](myChar a) -> bool {
                                    return (a.getVal() == '1' || a.getVal() == '2' || a.getVal() == '3');
                                  },                                           // states function
@@ -1717,8 +1714,8 @@ void makeAndTestNFAs()
                                    return (a.getVal() == '1');
                                  });
 
-  // textbookExampleNFA converted manually to a DFA
-  DFA<myVector<myChar>> manuallyConvertedDFA(
+  // textbookExampleNFA converted manually to a DFA (by following the textbook's example)
+  DFA<myVector<myChar>> manuallyConvertedExampleNFA1(
       "textbookExampleNFA -> DFA",
       [](myVector<myChar> &a) -> bool {
         if (a == myVector<myChar>{})
@@ -1767,11 +1764,67 @@ void makeAndTestNFAs()
       [](myVector<myChar> &a) -> bool {
         return (a == myVector<myChar>{myChar('1'), myChar('3')} || a == myVector<myChar>{myChar('1'), myChar('2'), myChar('3')});
       });
-  // convert textbookExampleNFA to DFA using function
-  DFA<myVector<myChar>> convertedTextbookNFA = NFA2DFA(textbookExampleNFA);
-  std::cout << "Is manually converted NFA == function-converted NFA (should be true)? " << equalityDFA(convertedTextbookNFA, manuallyConvertedDFA);
+  // textbookExampleNFA automatically converted to DFA using NFA2DFA function
+  DFA<myVector<myChar>> autoConvertedExampleNFA1 = NFA2DFA(exampleNFA1);
+  NFA<myChar> exampleNFA2("NFA example from Youtube video to convert to DFA", // name
+                                 [](myChar a) -> bool {
+                                   return (a.getVal() == 'A' || a.getVal() == 'B');
+                                 },                                           // states function
+                                 myVector<myChar>{myChar('0'), myChar('1')},  // alphabet
+                                 myChar('A'),                                 // start state
+                                 [](myChar a, myChar b) -> myVector<myChar> { // transition function
+                                  if(a.getVal() == 'A' && b.getVal() == '1')
+                                    return myVector<myChar> {myChar('A'), myChar('B')};
+                                  else if (a.getVal() == 'A' && b.getVal() == '0')
+                                    return myVector<myChar> {myChar('A')};
+                                  else
+                                     return myVector<myChar>{};
+                                 },
+                                 [](myChar a) -> myVector<myChar> { // epsilon transition
+                                  return myVector<myChar>{};
+                                 },
+                                 [](myChar a) -> bool { // accept states
+                                   return (a.getVal() == 'B');
+                                 });
+  DFA<myVector<myChar>> manuallyConvertedExampleNFA2("NFA example from Youtube video manually converted to DFA", // name
+                                 [](myVector<myChar> &a) -> bool {
+                                  if (a == myVector<myChar>{myChar('A')})
+                                    return true;
+                                  else if (a == myVector<myChar>{myChar('A'), myChar('B')})
+                                    return true;
+                                  else
+                                    return false;
+                                 },                                           // states function
+                                 myVector<myChar>{myChar('0'), myChar('1')},  // alphabet
+                                 myVector<myChar>{myChar('A')},                                 // start state
+                                 [](myVector<myChar> a, myChar b) -> myVector<myChar> { // transition function
+                                  if(a == myVector<myChar>{myChar('A')} && b.getVal() == '0')
+                                    return myVector<myChar>{myChar('A')};
+                                  else if (a == myVector<myChar>{myChar('A')} && b.getVal() == '1')
+                                    return myVector<myChar> {myChar('A'), myChar('B')};
+                                  else if (a == myVector<myChar>{myChar('A'), myChar('B')} && b.getVal() == '1')
+                                    return myVector<myChar>{myChar('A'), myChar('B')};
+                                  else if (a == myVector<myChar>{myChar('A'), myChar('B')} && b.getVal() == '0')
+                                    return myVector<myChar>{myChar('A')};
+                                  else
+                                     return myVector<myChar>{};
+                                 },                           
+                                 [](myVector<myChar> &a) -> bool { // accept states
+                                   return (a == myVector<myChar>{myChar('A'), myChar('B')});
+                                 });
+  DFA<myVector<myChar>> autoConvertedExampleNFA2 = NFA2DFA(exampleNFA2);
+  
+  std::cout << "Does dfa1 == dfa2 (should be false)? " << equalityDFA(dfa1, dfa2) << std::endl;
+  std::cout << "Does dfa2 == dfa3 (should be false)? " << equalityDFA(dfa2, dfa3) << std::endl;
+  std::cout << "Does dfa2 == dfa2 (should be true)? " << equalityDFA(dfa2, dfa2) << std::endl;
+  std::cout << "Is manually-converted example NFA1 == auto-converted example NFA1 (should be true)? " << equalityDFA(autoConvertedExampleNFA1, manuallyConvertedExampleNFA1);
+  std::cout << std::endl;
+  std::cout << "Is manually-converted example NFA2 == auto-converted example NFA2 (should be true)? " << equalityDFA(autoConvertedExampleNFA2, manuallyConvertedExampleNFA2);
+  std::cout << std::endl;
+  std::cout << "Is auto-converted example NFA1 == auto-converted example NFA2 (should be false)? " << equalityDFA(autoConvertedExampleNFA1, autoConvertedExampleNFA2);
   std::cout << std::endl;
 }
+
 
 void makeAndTestRegex()
 {

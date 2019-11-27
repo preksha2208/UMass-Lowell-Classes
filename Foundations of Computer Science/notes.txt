@@ -37,7 +37,7 @@ TASK 36: Done. Function adds new start state that epsi transitions to old state,
 TASK 37: Done. Tests written in section entitled "NFA Kleene Star Tests"
 TASK 38: Done. Returned DFA is of type myVector<NFA's state type>. This allows the DFA's state to each be a set of states and also this allows the DFA's transition function to return a set of states.
 TASK 39: Done. Tests written in section entitled "NFA2DFA Tests"
-TASK 40:
+TASK 40: Done. Tests can be found under "NFA2DFA Tests". Created and converted 2 NFAs to DFAs manually (using examples from texbook and Youtube) and then auto-converted the NFAs using my NFA2DFA function, and then finally compared the DFAs using the equalityDFA function
 TASK 41:
 TASK 42:
 TASK 43:
