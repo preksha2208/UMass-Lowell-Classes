@@ -231,9 +231,9 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
       nfaState(0), // start state object
       [=](nfaState a, myChar b) -> myVector<nfaState> {
         if (a.isStartState)
-          return myVector<nfaState>{a};
+          return myVector<nfaState>{};
         else if (a.isAcceptState)
-          return myVector<nfaState>{a};
+          return myVector<nfaState>{};
         else if (a.isFromX)
         {
           myVector<State1> xVec = nfa1.transFunc(a.fromX, b); // get State1 objects from nfa1's transition function
@@ -293,15 +293,9 @@ NFA<NFAComboState<State1, State2>> unionNFA(NFA<State1> nfa1, NFA<State2> nfa2)
       },
       [=](nfaState a) -> bool {
         if (a.isFromX)
-        {
-          std::cout << "fromX: checking if " << a << " is an accept state" << std::endl;
           return nfa1.F(a.fromX);
-        }
         else if (a.isFromY)
-        {
-          std::cout << "fromY: checking if " << a << " is an accept state" << std::endl;
           return nfa2.F(a.fromY);
-        }
         else
           return false;
       });
@@ -1246,7 +1240,7 @@ void makeAndTestNFAs()
                                              [](myChar a) -> bool {
                                                return (a.getVal() == 'A' || a.getVal() == 'B' || a.getVal() == 'C' || a.getVal() == 'D' || a.getVal() == 'E' || a.getVal() == 'F' || a.getVal() == 'G');
                                              },                                           // states function
-                                             myVector<myChar>{myChar('0')},               // alphabet
+                                             myVector<myChar>{myChar('0'), myChar('1')},  // alphabet
                                              myChar('A'),                                 // start state
                                              [](myChar a, myChar b) -> myVector<myChar> { // transition function
                                                                                           // if (a.getVal() == 'A')
@@ -1261,6 +1255,8 @@ void makeAndTestNFAs()
                                                  return myVector<myChar>{myChar('F')};
                                                else if (a.getVal() == 'F' && b.getVal() == '0')
                                                  return myVector<myChar>{myChar('D')};
+                                               else if (b.getVal() == '1')
+                                                 return myVector<myChar>{a};
                                                else
                                                  return myVector<myChar>{};
                                              },
@@ -1407,7 +1403,8 @@ void makeAndTestNFAs()
   std::cout << "testing oracle with numZerosIsMultipleOfTwoOrThree, input of 00, and trace ADEF (should return true) " << numZerosIsMultipleOfTwoOrThree.oracle(ZZ, tp5);
   std::cout << std::endl;
   std::cout << "testing oracle with numZerosIsMultipleOfTwoOrThree, input of 00000, and trace ADEF (should return false) " << numZerosIsMultipleOfTwoOrThree.oracle(ZZZZZ, tp5);
-  std::cout << std::endl;
+  std::cout << std::endl << std::endl;
+
   std::cout << "testing oracle with oneIsThirdFromEnd, input of 111, and trace AAAA (should return true) " << oneIsThirdFromEnd.oracle(OOO, tp6);
   std::cout << std::endl;
   std::cout << "testing oracle with oneIsThirdFromEnd, input of 100, and trace ABCD (should return true) " << oneIsThirdFromEnd.oracle(OZZ, tp7);
@@ -1419,7 +1416,8 @@ void makeAndTestNFAs()
   std::cout << "testing oracle with oneIsThirdFromEnd, input of 100111, and trace AB (should return false) " << oneIsThirdFromEnd.oracle(OZZOOO, tp2);
   std::cout << std::endl;
   std::cout << "testing oracle with oneIsThirdFromEnd, input of 100111, and trace ABCD (should return false) " << oneIsThirdFromEnd.oracle(OZZOOO, tp7);
-  std::cout << std::endl;
+  std::cout << std::endl << std::endl;
+
   std::cout << "testing oracle with containsOZOorOO, input of 11, and trace AAA (should return true) " << containsOZOorOO.oracle(OO, tp9);
   std::cout << std::endl;
   std::cout << "testing oracle with containsOZOorOO, input of 11, and trace ABCD (should return true) " << containsOZOorOO.oracle(OO, tp11);
@@ -1497,34 +1495,61 @@ void makeAndTestNFAs()
   oneIsThirdFromEnd.traceTree(Z);
 
   std::cout << "---------------------------------------------------------------" << std::endl;
-  std::cout << "                    NFA Union Tests                     " << std::endl;
+  std::cout << "                    NFA Union Tests                           " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
 
   std::string sOZZZ = "1000";
   oneString OZZZ = genMyString(sOZZZ);
-  auto numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd = unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd);
-  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept the emptyString (should be true)? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(epsi);
+  std::string sOZZO = "1001";
+  oneString OZZO = genMyString(sOZZO);
+  std::string sZZZZZOO = "0000011";
+  oneString ZZZZZOO = genMyString(sZZZZZOO);
+  std::string sZZZZZO = "000001";
+  oneString ZZZZZO = genMyString(sZZZZZO);
+
+  std::string sOZZOZ = "10010";
+  oneString OZZOZ = genMyString(sOZZOZ);
+
+  auto unionNFA1 = unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd);
+  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept the emptyString (should be true)? " << unionNFA1.accepts(epsi);
   std::cout << std::endl;
-  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept 11 (should be true)? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OO);
+  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept 111 (should be true)? " << unionNFA1.accepts(OOO);
   std::cout << std::endl;
-  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept 100 (should be true)? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OZZ);
+  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept 100 (should be true)? " << unionNFA1.accepts(OZZ);
   std::cout << std::endl;
-  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept 1000 (should be true)? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(OZZZ);
+  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept 1000 (should be true)? " << unionNFA1.accepts(OZZZ);
   std::cout << std::endl;
-  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept 100000 (should be false)? " << numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.accepts(ZZZZZ);
-  //numZerosIsMultipleOfTwoOrThreeOrOneIsThirdFromEnd.traceTree(ZZZZZ);
+  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept 00000 (should be false)? " << unionNFA1.accepts(ZZZZZ);
   std::cout << std::endl
             << std::endl;
 
-  auto unionOneThirdFromEndAndContainsOZOorOO = unionNFA(oneIsThirdFromEnd, containsOZOorOO);
-  std::cout << "Does unionOneThirdFromEndAndContainsOZOorOO accept 100 (should be true)? " << unionOneThirdFromEndAndContainsOZOorOO.accepts(OZZ);
+  auto unionNFA2 = unionNFA(oneIsThirdFromEnd, containsOZOorOO);
+  std::cout << "Does unionNFA(oneIsThirdFromEnd, containsOZOorOO) accept 100 (should be true)? " << unionNFA2.accepts(OZZ);
   std::cout << std::endl;
-  std::cout << "Does unionOneThirdFromEndAndContainsOZOorOO accept emptyString (should be false)? " << unionOneThirdFromEndAndContainsOZOorOO.accepts(epsi);
+  std::cout << "Does unionNFA(oneIsThirdFromEnd, containsOZOorOO) accept emptyString (should be false)? " << unionNFA2.accepts(epsi);
   std::cout << std::endl;
-  std::cout << "Does unionOneThirdFromEndAndContainsOZOorOO accept 1110 (should be true)? " << unionOneThirdFromEndAndContainsOZOorOO.accepts(OOOZ);
+  std::cout << "Does unionNFA(oneIsThirdFromEnd, containsOZOorOO) accept 1110 (should be true)? " << unionNFA2.accepts(OOOZ);
   std::cout << std::endl;
-  std::cout << "Does unionOneThirdFromEndAndContainsOZOorOO accept 1011 (should be true)? " << unionOneThirdFromEndAndContainsOZOorOO.accepts(OZOO);
+  std::cout << "Does unionNFA(oneIsThirdFromEnd, containsOZOorOO) accept 1011 (should be true)? " << unionNFA2.accepts(OZOO);
   std::cout << std::endl;
+  std::cout << "Does unionNFA(oneIsThirdFromEnd, containsOZOorOO) accept 10010 (should be false)? " << unionNFA2.accepts(OZZOZ);
+  std::cout << std::endl;
+  std::cout << std::endl << std::endl;
+
+
+  auto unionNFA3 = unionNFA(numZerosIsMultipleOfTwoOrThree, containsOZOorOO);
+  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, containsOZOorOO) accept 111 (should be true)? " << unionNFA3.accepts(OOO);
+  std::cout << std::endl;
+  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, containsOZOorOO) accept 1001 (should be true)? " << unionNFA3.accepts(OZZO);
+  std::cout << std::endl;
+  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, containsOZOorOO) accept emptyString (should be true)? " << unionNFA3.accepts(epsi);
+  std::cout << std::endl;
+  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, containsOZOorOO) accept 1110 (should be true)? " << unionNFA3.accepts(OOOZ);
+  std::cout << std::endl;
+  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, containsOZOorOO) accept 1011 (should be true)? " << unionNFA3.accepts(OZOO);
+  std::cout << std::endl;
+  std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, containsOZOorOO) accept 000001 (should be false)? " << unionNFA3.accepts(ZZZZZO);
+  std::cout << std::endl << std::endl;
 
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    NFA Concatenation Tests                     " << std::endl;

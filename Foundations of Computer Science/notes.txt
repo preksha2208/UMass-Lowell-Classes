@@ -30,7 +30,7 @@ TASK 29: Done. Trace trees written in the form of strings at the top of the sect
 TASK 30: Done. Trace tree prints out each level of the tree. Regular transitions are in form  {<last state>/<input>/<new state>} and epsi transitions in the form [<last state>/<new state>]. The last is in the form { <state>/<accepting YES or NO>}
 TASK 31: Done. Didn't write a dozen examples for each NFA, but made enough to know that they are functioning correctly.
 TASK 32: Done. Steps through input string character by character and runs transition function & checks for epsi transitions
-TASK 33: 
+TASK 33: Done. Implemented using NFAComboState, which can be an accept state, a state from nfa1, a state from nfa2, or an accept state (which actually wasn't needed in the end).
 TASK 34: 
 TASK 35:
 TASK 36: 
