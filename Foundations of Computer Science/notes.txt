@@ -33,9 +33,9 @@ TASK 32: Done. Steps through input string character by character and runs transi
 TASK 33: Done. Implemented using NFAComboState, which can be an accept state, a state from nfa1, a state from nfa2, or an accept state (which actually wasn't needed in the end).
 TASK 34: Done. Utilized NFAComboState and epsilon transition to start state of nfa2 when I reach accept state of nfa1.
 TASK 35: Done. Tests written in section entitled "NFA Concatenation Tests"
-TASK 36: 
-TASK 37:
-TASK 38:
+TASK 36: Done. Function adds new start state that epsi transitions to old state, and also adds in epsilon transitions from accept states to the old start state
+TASK 37: Done. Tests written in section entitled "NFA Kleene Star Tests"
+TASK 38: 
 TASK 39:
 TASK 40:
 TASK 41:

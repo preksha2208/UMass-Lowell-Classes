@@ -35,12 +35,20 @@ public:
     myVector<State> newStates;
     myVector<State> epsilonStates;
     myString *temp = &inputString;
-
-    for (int i = 0; i < currentStates.size(); i++)
+    int originalSize = currentStates.size();
+    for (int i = 0; i < currentStates.size(); i++)  // get all epsilon transitions from first state
     {
       tempVector = epsilonTrans(currentStates[i]);
       currentStates.insert(currentStates.end(), tempVector.begin(), tempVector.end());
+      
+      if (i > (originalSize*2))  // need to make sure that I'm not in an infinite loop, and this would be the case here
+        break;
     }
+    std::sort(newStates.v.begin(), newStates.v.end(), [](const State &lhs, const State &rhs) {
+        return (lhs < rhs);
+    });
+    newStates.v.erase(std::unique(newStates.v.begin(), newStates.v.end()), newStates.v.end());  // get rid of any duplicates
+
 
     // step through NFA with the input string
     while (temp->isEmpty() != true)
@@ -59,10 +67,14 @@ public:
       });
       currentStates.v.erase(std::unique(currentStates.v.begin(), currentStates.v.end()), currentStates.v.end());
 
+      originalSize = currentStates.size();
       for (int i = 0; i < currentStates.size(); i++)
       {
         tempVector = epsilonTrans(currentStates[i]);
         currentStates.insert(currentStates.end(), tempVector.begin(), tempVector.end());
+
+        if (i > (originalSize*2))  // need to make sure that I'm not in an infinite loop, and this would be the case here
+          break;
       }
       std::sort(newStates.v.begin(), newStates.v.end(), [](const State &lhs, const State &rhs) {
         return (lhs < rhs);

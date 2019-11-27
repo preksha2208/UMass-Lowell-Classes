@@ -402,7 +402,12 @@ NFA<myChar> kleeneStarNFA(NFA<myChar> nfa)
           return nfa.Q(a);
       },
       nfa.alphabet, myChar('|'), // start state may have to be changed to something else
-      nfa.transFunc,
+      [=](myChar a, myChar b) -> myVector<myChar> {
+        if (a == myChar('|'))
+          return myVector<myChar>{};
+        else
+          return nfa.transFunc(a,b);
+      },
       [=](myChar a) -> myVector<myChar> {
         if (a == myChar('|'))
           return myVector<myChar>{nfa.q0};
@@ -1356,6 +1361,14 @@ void makeAndTestNFAs()
   oneString OZZOZZ = genMyString(s2);
   std::string s3 = "100100100";
   oneString OZZOZZOZZ = genMyString(s3);
+  std::string sABCD= "ABCD";
+  oneString ABCD = genMyString(sABCD);
+  std::string s4 = "10111";
+  oneString OZOOO = genMyString(s4);
+  std::string s5 = "11101";
+  oneString OOOZO = genMyString(s5);
+  std::string s6 = "101123";
+  oneString OZOO23 = genMyString(s6);
 
   // tests for oneIsThirdFromEnd
   std::cout << std::boolalpha;
@@ -1606,35 +1619,41 @@ void makeAndTestNFAs()
   std::cout << "---------------------------------------------------------------" << std::endl;
 
   
-  NFA<myChar> kleeneOneThirdFromEnd = kleeneStarNFA(oneIsThirdFromEnd);
-  std::cout << "Does (oneIsThirdFromEnd)* accept 100100 (should be true)? " << kleeneOneThirdFromEnd.accepts(OZZOZZ); // should return true
+  NFA<myChar> kleene1 = kleeneStarNFA(oneIsThirdFromEnd);
+  std::cout << "Does (oneIsThirdFromEnd)* accept 100100 (should be true)? " << kleene1.accepts(OZZOZZ); // should return true
   std::cout << std::endl;
-  std::cout << "Does (oneIsThirdFromEnd)* accept emptyString (should be true)? " << kleeneOneThirdFromEnd.accepts(epsi); // should return true
+  std::cout << "Does (oneIsThirdFromEnd)* accept emptyString (should be true)? " << kleene1.accepts(epsi); // should return true
   std::cout << std::endl;
-  //std::cout << "Does (oneIsThirdFromEnd)* accept ABCD (should be false)? " << kleeneOneThirdFromEnd.accepts(ABCD); // should return false
+  std::cout << "Does (oneIsThirdFromEnd)* accept ABCD (should be false)? " << kleene1.accepts(ABCD); // should return false
   std::cout << std::endl;
-  std::cout << "Does (oneIsThirdFromEnd)* accept 0000 (should be false)? " << kleeneOneThirdFromEnd.accepts(ZZZ); // should return false
+  std::cout << "Does (oneIsThirdFromEnd)* accept 0000 (should be false)? " << kleene1.accepts(ZZZ); // should return false
   std::cout << std::endl;
-  std::cout << "Does (oneIsThirdFromEnd)* accept 100 (should be true)? " << kleeneOneThirdFromEnd.accepts(OZZ); // should return true
+  std::cout << "Does (oneIsThirdFromEnd)* accept 100 (should be true)? " << kleene1.accepts(OZZ); // should return true
   std::cout << std::endl;
-  std::cout << "Does (oneIsThirdFromEnd)* accept 100100100 (should be true)? " << kleeneOneThirdFromEnd.accepts(OZZOZZOZZ); // should return true
+  std::cout << "Does (oneIsThirdFromEnd)* accept 100100100 (should be true)? " << kleene1.accepts(OZZOZZOZZ); // should return true
   std::cout << std::endl;
   std::cout << std::endl;
 
-  NFA<myChar> kleeneContainsOZOorOO = kleeneStarNFA(containsOZOorOO);
-  std::string s4 = "10111";
-  oneString OZOOO = genMyString(s4);
-  std::cout << "Does (containsOZOorOO)* accept 10111 (should be true)?" << kleeneContainsOZOorOO.accepts(OZOOO); // should return true
+  NFA<myChar> kleene2 = kleeneStarNFA(containsOZOorOO);
+  std::cout << "Does (containsOZOorOO)* accept 10111 (should be true)? " << kleene2.accepts(OZOOO); // should return true
   std::cout << std::endl;
-  std::string s5 = "11101";
-  oneString OOOZO = genMyString(s5);
-  std::cout << "Does (containsOZOorOO)* accept 11101 (should be true)?" << kleeneContainsOZOorOO.accepts(OOOZO); // should return true
+  std::cout << "Does (containsOZOorOO)* accept 11101 (should be true)? " << kleene2.accepts(OOOZO); // should return true
   std::cout << std::endl;
-  std::string s6 = "101123";
-  oneString OZOO23 = genMyString(s6);
-  std::cout << "Does (containsOZOorOO)* accept 101123 (should be false)?" << kleeneContainsOZOorOO.accepts(OZOO23); // should return false
+  std::cout << "Does (containsOZOorOO)* accept 101123 (should be false)? " << kleene2.accepts(OZOO23); // should return false
   std::cout << std::endl;
-  std::cout << "Does (containsOZOorOO)* accept emptyString (should be true)?" << kleeneContainsOZOorOO.accepts(epsi); // should return true
+  std::cout << "Does (containsOZOorOO)* accept emptyString (should be true)? " << kleene2.accepts(epsi); // should return true
+  std::cout << std::endl;
+  std::cout << std::endl;
+
+  NFA<myChar> kleene3 = kleeneStarNFA(numZerosIsMultipleOfTwoOrThree);
+  std::cout << "Does (numZerosIsMultipleOfTwoOrThree)* accept Z (should be false)? " << kleene3.accepts(Z); // should return true
+  std::cout << std::endl;
+  std::cout << "Does (numZerosIsMultipleOfTwoOrThree)* accept ZZZZZ (should be true)? " << kleene3.accepts(ZZZZZ); // should return true
+  std::cout << std::endl;
+  std::cout << "Does (numZerosIsMultipleOfTwoOrThree)* accept ABCD (should be false)? " << kleene3.accepts(ABCD); // should return false
+  std::cout << std::endl;
+  std::cout << "Does (numZerosIsMultipleOfTwoOrThree)* accept emptyString (should be true)? " << kleene3.accepts(epsi); // should return true
+  std::cout << std::endl;
   std::cout << std::endl;
 
   std::cout << "---------------------------------------------------------------" << std::endl;
