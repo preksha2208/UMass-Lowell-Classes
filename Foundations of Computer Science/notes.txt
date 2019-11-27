@@ -38,8 +38,8 @@ TASK 37: Done. Tests written in section entitled "NFA Kleene Star Tests"
 TASK 38: Done. Returned DFA is of type myVector<NFA's state type>. This allows the DFA's state to each be a set of states and also this allows the DFA's transition function to return a set of states.
 TASK 39: Done. Tests written in section entitled "NFA2DFA Tests"
 TASK 40: Done. Tests can be found under "NFA2DFA Tests". Created and converted 2 NFAs to DFAs manually (using examples from texbook and Youtube) and then auto-converted the NFAs using my NFA2DFA function, and then finally compared the DFAs using the equalityDFA function
-TASK 41: Done. Regex are represented by the classes charRegex, emptySetRegex, epsiRegex, unionRegex, concatRegex, and kleeneRegex. They all inherit from the class regex.hpp
-TASK 42:
+TASK 41: Done. Regex are represented by the classes charRegex, emptySetRegex, epsiRegex, unionRegex, concatRegex, and kleeneRegex. They all inherit from the class regex.hpp and they each have their own header file.
+TASK 42: Done. Each regex child class has it's own printer function. The function gets called recursively and it does a different thing depending on the type of regex that is calling it.
 TASK 43:
 TASK 44:
 TASK 45:
