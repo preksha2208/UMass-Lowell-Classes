@@ -42,7 +42,7 @@ TASK 41: Done. Regex are represented by the classes charRegex, emptySetRegex, ep
 TASK 42: Done. Each regex child class has it's own printer function. The function gets called recursively and it does a different thing depending on the type of regex that is calling it.
 TASK 43: Done. Can be found Did not make a literal dozen regex, but I made 6 and called the print function on them and they returned the expected results
 TASK 44: Done. Wrote out examples of accepted and rejected strings under each example regex.
-TASK 45:
+TASK 45: Done. Similar to the generator function, since each regex type has its own way of calling the generator function, which ultimately results in a printed output of a string that would be accepted by the given regex. 
 TASK 46:
 TASK 47:
 TASK 48:
