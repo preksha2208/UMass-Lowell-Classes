@@ -31,8 +31,8 @@ TASK 30: Done. Trace tree prints out each level of the tree. Regular transitions
 TASK 31: Done. Didn't write a dozen examples for each NFA, but made enough to know that they are functioning correctly.
 TASK 32: Done. Steps through input string character by character and runs transition function & checks for epsi transitions
 TASK 33: Done. Implemented using NFAComboState, which can be an accept state, a state from nfa1, a state from nfa2, or an accept state (which actually wasn't needed in the end).
-TASK 34: 
-TASK 35:
+TASK 34: Done. Utilized NFAComboState and epsilon transition to start state of nfa2 when I reach accept state of nfa1.
+TASK 35: Done. Tests written in section entitled "NFA Concatenation Tests"
 TASK 36: 
 TASK 37:
 TASK 38:

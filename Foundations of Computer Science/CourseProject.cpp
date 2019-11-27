@@ -1209,6 +1209,7 @@ void makeAndTestDFAs()
 // creates NFAs and runs tests on them
 void makeAndTestNFAs()
 {
+  // example NFAs
   NFA<myChar> oneIsThirdFromEnd("OneIsThirdFromEnd", // name
                                 [](myChar a) -> bool {
                                   return (a.getVal() == 'A' || a.getVal() == 'B' || a.getVal() == 'C' || a.getVal() == 'D' || a.getVal() == 'E');
@@ -1300,7 +1301,8 @@ void makeAndTestNFAs()
                                 return (a.getVal() == 'D');
                               });
 
-  // inputStrings
+ 
+  // strings for tests. I started being smarter and created a genMyString function after a while.
   oneString OZZ = oneString('1', new oneString('0', new oneString('0', new emptyString)));
   oneString OZ = oneString('1', new oneString('0', new emptyString));
   oneString OO = oneString('1', new oneString('1', new emptyString));
@@ -1312,16 +1314,48 @@ void makeAndTestNFAs()
   oneString ZZ = oneString('0', new oneString('0', new emptyString));
   oneString ZZZ = oneString('0', new oneString('0', new oneString('0', new emptyString)));
   oneString ZZZZZ = oneString('0', new oneString('0', new oneString('0', new oneString('0', new oneString('0', new emptyString)))));
-
-  // trace tree for numZerosIsMultipleOfTwoOrThree with emptyString
-  oneString ABD = oneString('A', new oneString('B', new oneString('D', new emptyString)));
-  // trace tree for numZerosIsMultipleOfTwoOrThree with ZZ
-  oneString A_ABD_GCE = oneString('A', new oneString('-', new oneString('B', new oneString('D',
-                                                                                           new oneString('-', new oneString('G', new oneString('C', new oneString('E', new emptyString))))))));
-  // trace tree for containsOZOorOO with OZZ
-  oneString A_ABC_ACE = oneString('A', new oneString('-', new oneString('A', new oneString('B', new oneString('C',
-                                                                                                              new oneString('-', new oneString('A', new oneString('C', new oneString('E', new emptyString)))))))));
-  // trace tree for oneIsThirdFromEnd with
+  std::string s000 = "111";
+  oneString OOO = genMyString(s000);
+  std::string sOZZOOO = "100111";
+  oneString OZZOOO = genMyString(sOZZOOO);
+  std::string sOZO = "101";
+  oneString OZO = genMyString(sOZO);
+  std::string sZZZZ = "0000";
+  oneString ZZZZ = genMyString(sZZZZ);
+  std::string sZ = "0";
+  oneString Z = genMyString(sZ);
+  std::string sO = "1";
+  oneString O = genMyString(sO);
+  std::string sZOZZ = "0100";
+  oneString ZOZZ = genMyString(sZOZZ);
+  std::string sOZZZ = "1000";
+  oneString OZZZ = genMyString(sOZZZ);
+  std::string sOZZO = "1001";
+  oneString OZZO = genMyString(sOZZO);
+  std::string sZZZZZOO = "0000011";
+  oneString ZZZZZOO = genMyString(sZZZZZOO);
+  std::string sZZZZZO = "000001";
+  oneString ZZZZZO = genMyString(sZZZZZO);
+  std::string sOZZOZ = "10010";
+  oneString OZZOZ = genMyString(sOZZOZ);
+  std::string s1 = "10000";
+  oneString OZZZZ = genMyString(s1);
+  std::string sOZZOO = "10011";
+  oneString OZZOO = genMyString(sOZZOO);
+  std::string sOZZZZZ = "100000";
+  oneString OZZZZZ = genMyString(sOZZZZZ);
+  std::string sOZZOZO = "100101";
+  oneString OZZOZO = genMyString(sOZZOZO);
+  std::string sOOOOO = "11111";
+  oneString OOOOO = genMyString(sOOOOO);
+  std::string sOZOZOZZ = "1010100";
+  oneString OZOZOZZ = genMyString(sOZOZOZZ);
+  std::string sOZZZOOOZ = "10001110";
+  oneString OZZZOOOZ = genMyString(sOZZZOOOZ);
+  std::string s2 = "100100";
+  oneString OZZOZZ = genMyString(s2);
+  std::string s3 = "100100100";
+  oneString OZZOZZOZZ = genMyString(s3);
 
   // tests for oneIsThirdFromEnd
   std::cout << std::boolalpha;
@@ -1385,12 +1419,7 @@ void makeAndTestNFAs()
                                                           new tpNode(myChar('C'), myChar('1'), myChar('D'), NULL))));
   tpNode tp12 = tpNode(myChar('A'), new tpNode(myChar('A'), myChar('1'), myChar('B'),
                                                new tpNode(myChar('B'), myChar('0'), myChar('C'), NULL)));
-  std::string s000 = "111";
-  oneString OOO = genMyString(s000);
-  std::string sOZZOOO = "100111";
-  oneString OZZOOO = genMyString(sOZZOOO);
-  std::string sOZO = "101";
-  oneString OZO = genMyString(sOZO);
+  
 
   std::cout << "testing oracle with numZerosIsMultipleOfTwoOrThree, input of emptyString, and trace A (should return true) " << numZerosIsMultipleOfTwoOrThree.oracle(epsi, tp1);
   std::cout << std::endl;
@@ -1430,15 +1459,6 @@ void makeAndTestNFAs()
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    Trace Tree Function Tests                      " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
-
-  std::string sZZZZ = "0000";
-  oneString ZZZZ = genMyString(sZZZZ);
-  std::string sZ = "0";
-  oneString Z = genMyString(sZ);
-  std::string sO = "1";
-  oneString O = genMyString(sO);
-  std::string sZOZZ = "0100";
-  oneString ZOZZ = genMyString(sZOZZ);
 
   // example trace trees
   std::string tree1 = "{A} [A/(BD)] -> {A/NO B/YES D/NO}"; // numZerosIsMultipleOfTwoOrThree with emptyString
@@ -1498,18 +1518,6 @@ void makeAndTestNFAs()
   std::cout << "                    NFA Union Tests                           " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
 
-  std::string sOZZZ = "1000";
-  oneString OZZZ = genMyString(sOZZZ);
-  std::string sOZZO = "1001";
-  oneString OZZO = genMyString(sOZZO);
-  std::string sZZZZZOO = "0000011";
-  oneString ZZZZZOO = genMyString(sZZZZZOO);
-  std::string sZZZZZO = "000001";
-  oneString ZZZZZO = genMyString(sZZZZZO);
-
-  std::string sOZZOZ = "10010";
-  oneString OZZOZ = genMyString(sOZZOZ);
-
   auto unionNFA1 = unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd);
   std::cout << "Does unionNFA(numZerosIsMultipleOfTwoOrThree, oneIsThirdFromEnd) accept the emptyString (should be true)? " << unionNFA1.accepts(epsi);
   std::cout << std::endl;
@@ -1555,31 +1563,49 @@ void makeAndTestNFAs()
   std::cout << "                    NFA Concatenation Tests                     " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
 
-  NFA<NFAComboState<myChar, myChar>> concatOneThirdFromEndAndNumZerosMultTwoOrThree = concatenationNFA(oneIsThirdFromEnd, numZerosIsMultipleOfTwoOrThree);
-  std::string s1 = "10000";
-  oneString OZZZZ = genMyString(s1);
-  std::string sOZZOO = "10011";
-  oneString OZZOO = genMyString(sOZZOO);
-  std::cout << "Does concatOneThirdFromEndAndNumZerosMultTwoOrThree accept 10000 (should be true)? " << concatOneThirdFromEndAndNumZerosMultTwoOrThree.accepts(OZZZZ);
+  
+
+  auto concatNFA1 = concatenationNFA(oneIsThirdFromEnd, numZerosIsMultipleOfTwoOrThree);
+  std::cout << "Does concatenationNFA(oneIsThirdFromEnd, numZerosIsMultipleOfTwoOrThree) accept 10000 (should be true)? " << concatNFA1.accepts(OZZZZ);
   std::cout << std::endl;
-  NFA<NFAComboState<myChar, myChar>> concatOneThirdFromEndAndContainsOZOorOO = concatenationNFA(oneIsThirdFromEnd, containsOZOorOO);
-  std::cout << "Does concatOneThirdFromEndAndContainsOZOorOO accept 100 (should be false)? " << concatOneThirdFromEndAndContainsOZOorOO.accepts(OZZ);
+  std::cout << "Does concatenationNFA(oneIsThirdFromEnd, numZerosIsMultipleOfTwoOrThree) accept 100000 (should be false)? " << concatNFA1.accepts(OZZZZZ);
   std::cout << std::endl;
-  std::cout << "Does concatOneThirdFromEndAndContainsOZOorOO accept 10000 (should be false)? " << concatOneThirdFromEndAndContainsOZOorOO.accepts(OZZZZ);
+  std::cout << "Does concatenationNFA(oneIsThirdFromEnd, numZerosIsMultipleOfTwoOrThree) accept 00000 (should be false)? " << concatNFA1.accepts(ZZZZZ);
   std::cout << std::endl;
-  std::cout << "Does concatOneThirdFromEndAndContainsOZOorOO accept 10011 (should be true)? " << concatOneThirdFromEndAndContainsOZOorOO.accepts(OZZOO);
+  std::cout << "Does concatenationNFA(oneIsThirdFromEnd, numZerosIsMultipleOfTwoOrThree) accept emptyString (should be false)? " << concatNFA1.accepts(epsi);
+  std::cout << std::endl << std::endl;
+
+  auto concatNFA2 = concatenationNFA(oneIsThirdFromEnd, containsOZOorOO);
+  std::cout << "Does concatenationNFA(oneIsThirdFromEnd, containsOZOorOO) accept 100 (should be false)? " << concatNFA2.accepts(OZZ);
   std::cout << std::endl;
-  // concatOneThirdFromEndAndContainsOZOorOO.traceTree(OZZZZ);
-  //concatOneThirdFromEndAndNumZerosMultTwoOrThree.traceTree(OZZZZ);
+  std::cout << "Does concatenationNFA(oneIsThirdFromEnd, containsOZOorOO) accept 10000 (should be false)? " << concatNFA2.accepts(OZZZZ);
+  std::cout << std::endl;
+  std::cout << "Does concatenationNFA(oneIsThirdFromEnd, containsOZOorOO) accept 10011 (should be true)? " << concatNFA2.accepts(OZZOO);
+  std::cout << std::endl;
+  std::cout << "Does concatenationNFA(oneIsThirdFromEnd, containsOZOorOO) accept 100101 (should be true)? " << concatNFA2.accepts(OZZOZO);
+  std::cout << std::endl;
+  std::cout << "Does concatenationNFA(oneIsThirdFromEnd, containsOZOorOO) accept emptyString (should be false)? " << concatNFA2.accepts(epsi);
+  std::cout << std::endl << std::endl;
+  
+  auto concatNFA3 = concatenationNFA(containsOZOorOO, oneIsThirdFromEnd);
+  std::cout << "Does concatenationNFA(containsOZOorOO, oneIsThirdFromEnd) accept 100 (should be false)? " << concatNFA3.accepts(OZZ);
+  std::cout << std::endl;
+  std::cout << "Does concatenationNFA(containsOZOorOO, oneIsThirdFromEnd) accept 10000 (should be false)? " << concatNFA3.accepts(OZZZZ);
+  std::cout << std::endl;
+  std::cout << "Does concatenationNFA(containsOZOorOO, oneIsThirdFromEnd) accept 10011 (should be false)? " << concatNFA3.accepts(OZZOO);
+  std::cout << std::endl;
+  std::cout << "Does concatenationNFA(containsOZOorOO, oneIsThirdFromEnd) accept 11111 (should be true)? " << concatNFA3.accepts(OOOOO);
+  std::cout << std::endl;
+  std::cout << "Does concatenationNFA(containsOZOorOO, oneIsThirdFromEnd) accept 111 (should be false)? " << concatNFA3.accepts(OOO);
+  std::cout << std::endl;
+  std::cout << "Does concatenationNFA(containsOZOorOO, oneIsThirdFromEnd) accept 1010100 (should be true)? " << concatNFA3.accepts(OZOZOZZ);
+  std::cout << std::endl << std::endl;
 
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                    NFA Kleene Star Tests                     " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
 
-  std::string s2 = "100100";
-  oneString OZZOZZ = genMyString(s2);
-  std::string s3 = "100100100";
-  oneString OZZOZZOZZ = genMyString(s3);
+  
   NFA<myChar> kleeneOneThirdFromEnd = kleeneStarNFA(oneIsThirdFromEnd);
   std::cout << "Does (oneIsThirdFromEnd)* accept 100100 (should be true)? " << kleeneOneThirdFromEnd.accepts(OZZOZZ); // should return true
   std::cout << std::endl;
