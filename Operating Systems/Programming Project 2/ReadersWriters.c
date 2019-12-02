@@ -89,12 +89,8 @@ int main(int argc, char **argv)
     }
     else
     {
-printf("Usage: %s <reader in critical section sleep range> <reader in critical section
-sleep base> \n\t <reader out of critical section sleep range> <reader out of critical section sleep
-base> \n\t <writer in critical section sleep range> <writer in critical section sleep base> \n\t
-<writer out of critical section sleep range> <writer out of critical section sleep base> \n\t <number
-of readers> <number of writers>\n", argv[0]);
-exit(-1);
+        printf("Usage: %s <reader in critical section sleep range> <reader in critical section sleep base> \n\t <reader out of critical section sleep range> <reader out of critical section sleepbase> \n\t <writer in critical section sleep range> <writer in critical section sleep base> \n\t<writer out of critical section sleep range> <writer out of critical section sleep base> \n\t <number of readers> <number of writers>\n", argv[0]);
+        exit(-1);
     }
     // declarations for pthread arrays, one for reader threads and
     // one for writer threads
@@ -112,4 +108,5 @@ exit(-1);
     // two for loops to use pthread_join to wait for the reader
     // and writer threads to quit
     printf("Total number of reads: %d\nTotal number of writes: %d\n", totalReaders, totalWriters);
+    return 0;
 }
