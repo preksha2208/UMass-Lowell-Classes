@@ -1,3 +1,20 @@
+/* NOTE: program run with ./ReaderWriters ricr ricb roocr roocb wicr wicb woocr
+woocb nr nw • ricr is the range parameter for controlling how long readers sleep
+inside their critical sections • ricb is the base number of nanoseconds a reader
+will sleep inside their critical sections • roocr is the range parameter for
+controlling how long readers sleep outside their critical sections • roocb is
+the base number of nanoseconds a reader will sleep outside their critical
+sections • wicr is the range parameter for controlling how long writer s sleep
+inside their critical sections • wicb is the base number of nanoseconds a writer
+will sleep inside their critical sections • woocr is the range parameter for
+controlling how long writer s sleep outside their critical sections • woocb is
+the base number of nanoseconds a writer will sleep outside their critical
+sections • nr is the number of reader threads to create • nw is the number of
+writer threads to create
+
+ex: ./ReadersWriters 5 5 5 5 5 5 5 5 5 5
+*/
+
 #include <errno.h>
 #include <pthread.h>
 #include <semaphore.h>
@@ -21,7 +38,9 @@ int totalWriters = 0;
 // the global area must include semaphore declarations and declarations
 // of any state variables (reader counts, total number of readers and writers
 
-sem_t sems[5]; // need to change this number
+sem_t rw_mutex = 1;
+sem_t mutex = 1;
+int read_count = 0;
 
 // Use this to sleep in the threads
 void threadSleep(int range, int base) {
@@ -37,15 +56,27 @@ void *readers(void *args) {
   while (keepgoing) {
     // add code for each reader to enter the
     // reading area
+    sem_wait(&mutex);
     // the totalReaders variable must be
     // incremented just before entering the
     // reader area
+    read_count++;
+    if (read_count == 1)
+      sem_wait(&rw_mutex);
+    sem_post(&mutex);
+
     printf("Reader %d starting to read\n", id);
     threadSleep(rICrange, rICbase);
     printf("Reader %d finishing reading\n", id);
+    threadSleep(rOOCrange, rOOCbase);
+
+    wait(mutex);
+    read_count--;
+    if (read_count == 0)
+      sem_post(&rw_mutex);
     // add code for each reader to leave the
     // reading area
-    threadSleep(rOOCrange, rOOCbase);
+    sem_post(&mutex);
   }
   printf("Reader %d quitting\n", id);
 }
@@ -56,6 +87,7 @@ void *writers(void *args) {
   while (keepgoing) {
     // add code for each writer to enter
     // the writing area
+    sem_wait(&rw_mutex);
     totalWriters++;
     printf("Writer %d starting to write\n", id);
     threadSleep(wICrange, wICbase);
@@ -63,6 +95,7 @@ void *writers(void *args) {
     // add code for each writer to leave
     // the writing area
     threadSleep(wOOCrange, wOOCbase);
+    sem_post(&rw_mutex);
   }
   printf("Writer %d quitting\n", id);
 }
@@ -105,24 +138,23 @@ int main(int argc, char **argv) {
   // the reader and writer threads to quit
 
   pthread_t pWriters[numWThreads]; // need to change this number
-  pthread_t pReaders[numRthreads];
+  pthread_t pReaders[numRThreads];
 
   int i;
-  int writerID[5];
-  int readerID[5];
+  int writerID[numWThreads];
+  int readerID[numRThreads];
+  sem_init(&rw_mutex, 0, 1); // initialize semaphores
+  sem_init(&mutex, 0, 1);
 
-  for (i = 0; i < 5; i++)
-    sem_init(&[sems[i], 0, 1);  // init semaphores
-
-  for (i = 0; i < numWThreads; i++) {  // create writer threads
-      writerID[i] = i;
-      if (pthread_create(&pWriters[i], 0, writers, &writerID[i]) != 0)
-        perror("Pthread_create error");
+  for (i = 0; i < numWThreads; i++) { // create writer threads
+    writerID[i] = i;
+    if (pthread_create(&pWriters[i], 0, writers, &writerID[i]) != 0)
+      perror("Writer Pthread_create error");
   }
-  for (i = 0; i < numRThreads; i++) {  // create reader threads
-      readerID[i] = i;
-      if (pthread_create(&pReaders[i], 0, readers, &readerID[i]) != 0)
-        perror("Pthread_create error");
+  for (i = 0; i < numRThreads; i++) { // create reader threads
+    readerID[i] = i;
+    if (pthread_create(&pReaders[i], 0, readers, &readerID[i]) != 0)
+      perror("Reader Pthread_create error");
   }
 
   char buf[256];
@@ -133,7 +165,10 @@ int main(int argc, char **argv) {
   printf("Total number of reads: %d\nTotal number of writes: %d\n",
          totalReaders, totalWriters);
 
-  for (i = 0; i < 5; i++) //
-    pthread_join(phils[i], 0);
+  for (i = 0; i < numRThreads; i++) //
+    pthread_join(pReaders[i], 0);
+  for (i = 0; i < numWThreads; i++) //
+    pthread_join(pWriters[i], 0);
+  
   return 0;
 }
