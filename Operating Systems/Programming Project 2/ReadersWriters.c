@@ -1,18 +1,16 @@
-/* NOTE: program run with ./ReaderWriters ricr ricb roocr roocb wicr wicb woocr
-woocb nr nw • ricr is the range parameter for controlling how long readers sleep
-inside their critical sections • ricb is the base number of nanoseconds a reader
-will sleep inside their critical sections • roocr is the range parameter for
-controlling how long readers sleep outside their critical sections • roocb is
-the base number of nanoseconds a reader will sleep outside their critical
-sections • wicr is the range parameter for controlling how long writer s sleep
-inside their critical sections • wicb is the base number of nanoseconds a writer
-will sleep inside their critical sections • woocr is the range parameter for
-controlling how long writer s sleep outside their critical sections • woocb is
-the base number of nanoseconds a writer will sleep outside their critical
-sections • nr is the number of reader threads to create • nw is the number of
-writer threads to create
+/* NOTE: program run with ./ReaderWriters ricr ricb roocr roocb wicr wicb woocr woocb nr nw 
+• ricr is the range parameter for controlling how long readers sleep inside their critical sections 
+• ricb is the base number of nanoseconds a reader will sleep inside their critical sections 
+• roocr is the range parameter for controlling how long readers sleep outside their critical sections 
+• roocb is the base number of nanoseconds a reader will sleep outside their critical sections 
+• wicr is the range parameter for controlling how long writer s sleep inside their critical sections 
+• wicb is the base number of nanoseconds a writer will sleep inside their critical sections 
+• woocr is the range parameter for controlling how long writer s sleep outside their critical sections 
+• woocb is the base number of nanoseconds a writer will sleep outside their critical sections 
+• nr is the number of reader threads to create • nw is the number of writer threads to create
 
-ex: ./ReadersWriters 5 5 5 5 5 5 5 5 5 5
+ex: ./ReadersWriters 5 5 5
+    ./ReadersWriters 
 */
 
 #include <errno.h>
