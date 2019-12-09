@@ -7,10 +7,11 @@
 • wicb is the base number of nanoseconds a writer will sleep inside their critical sections 
 • woocr is the range parameter for controlling how long writer s sleep outside their critical sections 
 • woocb is the base number of nanoseconds a writer will sleep outside their critical sections 
-• nr is the number of reader threads to create • nw is the number of writer threads to create
+• nr is the number of reader threads to create 
+• nw is the number of writer threads to create
 
-ex: ./ReadersWriters 5 5 5
-    ./ReadersWriters 
+ex: ./ReadersWriters 5 5 5 5 5 5 5 5 5 5
+    ./ReadersWriters 100 100 100 100 5 5 5 5 3 10
 */
 
 #include <errno.h>
