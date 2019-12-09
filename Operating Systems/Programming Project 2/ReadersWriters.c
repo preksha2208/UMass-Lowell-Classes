@@ -11,6 +11,7 @@
 • nw is the number of writer threads to create
 
 ex: ./ReadersWriters 5 5 5 5 5 5 5 5 5 5
+    ./ReadersWriters 10000 10000 10000 10000 10000 10000 10000 10000 5 5
     ./ReadersWriters 100 100 100 100 5 5 5 5 3 10
 */
 
@@ -40,6 +41,7 @@ int totalWriters = 0;
 sem_t rw_mutex = 1;
 sem_t mutex = 1;
 int read_count = 0;
+int total_reads = 0;
 
 // Use this to sleep in the threads
 void threadSleep(int range, int base) {
@@ -63,11 +65,11 @@ void *readers(void *args) {
     if (read_count == 1)
       sem_wait(&rw_mutex);
     sem_post(&mutex);
-
+    total_reads++;
     printf("Reader %d starting to read\n", id);
     threadSleep(rICrange, rICbase);
     printf("Reader %d finishing reading\n", id);
-    threadSleep(rOOCrange, rOOCbase);
+   
 
     wait(mutex);
     read_count--;
@@ -76,6 +78,7 @@ void *readers(void *args) {
     // add code for each reader to leave the
     // reading area
     sem_post(&mutex);
+    threadSleep(rOOCrange, rOOCbase);
   }
   printf("Reader %d quitting\n", id);
 }
@@ -93,8 +96,9 @@ void *writers(void *args) {
     printf("Writer %d finishing writing\n", id);
     // add code for each writer to leave
     // the writing area
-    threadSleep(wOOCrange, wOOCbase);
+   
     sem_post(&rw_mutex);
+    threadSleep(wOOCrange, wOOCbase);
   }
   printf("Writer %d quitting\n", id);
 }
@@ -161,13 +165,15 @@ int main(int argc, char **argv) {
   keepgoing = 0;
   // two for loops to use pthread_join to wait for the reader
   // and writer threads to quit
-  printf("Total number of reads: %d\nTotal number of writes: %d\n",
-         totalReaders, totalWriters);
 
-  for (i = 0; i < numRThreads; i++) //
-    pthread_join(pReaders[i], 0);
-  for (i = 0; i < numWThreads; i++) //
+  for (i = 0; i < numWThreads; i++) 
     pthread_join(pWriters[i], 0);
-  
+  for (i = 0; i < numRThreads; i++) 
+    pthread_join(pReaders[i], 0);
+
+
+  printf("Total number of reads: %d\nTotal number of writes: %d\n",
+         total_reads, totalWriters);
+
   return 0;
 }
