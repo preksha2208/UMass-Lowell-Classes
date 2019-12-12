@@ -9,6 +9,21 @@
 #include "DFA.hpp"
 #include "tracePairNode.hpp"
 
+/*
+NFA class has 7 attributes:
+1) Name (which I never actually use...)
+2) Q: returns true/false whether a given state is part of this NFA
+3) alphabet: the accepted characters for this machine
+4) q0: the start state
+5) transFunc: the non-epsilon transitions; takes in a state and an input and returns a vector of the next states
+6) epsilonTrans: takes in a state and returns a vector of the states reachable by epsilon from the current state
+7) F: returns whether a given state is an accept state
+
+this class also has three functions:
+1) accepts: returns true/false depending on whether or not a given input string is accepted by the nfa
+2) traceTree: creates a tree of all possible traces
+3) oracle: returns true/false to indicate whether a supplied trace is the same trace created by the nfa with the provided input string
+*/
 template <class State>
 class NFA
 {
@@ -28,7 +43,13 @@ public:
   std::function<myVector<State>(State)> epsilonTrans;      // returns what the state transitions to on epsilon
   std::function<bool(State &)> F;                          // accept states
 
-  bool accepts(myString &inputString) // does NFA accept inputString?
+
+/*
+returns true/false to indicate whether the NFA accepts the given input string
+steps through the NFA and calls the transition and then epsilon transition at each state
+Once input string has finished, the F function is called to check whether the NFA has reached an accept state
+*/
+  bool accepts(myString &inputString)
   {
     myVector<State> currentStates{this->q0}; // keeps track of current states
     myVector<State> tempVector;
