@@ -43,11 +43,10 @@ public:
   std::function<myVector<State>(State)> epsilonTrans;      // returns what the state transitions to on epsilon
   std::function<bool(State &)> F;                          // accept states
 
-
-/*
+  /*
 returns true/false to indicate whether the NFA accepts the given input string
 steps through the NFA and calls the transition and then epsilon transition at each state
-Once input string has finished, the F function is called to check whether the NFA has reached an accept state
+Once input string has finished, the F function is called to check whether the NFA has reached an accept state        
 */
   bool accepts(myString &inputString)
   {
@@ -57,19 +56,18 @@ Once input string has finished, the F function is called to check whether the NF
     myVector<State> epsilonStates;
     myString *temp = &inputString;
     int originalSize = currentStates.size();
-    for (int i = 0; i < currentStates.size(); i++)  // get all epsilon transitions from first state
+    for (int i = 0; i < currentStates.size(); i++) // get all epsilon transitions from first state
     {
       tempVector = epsilonTrans(currentStates[i]);
       currentStates.insert(currentStates.end(), tempVector.begin(), tempVector.end());
-      
-      if (i > (originalSize*2))  // need to make sure that I'm not in an infinite loop, and this would be the case here
+
+      if (i > (originalSize * 2)) // need to make sure that I'm not in an infinite loop, and this would be the case here
         break;
     }
     std::sort(newStates.v.begin(), newStates.v.end(), [](const State &lhs, const State &rhs) {
-        return (lhs < rhs);
+      return (lhs < rhs);
     });
-    newStates.v.erase(std::unique(newStates.v.begin(), newStates.v.end()), newStates.v.end());  // get rid of any duplicates
-
+    newStates.v.erase(std::unique(newStates.v.begin(), newStates.v.end()), newStates.v.end()); // get rid of any duplicates
 
     // step through NFA with the input string
     while (temp->isEmpty() != true)
@@ -94,7 +92,7 @@ Once input string has finished, the F function is called to check whether the NF
         tempVector = epsilonTrans(currentStates[i]);
         currentStates.insert(currentStates.end(), tempVector.begin(), tempVector.end());
 
-        if (i > (originalSize*2))  // need to make sure that I'm not in an infinite loop, and this would be the case here
+        if (i > (originalSize * 2)) // need to make sure that I'm not in an infinite loop, and this would be the case here
           break;
       }
       std::sort(newStates.v.begin(), newStates.v.end(), [](const State &lhs, const State &rhs) {
@@ -256,15 +254,15 @@ NOTE: an underscore _ is used as to signify an input of epsilon in the trace
     {
       if (tempTrace == NULL)
         return false;
-      
+
       isValid = false;
       newStates.clear(); // prepare to get new set of states from transFunc
       epsilonStates.clear();
       c = temp->charObject(); // stored for more efficient reference
-    
+
       for (int i = 0, j = 0; i < currentStates.size(); i++) // check for all non-epsilon transitions from current state
       {
-        if (isValid == true)  // no need to continue checking if trace match has already been found
+        if (isValid == true) // no need to continue checking if trace match has already been found
           break;
         tempVector = transFunc(currentStates[i], c); // generate new sets of states from input char w/ each current state
 
@@ -284,7 +282,6 @@ NOTE: an underscore _ is used as to signify an input of epsilon in the trace
       }
       if (isValid == false)
         return false; // trace is invalid because it did not correspond to any of the transitions
-      
 
       currentStates = newStates; // update newStates
       std::sort(currentStates.v.begin(), currentStates.v.end(), [](const State &lhs, const State &rhs) {

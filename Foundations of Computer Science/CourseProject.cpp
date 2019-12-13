@@ -1335,7 +1335,7 @@ void makeAndTestNFAs()
                                 return (a.getVal() == 'D');
                               });
 
-    // strings for tests. I started being smarter and created a genMyString function after a while.
+  // strings for tests. I started being smarter and created a genMyString function after a while.
   oneString OZZ = oneString('1', new oneString('0', new oneString('0', new emptyString)));
   oneString OZ = oneString('1', new oneString('0', new emptyString));
   oneString OO = oneString('1', new oneString('1', new emptyString));
@@ -1398,6 +1398,9 @@ void makeAndTestNFAs()
   std::string s6 = "101123";
   oneString OZOO23 = genMyString(s6);
 
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "              Tests for  oneIsThirdFromEnd NFA                 " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl;
   // tests for oneIsThirdFromEnd
   std::cout << std::boolalpha;
   std::cout << "Does oneIsThirdFromEnd accept 100 (should be true)? " << oneIsThirdFromEnd.accepts(OZZ) << std::endl;
@@ -1407,6 +1410,9 @@ void makeAndTestNFAs()
   std::cout << "Does oneIsThirdFromEnd accept the empty string (should be false)? " << oneIsThirdFromEnd.accepts(epsi) << std::endl;
   std::cout << std::endl;
 
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "          Tests for  numZerosIsMultipleOfTwoOrThree NFA        " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl;
   // tests for numZerosIsMultipleOfTwoOrThree
   std::cout << "Does numZerosIsMultipleOfTwoOrThree accept the empty string (should be true)? " << numZerosIsMultipleOfTwoOrThree.accepts(epsi) << std::endl;
   std::cout << "Does numZerosIsMultipleOfTwoOrThree accept 00 (should be true)? " << numZerosIsMultipleOfTwoOrThree.accepts(ZZ) << std::endl;
@@ -1416,6 +1422,9 @@ void makeAndTestNFAs()
   std::cout << "Does numZerosIsMultipleOfTwoOrThree accept 1011 (should be false)? " << numZerosIsMultipleOfTwoOrThree.accepts(OZOO) << std::endl;
   std::cout << std::endl;
 
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "              Tests for containsOZOorOO NFA                " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl;
   // tests for containsOZOorOO
   std::cout << "Does containsOZOorOO accept the empty string (should be false)? " << containsOZOorOO.accepts(epsi) << std::endl;
   std::cout << "Does containsOZOorOO accept 1011 (should be true)? " << containsOZOorOO.accepts(OZOO) << std::endl;
@@ -1692,7 +1701,7 @@ void makeAndTestNFAs()
   /*
   Converts each of the three example NFAs to DFAs and shows that the accepts function returns the same values as before
   */
- 
+
   DFA<myVector<myChar>> dfa1 = NFA2DFA(containsOZOorOO);
   std::cout << "Does dfa containsOZOorOO accept the empty string (should be false)? " << dfa1.accepts(epsi) << std::endl;
   std::cout << "Does dfa containsOZOorOO accept 1011 (should be true)? " << dfa1.accepts(OZOO) << std::endl;
@@ -1889,7 +1898,7 @@ void makeAndTestRegex()
 
   oneString ZZOZ = oneString('0', new oneString('0', new oneString('1', new oneString('0', new emptyString)))); // accepted; 0010
 
-  concatRegex(r3) = concatRegex(new unionRegex(new charRegex(myChar('0')), new epsiRegex()),
+  concatRegex r3 = concatRegex(new unionRegex(new charRegex(myChar('0')), new epsiRegex()),
                                 new kleeneRegex(new charRegex(myChar('1'))));
   regexPrinter(r3); // should print (0 U _)(1)*, which is equal to 01* U 1*
   // accepts 01, 1, 111, 011
@@ -1919,53 +1928,72 @@ void makeAndTestRegex()
   std::cout << "                     REGEX GENERATOR Tests                     " << std::endl;
   std::cout << "---------------------------------------------------------------" << std::endl;
 
+  std::cout << "Calling generator on regex (01 U 10) ..." << std::endl;
+  std::cout << "Output: ";
   myString *temp = r1.generator();
   while (temp->isEmpty() == false)
   {
     std::cout << temp->charValue();
     temp = temp->next();
   }
-  std::cout << std::endl;
+  std::cout << std::endl
+            << std::endl;
 
+  std::cout << "Calling generator on regex (0)*1(0)* ..." << std::endl;
+  std::cout << "Output: ";
   temp = r2.generator();
   while (temp->isEmpty() == false)
   {
     std::cout << temp->charValue();
     temp = temp->next();
   }
-  std::cout << std::endl;
+  std::cout << std::endl
+            << std::endl;
 
+  std::cout << "Calling generator on regex (0 U _)(1)* ..." << std::endl;
+  std::cout << "Output: ";
   temp = r3.generator();
+  std::cout << "after r3 call" << std::endl;
   while (temp->isEmpty() == false)
   {
     std::cout << temp->charValue();
     temp = temp->next();
   }
-  std::cout << std::endl;
+  std::cout << std::endl
+            << std::endl;
 
+  std::cout << "Calling generator on regex (a)*001(b)* ..." << std::endl;
+  std::cout << "Output: ";
   temp = r4.generator();
   while (temp->isEmpty() == false)
   {
     std::cout << temp->charValue();
     temp = temp->next();
   }
-  std::cout << std::endl;
+  std::cout << std::endl
+            << std::endl;
 
+  std::cout << "Calling generator on regex (abc)* ..." << std::endl;
+  std::cout << "Output: ";
   temp = r5.generator();
   while (temp->isEmpty() == false)
   {
     std::cout << temp->charValue();
     temp = temp->next();
   }
-  std::cout << std::endl;
+  std::cout << std::endl
+            << std::endl;
 
+  std::cout << "Calling generator on regex ((abc)* U (01 U 10)) ..." << std::endl;
+  std::cout << "Output: ";
   temp = r6.generator();
   while (temp->isEmpty() == false)
   {
     std::cout << temp->charValue();
     temp = temp->next();
   }
-  std::cout << std::endl;
+  std::cout << std::endl
+            << std::endl;
 
   std::cout << "---------------------------------------------------------------" << std::endl;
   std::cout << "                     REGEX -> NFA Tests                        " << std::endl;

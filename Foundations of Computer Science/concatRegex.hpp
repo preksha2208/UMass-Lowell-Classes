@@ -29,6 +29,8 @@ public:
         myString *leftStr = left->generator();  // get strings from respective generator functions
         myString *rightStr = right->generator();
         myString *temp = leftStr;
+        if(temp->isEmpty() != false)
+            return rightStr;
         while (temp->next()->isEmpty() != true)  // move to end of first string
             temp = temp->next();
         temp->setNext(rightStr);  // concatenate the two string linked lists

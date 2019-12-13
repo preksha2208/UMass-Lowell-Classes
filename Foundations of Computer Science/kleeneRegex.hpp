@@ -25,12 +25,21 @@ public:
     }
     myString *generator()
     {
-        int random = (rand() % 5) + 1;
-        myString* ret = next->generator();
-        myString *temp = ret;
+        int random = (rand() % 10); // generate random number 0->9
+        if (random == 0)
+            return new emptyString;
 
-        for (int i = 1; i < random; i++)
+        myString *ret = next->generator();
+        myString *temp = ret;
+        while (!temp->next()->isEmpty())  // move to end of currently generate string
+            temp = temp->next();
+  
+        for (int i = 0; i < random; i++)
+        {
             temp->setNext(next->generator());
+            while (!temp->next()->isEmpty())  // move to end of currently generated string
+                temp = temp->next(); 
+        }
         return ret;
     }
 };
