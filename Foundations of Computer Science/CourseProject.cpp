@@ -1884,6 +1884,9 @@ void makeAndTestRegex()
   oneString abcabc = oneString('a', new oneString('b', new oneString('c', new oneString('a', new oneString('b', new oneString('c', new emptyString))))));
   oneString abcZO = oneString('a', new oneString('b', new oneString('c', new oneString('0', new oneString('1', new emptyString)))));
 
+  std::cout << "---------------------------------------------------------------" << std::endl;
+  std::cout << "                     REGEX PRINTER Tests                     " << std::endl;
+  std::cout << "---------------------------------------------------------------" << std::endl;
   unionRegex r1 = unionRegex(new concatRegex(new charRegex(myChar('0')), new charRegex(myChar('1'))),
                              new concatRegex(new charRegex(myChar('1')), new charRegex(myChar('0'))));
   regexPrinter(r1); // should print (01 U 10)
