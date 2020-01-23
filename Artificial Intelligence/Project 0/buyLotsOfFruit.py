@@ -35,7 +35,23 @@ def buyLotsOfFruit(orderList):
     Returns cost of order
     """
     totalCost = 0.0
-    "*** YOUR CODE HERE ***"
+    # iterate through orderList. Search up each item in fruitPrices
+    # if find item in fruit prices, then multiply the fruit price * numPounds and add that to totalCost
+    # if don't find item in fruit prices, then print "Error..." and return None
+    for i in orderList:
+        hasFruit = False
+        fruitPrice = 0
+        for x in fruitPrices:
+           if i[0] == x:
+               fruitPrice = fruitPrices[x]
+               hasFruit = True
+               break
+        if hasFruit == False:
+            print("Error. Fruit in orderList does not exist")
+            return None
+        else:
+            totalCost = totalCost + fruitPrice * i[1]
+
     return totalCost
 
 
