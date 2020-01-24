@@ -30,6 +30,18 @@ def shopSmart(orderList, fruitShops):
         fruitShops: List of FruitShops
     """
     "*** YOUR CODE HERE ***"
+    # for each fruitShops, iterate through the orderList and match each item in the orderList to an item in the fruit shop
+    # for each item found in the fruitShop and orderList, do totalCost = totalCost + fruitPrice * numPounds
+    # check whether this totalCost is lower than the current lowest
+    # if yes, then set lowPrice = totalCost, and lowIndex = currentIndex
+
+    lowPrice = 0
+    lowIndex = 0
+    x = 0
+    while x < len(fruitShops):
+        
+
+    return fruitShops[lowIndex]
     return None
 
 
