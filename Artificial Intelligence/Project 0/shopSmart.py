@@ -29,20 +29,21 @@ def shopSmart(orderList, fruitShops):
         orderList: List of (fruit, numPound) tuples
         fruitShops: List of FruitShops
     """
-    "*** YOUR CODE HERE ***"
-    # for each fruitShops, iterate through the orderList and match each item in the orderList to an item in the fruit shop
-    # for each item found in the fruitShop and orderList, do totalCost = totalCost + fruitPrice * numPounds
-    # check whether this totalCost is lower than the current lowest
-    # if yes, then set lowPrice = totalCost, and lowIndex = currentIndex
+    # for each fruitshop, call getPriceOfOrder(orderList) and keep track of the lowest price and index so far
+    # return fruitShop with lowest price at the end
 
-    lowPrice = 0
+    currentCost = 0
+    lowPrice = fruitShops[0].getPriceOfOrder(orderList)
     lowIndex = 0
-    x = 0
+    x = 1
     while x < len(fruitShops):
-        
+        currentCost = fruitShops[x].getPriceOfOrder(orderList)
+        if currentCost < lowPrice:
+            lowPrice = currentCost
+            lowIndex = x
+        x+=1
 
     return fruitShops[lowIndex]
-    return None
 
 
 if __name__ == '__main__':

@@ -46,11 +46,11 @@ def buyLotsOfFruit(orderList):
                fruitPrice = fruitPrices[x]
                hasFruit = True
                break
-        if hasFruit == False:
+        if hasFruit == False:  # if fruit was not found in fruit prices, then there is an error
             print("Error. Fruit in orderList does not exist")
             return None
         else:
-            totalCost = totalCost + fruitPrice * i[1]
+            totalCost = totalCost + fruitPrice * i[1]  # fruit was found in fruitPrices, so add it to totalCost
 
     return totalCost
 
