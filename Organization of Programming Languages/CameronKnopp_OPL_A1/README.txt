@@ -1,3 +1,6 @@
+README file for Cameron Knopp OPL Assignment 1
+Languages Used: Ada, Haskell, Go, Python, Prolog
+
 Q1: What was easy?
 A:
 
