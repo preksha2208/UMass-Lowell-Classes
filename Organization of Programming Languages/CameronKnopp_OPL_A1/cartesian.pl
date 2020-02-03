@@ -13,3 +13,8 @@ product([], [_|T2], List3, L4):-
 %go through first list and always first element of second list to our answer
 product([H1|T1], [H2|T2], [[H1,H2]|T3], List4):-
     product(T1, [H2|T2], T3, List4).
+
+% example input: product([1,2,3], [a,b], X).
+% example input: product([a], [a,b], X).
+% example input: product([1,2,3], [1,2,3], X).
+% example input: product([], [], X).
