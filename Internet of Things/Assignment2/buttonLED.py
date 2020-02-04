@@ -6,6 +6,8 @@ GPIO.setmode(GPIO.BCM)
 
 GPIO.setup(21,GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(18, GPIO.OUT)
+
+# booleans to keep track of whether the button has been pressed and whether the LED is currently on
 buttonstate = False
 ledOn = False
 
