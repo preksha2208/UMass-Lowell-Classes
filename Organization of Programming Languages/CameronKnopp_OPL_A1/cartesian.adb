@@ -1,3 +1,5 @@
+-- All code and comments written by me
+
 with Ada.Text_IO; use Ada.Text_IO;
 
 procedure cartesian is
