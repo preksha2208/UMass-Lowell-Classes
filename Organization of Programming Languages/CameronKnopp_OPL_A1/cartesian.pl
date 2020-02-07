@@ -1,4 +1,5 @@
 % Code taken from https://stackoverflow.com/a/49503900
+% Comments added by me
 
 :- use_module(library(chr)).
 
