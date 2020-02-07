@@ -38,15 +38,17 @@ answer4 : retArray;
 
 
 begin  -- start of body of main function
-    answer1 := cartProd(ex1, ex2);
+    answer1 := cartProd(ex1, ex2);  -- call the cartesian product function and store the returned value
     answer2 := cartProd(ex3, ex4);
     answer3 := cartProd(ex5, ex6);
     answer4 := cartProd(ex7, ex8);
 
+    -- Print out each cart product by iterating through it and at each iteration printing indices 1 and 2
+
     Put("(1,2,3) X (4,5,6):     {");
-    for x in 1..9 loop
+    for x in 1..9 loop  -- iterate through the 9 pairs in the cartesian product
         Put(" (");
-        Put(Integer'Image(answer1(x)(1)));
+        Put(Integer'Image(answer1(x)(1)));  -- need to use Integer'Image in order to print an integer with Put
         Put(",");
         Put(Integer'Image(answer1(x)(2)));
         Put(") ");
@@ -87,6 +89,6 @@ begin  -- start of body of main function
     Put("}");
     New_Line(1);
 
-end cartesian;
+end cartesian;  -- end of main function
 
 
