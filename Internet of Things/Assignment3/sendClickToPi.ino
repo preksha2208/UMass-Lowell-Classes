@@ -34,9 +34,6 @@ void setup() {
   // connect to mqtt server
   mqttclient.setServer(BROKER_IP, 1883);
   connect();
-
-
-  
 }
 
 void loop() {

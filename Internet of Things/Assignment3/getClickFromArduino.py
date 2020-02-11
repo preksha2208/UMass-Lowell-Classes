@@ -49,5 +49,10 @@ client.on_message=on_message #set the on message function
 client.subscribe("/led") #subscirbe to topic
 
 client.loop_start() #start client
+while True:
+	pass
+
+except KeyboardInterrupt:
+	pass
 
 client.loop_stop() #stop client
