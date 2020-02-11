@@ -22,6 +22,7 @@ broker_address="10.0.0.179"    #broker address (your pis ip address)
 def on_message(client, userdata, message):
 	print(message.topic + " " + str(message.payload)) #print incoming messages
 	buttonstate = str(message.payload)
+	print("Button state {}", buttonstate)
 	
 	if buttonstate == 'on' and ledOn == 'off':
 		GPIO.output(18, GPIO.HIGH)
