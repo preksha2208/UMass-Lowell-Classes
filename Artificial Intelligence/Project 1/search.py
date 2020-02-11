@@ -87,6 +87,22 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
+    print("Start:", problem.getStartState())
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+
+    stack = util.Stack()
+    
+
+
+    if problem.isGoalState():
+        return 
+
+    # use stack to keep track of visited nodes
+    # at each node, check adjacent nodes, when reach node that has no more successors and is not finalstate, pop from stack
+    # move back up to previously visited node and check whether that node has more nodes to check
+    # if does have more nodes, then check those
+
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
