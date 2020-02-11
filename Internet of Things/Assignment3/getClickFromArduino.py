@@ -11,7 +11,7 @@ adjust booleans accordingly and continue loop
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
-GPIO.setup(18, GPIO.OUT)  # NEED TO CHANGE PORT NUMBER, should correspond to LED
+GPIO.setup(18, GPIO.OUT)
 
 buttonstate = 'off'
 ledOn = 'off'
@@ -21,7 +21,7 @@ broker_address="10.0.0.179"    #broker address (your pis ip address)
 
 def on_message(client, userdata, message):
 	print(message.topic + " " + str(message.payload)) #print incoming messages
-	buttonstate = message.payload
+	buttonstate = str(message.payload)
 	
 	if buttonstate == 'on' and ledOn == 'off':
 		GPIO.output(18, GPIO.HIGH)

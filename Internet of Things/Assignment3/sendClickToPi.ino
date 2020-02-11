@@ -7,7 +7,6 @@
 #define BROKER_IP       "10.0.0.179"
 
 #define BUTTON 4
-#define LED 5     // CHECK THAT THESE ARE CORRECT
 bool buttonstate;
 bool ledOn = false;
 
