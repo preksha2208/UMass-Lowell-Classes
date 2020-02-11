@@ -7,7 +7,7 @@
 #define BROKER_IP       "10.0.0.179"
 
 //pins
-#define LED 5 //define 
+#define LED 5 // MAY NEED TO CHANGE, SHOULD CORRESPOND TO LED
 
 WiFiClient client;
 PubSubClient mqttclient(client);

@@ -9,7 +9,7 @@ publish on or off message
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
-GPIO.setup(21,GPIO.IN, pull_up_down=GPIO.PUD_UP)  # need to changes
+GPIO.setup(21,GPIO.IN, pull_up_down=GPIO.PUD_UP)  # NEED TO CHANGE, SHOULD CORRESPOND TO BUTTON
 
 broker_address="10.0.0.179" #broker address (your pis ip address)
 
