@@ -9,7 +9,7 @@ publish on or off message
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
-GPIO.setup(21,GPIO.IN, pull_up_down=GPIO.PUD_UP)  # NEED TO CHANGE, SHOULD CORRESPOND TO BUTTON
+GPIO.setup(17,GPIO.IN, pull_up_down=GPIO.PUD_UP)  # NEED TO CHANGE, SHOULD CORRESPOND TO BUTTON
 
 broker_address="10.0.0.179" #broker address (your pis ip address)
 
@@ -24,7 +24,7 @@ client.connect(broker_address) #connect to broker
 client.loop_start() #start client
 
 while True:
-	buttonstate = GPIO.input(21)
+	buttonstate = GPIO.input(17)
 
 	# turn LED on if the button is pressed and the LED is off
 	if buttonstate == 1 and ledOn == 0:
