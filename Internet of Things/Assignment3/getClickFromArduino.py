@@ -24,13 +24,13 @@ def on_message(client, userdata, message):
 	buttonstate = str(message.payload)
 	print("Button state {}", buttonstate)
 	
-	if buttonstate == 'on' and ledOn == 'off':
+	if buttonstate == 'b\'on\'' and ledOn == 'b\'off\'':
 		GPIO.output(18, GPIO.HIGH)
 		time.sleep(.2)
-		ledOn = 'on'
+		ledOn = 'b\'on\''
 	
 	# keep LED if it is already on and the button isn't being pressed
-	elif buttonstate == 'off' and ledOn == 'on':
+	elif buttonstate == 'b\'off\'' and ledOn == 'b\'on\'':
 		GPIO.output(18, GPIO.HIGH)
 		time.sleep(.2)
 	
@@ -38,7 +38,7 @@ def on_message(client, userdata, message):
 	else:
 		GPIO.output(18, GPIO.LOW)
 		time.sleep(.2)
-		ledOn = 'off'
+		ledOn = 'b\'off\''
 	
 
 
