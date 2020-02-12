@@ -34,6 +34,9 @@ void setup() {
   // connect to mqtt server
   mqttclient.setServer(BROKER_IP, 1883);
   connect();
+
+
+  
 }
 
 void loop() {
@@ -47,16 +50,16 @@ void loop() {
   // if the button is clicked and the LED is not on, then turn on the LED
   if (buttonstate and not ledOn){
       mqttclient.publish("/led", "on", false);  // send on message to client
-      delay(500);
       // set the flag to indicate that the LED is turned on
+      delay(200);
       ledOn = true;
   }
 
   // if the button is clicked and the LED is currently on, then turn off the LED
   else if (buttonstate and ledOn){
     mqttclient.publish("/led", "off", false);  // send on message to client
-    delay(500);
     // set flag to indicate that the LED is turned off
+    delay(200);
     ledOn = false;
   }
 
