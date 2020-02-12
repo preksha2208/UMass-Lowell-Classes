@@ -25,18 +25,18 @@ def on_message(client, userdata, message):
 	
 	if (buttonstate == 'on' and ledOn == 'off'):
 		GPIO.output(18, GPIO.HIGH)
-		time.sleep(.2)
+		time.sleep(.1)
 		ledOn = 'on'
 	
 	# keep LED if it is already on and the button isn't being pressed
 	elif (buttonstate == 'off' and ledOn == 'on'):
 		GPIO.output(18, GPIO.HIGH)
-		time.sleep(.2)
+		time.sleep(.1)
 	
 	# turn LED off otherwise
 	else:
 		GPIO.output(18, GPIO.LOW)
-		time.sleep(.2)
+		time.sleep(.1)
 		ledOn = 'off'
 	
 
