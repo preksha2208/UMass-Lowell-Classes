@@ -13,23 +13,23 @@ GPIO.setmode(GPIO.BCM)
 
 GPIO.setup(18, GPIO.OUT)
 
+
+broker_address="10.0.0.179"    #broker address (your pis ip address)
 buttonstate = 'off'
 ledOn = 'off'
 
-broker_address="10.0.0.179"    #broker address (your pis ip address)
-
-
 def on_message(client, userdata, message):
-	buttonstate = (str(message.payload)).decode("utf-8")
-	print("Button state {}", buttonstate)
+	global buttonstate
+	global ledOn
+	buttonstate = (message.payload).decode("utf-8")
 	
-	if buttonstate == on and ledOn == 'off'
+	if (buttonstate == 'on' and ledOn == 'off'):
 		GPIO.output(18, GPIO.HIGH)
 		time.sleep(.2)
 		ledOn = 'on'
 	
 	# keep LED if it is already on and the button isn't being pressed
-	elif buttonstate == 'off' and ledOn == 'on'
+	elif (buttonstate == 'off' and ledOn == 'on'):
 		GPIO.output(18, GPIO.HIGH)
 		time.sleep(.2)
 	
