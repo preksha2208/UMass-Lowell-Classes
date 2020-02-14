@@ -1,3 +1,4 @@
+# Write your code here :-)
 import paho.mqtt.client as mqtt
 import RPi.GPIO as GPIO
 import time
@@ -22,16 +23,17 @@ GPIO.setup(18, GPIO.OUT)
 dbclient = InfluxDBClient('0.0.0.0', 8086, 'root', 'root', 'mydb')
 
 broker_address="10.0.0.179"    #broker address (your pis ip address)
-lightstaten = 0
+
 ledOn = 'off'
 
 def on_message(client, userdata, message):
     global lightstate
     global ledOn
-    lightstate = int.from_bytes(message.payload, byteorder='big')
+    lightstate = int((message.payload).decode("utf-8"))  # convert bytes -> string -> int
 
     #get current time
     receiveTime=datetime.datetime.utcnow()
+    
    #create json to insert into db
     json_body = [{
 		"measurement": 'test',
@@ -41,32 +43,20 @@ def on_message(client, userdata, message):
     
     dbclient.write_points(json_body)
 
-    query = 'select mean("value") from "/lightstate" where "time" > now() - 10s'
+    query = 'SELECT MEAN("lightstate") from "test" where "time" > now() - 10s'
     result = dbclient.query(query)
 
     try:
-        light_avg = list(result.get_points(measurement='/lightstate'))[0]['mean']
-        print (light_avg)
+        light_avg = list(result.get_points(measurement='test'))[0]['mean']
+        print("average light value: ", light_avg)
+        if (light_avg >= 200):
+            GPIO.output(18, GPIO.LOW)  # turn LED off if light average over last 10 seconds is >= 200
+        else:
+            GPIO.output(18, GPIO.HIGH)  # otherwise turn on
+            
     except:
         #print 'exception'
         pass
-
-
-    if (buttonstate == 'on' and ledOn == 'off'):
-	    GPIO.output(18, GPIO.HIGH)
-	    time.sleep(.1)
-	    ledOn = 'on'
-
-	# keep LED if it is already on and the button isn't being pressed
-    elif (buttonstate == 'off' and ledOn == 'on'):
-	    GPIO.output(18, GPIO.HIGH)
-	    time.sleep(.1)
-
-	# turn LED off otherwise
-    else:
-	    GPIO.output(18, GPIO.LOW)
-	    time.sleep(.1)
-	    ledOn = 'off'
 
 client = mqtt.Client() #create new client instance
 client.connect(broker_address) #connect to broker
