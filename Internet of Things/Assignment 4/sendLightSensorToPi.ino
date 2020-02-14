@@ -10,6 +10,7 @@
 WiFiClient client;
 PubSubClient mqttclient(client);
 int lightstate;
+char str[5];
 
 void setup() {
   Serial.begin(115200); 
@@ -40,11 +41,11 @@ void loop() {
     connect();
   }
 
+
   lightstate = analogRead(A0);  // read the light state captured by the sensor
-
-  mqttclient.publish("/led", lightstate, false);  // send light state to pi through mqtt
-  delay(200);
-
+  sprintf(str, "%d", lightstate);  // convert light sensor value to string, so it can be sent through mqtt
+  mqttclient.publish("/led", str, false);  // send light state to pi through mqtt
+  delay(250);
   mqttclient.loop(); // run client
 }
 
