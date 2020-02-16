@@ -87,23 +87,35 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
+
     print("Start:", problem.getStartState())
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
 
+    """
+    generic algorithm pseudocode
+    1) put one of the graphs verticse on top of the stack
+    2) take the top item of the stack and add it to the visited list
+    3) create a list of that vertex's adjacent nodes. Add the ones that aren't in the visited list to the top of the stack
+    4) Keep repeating steps 2 and 3 until the stack is empty
+
+    algorithm in terms of this situation
+    1) Put the current position on top of the stack
+    2) take position on top of stack, check if it is and add to visited list
+    3) get successors from the position just popped from stack
+    4) Iterate through successors and if 
+
+    """
+    from game import Directions
+    s = Directions.SOUTH
+    w = Directions.WEST
+    e = Directions.EAST
+    n = Directions.NORTH
+
     stack = util.Stack()
     
 
-
-    if problem.isGoalState():
-        return 
-
-    # use stack to keep track of visited nodes
-    # at each node, check adjacent nodes, when reach node that has no more successors and is not finalstate, pop from stack
-    # move back up to previously visited node and check whether that node has more nodes to check
-    # if does have more nodes, then check those
-
-    util.raiseNotDefined()
+    return []
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
