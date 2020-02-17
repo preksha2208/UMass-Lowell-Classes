@@ -356,11 +356,68 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
+
+    """
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+    
+    def __init__(self, startingGameState):
+        self.walls = startingGameState.getWalls()
+        self.startingPosition = startingGameState.getPacmanPosition()
+        top, right = self.walls.height-2, self.walls.width-2 
+        self.corners = ((1,1), (1,top), (right, 1), (right, top))
+        for corner in self.corners:
+            if not startingGameState.hasFood(*corner):
+                print ('Warning: no food in corner ' + str(corner))
+        self._expanded = 0 # Number of search nodes expanded
+    
+    def startingState(self):
+        return (self.startingPosition, (False, False, False, False))# return the start point and a tuple
+                                            # we will put the explored corners in this tuple
 
-    "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    
+    def isGoal(self, state):
+
+        position = state[0]
+        corners = state[1]
+        if corners[0] and corners[1] and corners[2] and corners[3]:
+            return True
+        return False
+
+       
+    def successorStates(self, state):
+        succ = []
+
+        cornerState = list(state[1])
+        if state[0] in self.corners: # we have found a courner
+            for i in range(0,4):
+                if state[0] == self.corners[i]:
+                    cornerState[i] = True # put the courner in the list
+        corners = tuple(cornerState)
+
+
+        for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
+            x, y = state[0]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
+            if not hitsWall:
+                succ.append((((nextx,nexty),corners),action,1))
+
+        self._expanded += 1
+        return succ
+
+    def actionsCost(self, actions):
+        if actions == None: return 999999
+        x,y= self.startingPosition
+        for action in actions:
+            dx, dy = Actions.directionToVector(action)
+            x, y = int(x + dx), int(y + dy)
+            if self.walls[x][y]: return 999999
+        return len(actions)
+"""
+    return 0
+
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
