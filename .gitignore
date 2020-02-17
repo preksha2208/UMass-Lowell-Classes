@@ -27,3 +27,5 @@ Artificial Intelligence/Project 1/__pycache__/game.cpython-37.pyc
 Artificial Intelligence/Project 1/pacman.pyc
 Artificial Intelligence/Project 1/search.pyc
 Artificial Intelligence/Project 1/search.pyc
+*.pyc
+*.pyc
