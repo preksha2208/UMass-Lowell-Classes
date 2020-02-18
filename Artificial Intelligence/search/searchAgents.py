@@ -296,10 +296,7 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        corners = set()
-        for corner in self.corners:
-            corners.add(corner)
-        return (self.startingPosition, tuple(corners))
+        return (self.startingPosition, tuple([corner for corner in self.corners]))
 
     def isGoalState(self, state):
         """
@@ -332,6 +329,7 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+            
             x, y = state[0]
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
@@ -382,8 +380,8 @@ def cornersHeuristic(state, problem):
     fcorner = ()
     for corner in list(state[1]):
         if (distance < util.manhattanDistance(corner, state[0])):
+            distance = util.manhattanDistance(tuple(corner), state[0])
             fcorner = tuple(corner)
-            distance = util.manhattanDistance(fcorner, state[0])
 
     if len(fcorner) == 0:
         return 0
@@ -481,12 +479,7 @@ def foodHeuristic(state, problem):
     Subsequent calls to this heuristic can access
     problem.heuristicInfo['wallCount']
     """
-    position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    heuristic = [0]
-    for x in foodGrid.asList():
-        heuristic.append(mazeDistance(position, x, problem.startingGameState))
-    return max(heuristic)
+    
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -517,7 +510,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        return search.bfs(problem)
+        return search.aStarSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -553,9 +546,9 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        if not (x,y) in self.food.asList():
-            return False
-        return True
+        if (x,y) in self.food.asList():
+            return True
+        return False
 
 def mazeDistance(point1, point2, gameState):
     """
