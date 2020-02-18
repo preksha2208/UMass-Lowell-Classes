@@ -1,13 +1,12 @@
 /* Simple ad-hoc scanner for the calculator language.
     Michael L. Scott, 2008-2017.
 */
-
+#include <iostream>
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
 #include "ctype.h"
-
-#include "scan.h"
+#include "scan.hpp"
 
 char token_image[100];
 
@@ -56,7 +55,7 @@ token scan() {
         case '(': c = getchar(); return t_lparen;
         case ')': c = getchar(); return t_rparen;
         default:
-            printf("error\n");
+            std::cout << "error\n";
             exit(1);
     }
 }

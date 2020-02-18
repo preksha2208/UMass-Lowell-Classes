@@ -7,7 +7,7 @@
 
 #include "stdio.h"
 #include "stdlib.h"
-
+#include <iostream>
 #include "scan.h"
 
 const char* names[] = {"read", "write", "id", "literal", "gets",
