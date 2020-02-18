@@ -87,18 +87,13 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-
-    from game import Directions
-    directionMapping = {'South': Directions.SOUTH, 'West': Directions.WEST, 
-                        'East': Directions.EAST, 'North': Directions.NORTH}
-    
     stack = util.Stack()
     visited = []  # keep track of visited coordinates to avoid getting stuck in infinite loop
     visited.append(problem.getStartState())
 
     successors = problem.getSuccessors(problem.getStartState())
     for successor in successors:
-        stack.push((successor[0], [directionMapping[successor[1]]]))
+        stack.push((successor[0], [successor[1]]))
 
     
     while stack.isEmpty() == False:
@@ -113,28 +108,21 @@ def depthFirstSearch(problem):
 
             for successor in successors:
                 if successor not in visited:
-                    stack.push((successor[0], current[1] + [directionMapping[successor[1]]]))
+                    stack.push((successor[0], current[1] + [successor[1]]))
 
     return []
-
+    
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    from game import Directions
-    directionMapping = {'South': Directions.SOUTH, 'West': Directions.WEST, 
-                        'East': Directions.EAST, 'North': Directions.NORTH,
-                        'up' : 'up', 'down' : 'down','left' : 'left', 'right' : 'right'}
-    # 'up' : 'up", 'down' : 'down', etc.. included for compatibility with eightpuzzle.py
-    
-
     queue = util.Queue()
     visited = []  # keep track of visited coordinates to avoid getting stuck in infinite loop
     visited.append(problem.getStartState())
 
     successors = problem.getSuccessors(problem.getStartState())
     for successor in successors:
-        queue.push((successor[0], [directionMapping[successor[1]]]))
+        queue.push((successor[0], [successor[1]]))
 
     
     while queue.isEmpty() == False:
@@ -149,24 +137,21 @@ def breadthFirstSearch(problem):
 
             for successor in successors:
                 if successor[0] not in visited:
-                    queue.push((successor[0], current[1] + [directionMapping[successor[1]]]))
+                    queue.push((successor[0], current[1] + [successor[1]]))
 
     return []
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    from game import Directions
-    directionMapping = {'South': Directions.SOUTH, 'West': Directions.WEST, 
-                        'East': Directions.EAST, 'North': Directions.NORTH}
     queue = util.PriorityQueue()
     visited = []  # keep track of visited coordinates to avoid getting stuck in infinite loop
     visited.append(problem.getStartState())
 
     successors = problem.getSuccessors(problem.getStartState())
     for successor in successors:
-        cost = problem.getCostOfActions([directionMapping[successor[1]]])
-        queue.push((successor[0], [directionMapping[successor[1]]]), cost)
+        cost = problem.getCostOfActions([successor[1]])
+        queue.push((successor[0], [successor[1]]), cost)
 
 
     while queue.isEmpty() == False:
@@ -181,8 +166,8 @@ def uniformCostSearch(problem):
 
             for successor in successors:
                 if successor[0] not in visited:
-                    cost = problem.getCostOfActions(current[1] + [directionMapping[successor[1]]])
-                    queue.push((successor[0], current[1] + [directionMapping[successor[1]]]), cost)
+                    cost = problem.getCostOfActions(current[1] + [successor[1]])
+                    queue.push((successor[0], current[1] + [successor[1]]), cost)
 
     return []
 
@@ -196,17 +181,14 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    from game import Directions
-    directionMapping = {'South': Directions.SOUTH, 'West': Directions.WEST, 
-                        'East': Directions.EAST, 'North': Directions.NORTH}
     queue = util.PriorityQueue()
     visited = []  # keep track of visited coordinates to avoid getting stuck in infinite loop
     visited.append(problem.getStartState())
 
     successors = problem.getSuccessors(problem.getStartState())
     for successor in successors:
-        cost = problem.getCostOfActions([directionMapping[successor[1]]])
-        queue.push((successor[0], [directionMapping[successor[1]]]), cost + heuristic(successor[0], problem))
+        cost = problem.getCostOfActions([successor[1]])
+        queue.push((successor[0], [successor[1]]), cost + heuristic(successor[0], problem))
 
 
     while queue.isEmpty() == False:
@@ -221,8 +203,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
             for successor in successors:
                 if successor[0] not in visited:
-                    cost = problem.getCostOfActions(current[1] + [directionMapping[successor[1]]])
-                    queue.push((successor[0], current[1] + [directionMapping[successor[1]]]), cost + heuristic(successor[0], problem))
+                    cost = problem.getCostOfActions(current[1] + [successor[1]])
+                    queue.push((successor[0], current[1] + [successor[1]]), cost + heuristic(successor[0], problem))
 
     return []
 
