@@ -7,8 +7,8 @@
 #include "string.h"
 #include "ctype.h"
 #include "scan.hpp"
-
-char token_image[100];
+ 
+//char token_image[100];
 
 token scan() {
     static int c = ' ';
@@ -23,12 +23,21 @@ token scan() {
         return t_eof;
     if (isalpha(c)) {
         do {
-            token_image[i++] = c;
+            token_image[i++] = c;  // put inputted characters into token_image
             c = getchar();
         } while (isalpha(c) || isdigit(c) || c == '_');
-        token_image[i] = '\0';
-        if (!strcmp(token_image, "read")) return t_read;
-        else if (!strcmp(token_image, "write")) return t_write;
+        token_image[i] = '\0';  // add end of string at final index
+        if (!strcmp(token_image, "read"))
+            return t_read;
+        if (!strcmp(token_image, "write"))
+            return t_write;
+
+        // may use below once I change from getchar() to cin or something like that
+        /*if (token_image != "read")
+            return t_read;
+        if (token_image != "write")
+            return t_write;
+        */
         else return t_id;
     }
     else if (isdigit(c)) {
@@ -41,7 +50,7 @@ token scan() {
     } else switch (c) {
         case ':':
             if ((c = getchar()) != '=') {
-                fprintf(stderr, "error\n");
+                std::cerr << "error\n";
                 exit(1);
             } else {
                 c = getchar();
@@ -55,7 +64,7 @@ token scan() {
         case '(': c = getchar(); return t_lparen;
         case ')': c = getchar(); return t_rparen;
         default:
-            std::cout << "error\n";
+            std::cerr << "error\n";
             exit(1);
     }
 }

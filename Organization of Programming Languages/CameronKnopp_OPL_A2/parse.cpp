@@ -5,12 +5,13 @@
     Michael L. Scott, 2008-2017.
 */
 
+#include <iostream>
+#include <string>
 #include "stdio.h"
 #include "stdlib.h"
-#include <iostream>
-#include "scan.h"
+#include "scan.hpp"
 
-const char* names[] = {"read", "write", "id", "literal", "gets",
+const std::string names[] = {"read", "write", "id", "literal", "gets",
                        "add", "sub", "mul", "div", "lparen", "rparen", "eof"};
 
 static token input_token;
@@ -22,7 +23,7 @@ void error () {
 
 void match (token expected) {
     if (input_token == expected) {
-        printf ("matched %s", names[input_token]);
+        std::cout << "matched " << names[input_token];
         if (input_token == t_id || input_token == t_literal)
             printf (": %s", token_image);
         printf ("\n");
@@ -48,7 +49,7 @@ void program () {
         case t_read:
         case t_write:
         case t_eof:
-            printf ("predict program --> stmt_list eof\n");
+            std::cout << "predict program --> stmt_list eof\n";
             stmt_list ();
             match (t_eof);
             break;
@@ -61,12 +62,12 @@ void stmt_list () {
         case t_id:
         case t_read:
         case t_write:
-            printf ("predict stmt_list --> stmt stmt_list\n");
+            std::cout << "predict stmt_list --> stmt stmt_list\n";
             stmt ();
             stmt_list ();
             break;
         case t_eof:
-            printf ("predict stmt_list --> epsilon\n");
+            std::cout << "predict stmt_list --> epsilon\n";
             break;          /*  epsilon production */
         default: error ();
     }
@@ -75,18 +76,18 @@ void stmt_list () {
 void stmt () {
     switch (input_token) {
         case t_id:
-            printf ("predict stmt --> id gets expr\n");
+            std::cout << "predict stmt --> id gets expr\n";
             match (t_id);
             match (t_gets);
             expr ();
             break;
         case t_read:
-            printf ("predict stmt --> read id\n");
+            std::cout << "predict stmt --> read id\n";
             match (t_read);
             match (t_id);
             break;
         case t_write:
-            printf ("predict stmt --> write expr\n");
+            std::cout << "predict stmt --> write expr\n";
             match (t_write);
             expr ();
             break;
@@ -99,7 +100,7 @@ void expr () {
         case t_id:
         case t_literal:
         case t_lparen:
-            printf ("predict expr --> term term_tail\n");
+            std::cout << "predict expr --> term term_tail\n";
             term ();
             term_tail ();
             break;
@@ -111,7 +112,7 @@ void term_tail () {
     switch (input_token) {
         case t_add:
         case t_sub:
-            printf ("predict term_tail --> add_op term term_tail\n");
+            std::cout << "predict term_tail --> add_op term term_tail\n";
             add_op ();
             term ();
             term_tail ();
@@ -121,7 +122,7 @@ void term_tail () {
         case t_read:
         case t_write:
         case t_eof:
-            printf ("predict term_tail --> epsilon\n");
+            std::cout << "predict term_tail --> epsilon\n";
             break;          /*  epsilon production */
         default: error ();
     }
@@ -132,7 +133,7 @@ void term () {
         case t_id:
         case t_literal:
         case t_lparen:
-            printf ("predict term --> factor factor_tail\n");
+            std::cout << "predict term --> factor factor_tail\n";
             factor ();
             factor_tail ();
             break;
@@ -144,7 +145,7 @@ void factor_tail () {
     switch (input_token) {
         case t_mul:
         case t_div:
-            printf ("predict factor_tail --> mul_op factor factor_tail\n");
+            std::cout << "predict factor_tail --> mul_op factor factor_tail\n";
             mul_op ();
             factor ();
             factor_tail ();
@@ -156,7 +157,7 @@ void factor_tail () {
         case t_read:
         case t_write:
         case t_eof:
-            printf ("predict factor_tail --> epsilon\n");
+            std::cout << "predict factor_tail --> epsilon\n";
             break;          /*  epsilon production */
         default: error ();
     }
@@ -165,15 +166,15 @@ void factor_tail () {
 void factor () {
     switch (input_token) {
         case t_id :
-            printf ("predict factor --> id\n");
+            std::cout << "predict factor --> id\n";
             match (t_id);
             break;
         case t_literal:
-            printf ("predict factor --> literal\n");
+            std::cout << "predict factor --> literal\n";
             match (t_literal);
             break;
         case t_lparen:
-            printf ("predict factor --> lparen expr rparen\n");
+            std::cout << "predict factor --> lparen expr rparen\n";
             match (t_lparen);
             expr ();
             match (t_rparen);
@@ -185,11 +186,11 @@ void factor () {
 void add_op () {
     switch (input_token) {
         case t_add:
-            printf ("predict add_op --> add\n");
+            std::cout << "predict add_op --> add\n";
             match (t_add);
             break;
         case t_sub:
-            printf ("predict add_op --> sub\n");
+            std::cout << "predict add_op --> sub\n";
             match (t_sub);
             break;
         default: error ();
@@ -199,11 +200,11 @@ void add_op () {
 void mul_op () {
     switch (input_token) {
         case t_mul:
-            printf ("predict mul_op --> mul\n");
+            std::cout << "predict mul_op --> mul\n";
             match (t_mul);
             break;
         case t_div:
-            printf ("predict mul_op --> div\n");
+            std::cout << "predict mul_op --> div\n";
             match (t_div);
             break;
         default: error ();

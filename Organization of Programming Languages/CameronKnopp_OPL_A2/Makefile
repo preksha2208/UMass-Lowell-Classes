@@ -4,10 +4,14 @@
 # Note that rule for goal (parse) must be the first one in this file.
 
 parse: parse.o scan.o
-	gcc -o parse parse.o scan.o
+	gcc -o parse scan.o parse.o
+
+parse.o: scan.hpp parse.cpp
+	gcc -c scan.hpp parse.cpp
+
+scan.o: scan.hpp scan.cpp
+	gcc -c scan.hpp scan.cpp
 
 clean:
-	rm *.o parse
+	rm *.o *.hpp.gchparse
 
-parse.o: scan.hpp
-scan.o: scan.hpp
