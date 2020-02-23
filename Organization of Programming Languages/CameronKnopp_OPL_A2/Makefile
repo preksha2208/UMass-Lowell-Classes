@@ -13,5 +13,5 @@ scan.o: scan.hpp scan.cpp
 	gcc -c scan.hpp scan.cpp
 
 clean:
-	rm *.o *.hpp.gchparse
+	rm *.o *.hpp.gch parse
 

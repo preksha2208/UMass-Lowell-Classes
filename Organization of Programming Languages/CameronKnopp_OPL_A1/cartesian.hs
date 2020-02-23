@@ -1,6 +1,8 @@
 -- Code taken from http://www.rosettacode.org/wiki/Cartesian_product_of_two_or_more_lists#Go
 -- Comments added by me
 
+
+-- this is an example of polymorphism because the parameters have an unspecified type, and therefore are not constrained to a specific type
 cartProd :: [a] -> [b] -> [(a, b)]  -- take in sets with a and b, return set of (a,b) pairs
 cartProd xs ys = 
   [ (x, y)
