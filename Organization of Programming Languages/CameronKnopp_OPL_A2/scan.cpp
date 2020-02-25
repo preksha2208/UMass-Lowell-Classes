@@ -3,22 +3,15 @@
 */
 
 #include <iostream>
-#include <ios>
-#include <cstdlib> //to exit(1)
 #include <string>
+#include <cstdlib>
 #include <cctype>
-
+#include <ios>
 #include "scan.h"
 
-using std::cin;
-using std::cout;
-using std::endl;
-using std::noskipws;
-using std::string;
-
 char token_image[100];
-string image;
-string getImage()
+std::string image;
+std::string getImage()
 {
     return " \"" + image + "\"";
 }
@@ -31,13 +24,9 @@ token scan()
 
     /* skip white space */
 
-    /*if (!cin.get(c)) return t_eof;
-    while (isspace(c)) {
-        if (!cin.get(c)) return t_eof;
-    }*/
     do
     {
-        if (!cin.get(c))
+        if (!std::cin.get(c))
             return t_eof;
     } while (isspace(c));
     if (isalpha(c))
@@ -45,37 +34,36 @@ token scan()
         do
         {
             token_image[i++] = c;
-            if (!cin.get(c))
+            if (!std::cin.get(c))
                 break;
         } while (isalpha(c) || isdigit(c) || c == '_');
         token_image[i] = '\0';
-        if (token_image == string("read"))
+        if (token_image == std::string("read"))
             return t_read;
-        else if (token_image == string("write"))
+        else if (token_image == std::string("write"))
             return t_write;
-        else if (token_image == string("do"))
+        else if (token_image == std::string("do"))
             return t_do;
-        else if (token_image == string("od"))
+        else if (token_image == std::string("od"))
             return t_od;
-        else if (token_image == string("if"))
+        else if (token_image == std::string("if"))
             return t_if;
-        else if (token_image == string("fi"))
+        else if (token_image == std::string("fi"))
             return t_fi;
-        else if (token_image == string("check"))
+        else if (token_image == std::string("check"))
             return t_check;
         else
         {
             image = token_image;
             return t_id;
         }
-        // literal = token_image;
     }
     else if (isdigit(c))
     {
         do
         {
             token_image[i++] = c;
-            cin.get(c);
+            std::cin.get(c);
         } while (isdigit(c));
         token_image[i] = '\0';
         image = token_image;
@@ -85,66 +73,65 @@ token scan()
         switch (c)
         { // using switch/case
         case '+':
-            cin.get(c);
+            std::cin.get(c);
             return t_add;
         case '-':
-            cin.get(c);
+            std::cin.get(c);
             return t_sub;
         case '*':
-            cin.get(c);
+            std::cin.get(c);
             return t_mul;
         case '/':
-            cin.get(c);
+            std::cin.get(c);
             return t_div;
         case '(':
-            cin.get(c);
+            std::cin.get(c);
             return t_lparen;
         case ')':
-            cin.get(c);
+            std::cin.get(c);
             return t_rparen;
 
         case ':':
-            cin.get(c);
+            std::cin.get(c);
             if (c == '=')
             {
-                cin.get(c);
+                std::cin.get(c);
                 return t_gets;
             }
-            cout << "error\n";
+            std::cout << "error\n";
         case '<':
-            cin.get(c);
+            std::cin.get(c);
             if (c == '>')
             {
-                cin.get(c);
+                std::cin.get(c);
                 return t_notequal;
             }
             else if (c == '=')
             {
-                cin.get(c);
-                return t_smallerequal;
+                std::cin.get(c);
+                return t_smallerorequal;
             }
             else
                 return t_smaller;
         case '>':
-            cin.get(c);
+            std::cin.get(c);
             if (c == '=')
             {
-                cin.get(c);
-                return t_greaterequal;
+                std::cin.get(c);
+                return t_greaterorequal;
             }
             else
                 return t_greater;
         case '=':
-            cin.get(c);
+            std::cin.get(c);
             if (c == '=')
             {
-                cin.get(c);
+                std::cin.get(c);
                 return t_equal;
             }
-            cout << "error\n";
+            std::cout << "error\n";
         default:
-            cout << "error\n"; //default case
+            std::cout << "error\n";
             exit(1);
         }
 }
-

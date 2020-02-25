@@ -3,11 +3,12 @@
 
 # Note that rule for goal (parse) must be the first one in this file.
 
-parse: parse.o scan.o
-	g++ -o parse parse.o scan.o
-	./parse < primes.txt > output.txt
+test: parse.o scan.o
+	g++ -o test parse.o scan.o
+	./test < primes.txt > output.txt
 clean:
-	rm *.o parse
+	rm *.o
+	rm test
 	rm output.txt
 
 parse.o: scan.h

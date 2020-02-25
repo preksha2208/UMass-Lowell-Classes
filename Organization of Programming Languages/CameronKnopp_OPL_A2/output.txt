@@ -1,0 +1,79 @@
+(program 
+[(read (id "n" )
+(( := (id  "cp")((lit "2"))
+)((do
+Token check: do you mean "od"?
+ Not expecting "check" in Statement
+ Skipped: "check"
+(error)
+(Token greater: do you mean "gets"?
+ Not expecting ">" in Statement
+ Skipped: ">"
+ Skipped: literal
+(error)
+(( := (id  "found")((lit "0"))
+)(( := (id  "cf1")((lit "2"))
+)(( := (id  "cf1s")((id "cf1")* (id "cf1"))
+)((do
+Token check: do you mean "od"?
+ Not expecting "check" in Statement
+ Skipped: "check"
+(error)
+(Token smallerorequal: do you mean "gets"?
+ Not expecting "<=" in Statement
+ Skipped: "<="
+(error)
+(Token id: do you mean "gets"?
+ Not expecting id in Statement
+ Skipped: id
+ Skipped: "gets"
+ Skipped: literal
+(error)
+(( := (id  "pr")((id "cf1")* (id "cf2"))
+)((do
+Token check: do you mean "od"?
+ Not expecting "check" in Statement
+ Skipped: "check"
+(error)
+(Token smallerorequal: do you mean "gets"?
+ Not expecting "<=" in Statement
+ Skipped: "<="
+(error)
+(Token if: do you mean "gets"?
+ Not expecting "if" in Statement
+ Skipped: "if"
+(error)
+(Token equal: do you mean "gets"?
+ Not expecting "==" in Statement
+ Skipped: "=="
+(error)
+(Token id: do you mean "gets"?
+ Not expecting id in Statement
+ Skipped: id
+ Skipped: "gets"
+ Skipped: literal
+ Skipped: "fi"
+(error)
+(( := (id  "cf2")((id "cf2")+  (lit "1"))
+)(( := (id  "pr")((id "cf1")* (id "cf2"))
+)
+)
+)
+)
+)
+)
+)
+)
+)
+)
+)
+)
+)
+)
+)
+)
+)
+)
+)
+Token od: do you mean "eof"?
+ Not expecting od in Program
