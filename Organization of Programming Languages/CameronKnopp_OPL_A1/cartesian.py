@@ -5,7 +5,6 @@ import itertools
  
 def cp(lsts):
     return list(itertools.product(*lsts))  # Call built-in Cartesian product function
-    # this is an example of polymorphism because as can be seen below, the code works with different types of list
  
 if __name__ == '__main__':  # basically int main()
     from pprint import pprint as pp  # "pretty print"

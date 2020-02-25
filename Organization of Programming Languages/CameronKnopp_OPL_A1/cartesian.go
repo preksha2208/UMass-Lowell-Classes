@@ -19,7 +19,6 @@ func cart2(a, b []int) []pair { // func takes in two integer arrays and returns 
 }
 
 func main() {
-	// The print function is an example of polymorphism because it can take many different types of input arguments and return an output
 	fmt.Println(cart2([]int{1, 2}, []int{3, 4}))
 	fmt.Println(cart2([]int{3, 4}, []int{1, 2}))
 	fmt.Println(cart2([]int{1, 2}, nil))
