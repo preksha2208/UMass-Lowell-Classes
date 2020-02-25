@@ -31,5 +31,6 @@ A: I liked seeing the similarities between the languages and working in somethin
 
 Q5: Did you use polymorphism in one or more of your programs? If YES, specify which one(s), 
     and comment on whether it was easy or hard to make use of polymorphism in the respective language(s)
-A: Yes, I used polymorphism in Python when I called the cartesian product function because that function takes in a list
-    of an unspecified type and therefore it can work with a variety of types, making it
+A: Yes, I use it in prolog, which was easy because the language naturally works this way.
+    Prolog makes use of polymorphism so that lists of any size can be passed into the product function
+    that I created and still give a correct answer.
