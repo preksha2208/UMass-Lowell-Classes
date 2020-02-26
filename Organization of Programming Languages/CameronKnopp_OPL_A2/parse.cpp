@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <string>
+#include <exception>
 #include "stdio.h"
 #include "stdlib.h"
 #include "scan.h"
@@ -20,17 +21,9 @@ const std::string fullNames[] = {"\"check\"", "\"read\"", "\"write\"", "id", "li
                                  "\"fi\"", "\"do\"", "\"od\"", "\"==\"", "\"<>\"", "\"<\"", "\">\"", "\"<=\"", "\">=\"", "\"+\"", "\"-\"", "\"*\"", "\"/\"",
                                  "\"(\"", "\")\"", "\"eof\"", "\"eps\""};
 
-static token input_token;
-static int tabNum = 0; //tab spaces
-static int hasError = 0;
+token input_token;
 static std::string image = "";
-// check for the follow sets of statement, relation and expression to handle exceptions catched
-static token s_follow[] = {t_id, t_read, t_write, t_if, t_do, t_check, t_eof};
-static token r_follow[] = {t_id, t_read, t_write, t_if, t_do, t_check, t_eof, t_fi, t_rparen};
-static token e_follow[] = {t_id, t_read, t_write, t_if, t_do, t_check, t_eof, t_fi, t_rparen, t_equal, t_notequal, t_smaller, t_greater, t_smallerorequal, t_greaterorequal};
-//////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////////
 std::string prefix(std::string str, std::string tail)
 { // Print Prefix
     if (tail == "")
@@ -72,8 +65,6 @@ std::string match(token expected)
     {
         image = getImage();
         input_token = scan();
-        // std::cout << "Matched "<<names[expected] << " image: "<<image<< std::endl;
-        //std::cout << "match next: "<<names[input_token] << std::endl;
     }
     else
     {
@@ -174,9 +165,7 @@ std::string stmt()
             match(t_id);
             match(t_gets);
             std::string str = "( := (id " + image + ")" + relation();
-
             str += ")";
-
             return str;
         }
         case t_read:
@@ -235,14 +224,16 @@ std::string stmt()
             std::cout << "Not expecting " << fullNames[input_token] << " in statement" << std::endl;
         else
             std::cout << "Not expecting " << fullNames[input_token] << " in " << it << std::endl;
+
+        token follow[] = {t_id, t_read, t_write, t_if, t_do, t_check, t_eof};
         std::cout << "Skipped: " << fullNames[input_token] << std::endl;
         input_token = scan();
-        while (!contains(input_token, s_follow) && input_token != t_eof)
+        while (!contains(input_token, follow) && input_token != t_eof)
         {
             std::cout << "Skipped: " << fullNames[input_token] << std::endl;
             input_token = scan();
         }
-        if (contains(input_token, s_follow))
+        if (contains(input_token, follow))
         {
             return "(error)\n";
         }
@@ -271,12 +262,15 @@ std::string expr()
             std::cout << "Not expecting " << fullNames[input_token] << " in " << it << std::endl;
         std::cout << "Skipped: " << fullNames[input_token] << std::endl;
         input_token = scan();
-        while (!contains(input_token, e_follow) && input_token != t_eof)
+        token follow[] = {t_id, t_read, t_write, t_if, t_do, t_check, t_eof, t_fi, t_rparen, t_equal, t_notequal, t_smaller, t_greater, t_smallerorequal, t_greaterorequal};
+
+
+        while (!contains(input_token, follow) && input_token != t_eof)
         {
             std::cout << "Skipped: " << fullNames[input_token] << std::endl;
             input_token = scan();
         }
-        if (contains(input_token, e_follow))
+        if (contains(input_token, follow))
         {
             return "(error)\n";
         }
@@ -504,7 +498,7 @@ std::string mul_op()
 }
 
 std::string relation()
-{ //modified relation
+{ 
     try
     { // using try/catch exception
 
@@ -521,13 +515,15 @@ std::string relation()
             std::cout << "Not expecting " << fullNames[input_token] << " in " << it << std::endl;
         std::cout << "Skipped: " << fullNames[input_token] << std::endl;
         input_token = scan();
-        while (!contains(input_token, r_follow) && input_token != t_eof)
+        token follow[] = {t_id, t_read, t_write, t_if, t_do, t_check, t_eof, t_fi, t_rparen};
+
+        while (!contains(input_token, follow) && input_token != t_eof)
         {
             std::cout << "Skipped: " << fullNames[input_token] << std::endl;
             input_token = scan();
             std::cout << input_token << std::endl;
         }
-        if (contains(input_token, r_follow))
+        if (contains(input_token, follow))
         {
             return "(error)\n";
         }
