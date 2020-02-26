@@ -113,13 +113,13 @@ std::string program()
         case t_eof:
         {
 
-            std::string str1 = "(program \n";
-            str1 += "[";
+            std::string str = "(program \n";
+            str += "[";
 
-            str1 += stmt_list();
+            str += stmt_list();
             match(t_eof);
-            str1 += "]\n";
-            return str1 + ")\n";
+            str += "]\n";
+            return str + ")\n";
         }
         default:
             throw std::string("program"); // default case
@@ -128,7 +128,7 @@ std::string program()
     }
     catch (std::string e)
     { // Once you catch it
-        std::cout << "Not expecting " << names[input_token] << " in Program" << std::endl;
+        std::cout << "Didn't expect " << names[input_token] << " in program" << std::endl;
         return "";
     }
 }
@@ -144,14 +144,14 @@ std::string stmt_list()
     case t_if:
     case t_do:
     { // add if/do
-        std::string str1 = "";
+        std::string str = "";
 
-        str1 += "(" + stmt();
-        str1 += stmt_list();
+        str += "(" + stmt();
+        str += stmt_list();
 
-        str1 += ")\n";
+        str += ")\n";
 
-        return str1;
+        return str;
     }
     case t_eof:
 
@@ -173,11 +173,11 @@ std::string stmt()
         {
             match(t_id);
             match(t_gets);
-            std::string str1 = "( := (id " + image + ")" + relation();
+            std::string str = "( := (id " + image + ")" + relation();
 
-            str1 += ")";
+            str += ")";
 
-            return str1;
+            return str;
         }
         case t_read:
             match(t_read);
@@ -187,41 +187,41 @@ std::string stmt()
         case t_write:
         {
             match(t_write);
-            std::string str1 = relation();
+            std::string str = relation();
 
-            return "(write " + str1 + ")\n";
+            return "(write " + str + ")\n";
         }
         case t_if:
         {
             match(t_if);
-            std::string str1 = "(if \n";
+            std::string str = "(if \n";
 
-            str1 += relation();
+            str += relation();
 
             std::string str2 = stmt_list();
 
             match(t_fi);
 
-            return str1 + "[\n" + str2 + "])\n";
+            return str + "[\n" + str2 + "])\n";
         }
         case t_do:
         {
             match(t_do);
-            std::string str1 = "(do\n";
-            str1 += stmt_list();
+            std::string str = "(do\n";
+            str += stmt_list();
 
             match(t_od);
 
-            return "[" + str1 + "])\n";
+            return "[" + str + "])\n";
         }
         case t_check:
         {
             match(t_check);
-            std::string str1 = "";
+            std::string str = "";
 
-            str1 += relation();
+            str += relation();
 
-            return "(check\n" + str1 + ")\n";
+            return "(check\n" + str + ")\n";
         }
         default:
             error();
@@ -258,10 +258,10 @@ std::string expr()
 
     try
     { // using try/catch exception
-        std::string str1 = term();
+        std::string str = term();
         std::string str2 = term_tail();
 
-        return prefix(str1, str2);
+        return prefix(str, str2);
     }
     catch (std::string it)
     {
@@ -303,10 +303,10 @@ std::string expr_tail()
     case t_smallerorequal:
     case t_greaterorequal:
     {
-        std::string str1 = relation_op();
+        std::string str = relation_op();
         std::string str2 = expr();
 
-        return str1 + " " + str2;
+        return str + " " + str2;
     }
     case t_id:
     case t_read:
@@ -328,12 +328,12 @@ std::string term_tail()
     case t_add:
     case t_sub:
     {
-        std::string str1 = add_op();
-        str1 += " ";
-        str1 += term();
+        std::string str = add_op();
+        str += " ";
+        str += term();
         std::string str2 = term_tail();
 
-        return prefix(str1, str2);
+        return prefix(str, str2);
     }
     case t_rparen:
     case t_id:
@@ -352,10 +352,10 @@ std::string term()
     try
     { // using try/catch exception
 
-        std::string str1 = factor();
+        std::string str = factor();
         std::string str2 = factor_tail();
 
-        return prefix(str1, str2);
+        return prefix(str, str2);
     }
     catch (std::string it)
     { // once you catch it
@@ -372,12 +372,12 @@ std::string factor_tail()
     case t_mul:
     case t_div:
     {
-        std::string str1 = mul_op();
+        std::string str = mul_op();
         std::string str2 = factor();
-        str1 += str2;
-        str1 += factor_tail();
+        str += str2;
+        str += factor_tail();
 
-        return str1 + "";
+        return str + "";
     }
     case t_add:
     case t_sub:
@@ -402,23 +402,23 @@ std::string factor()
     {
         match(t_id);
 
-        std::string str1 = "(id" + image + ")";
-        return str1;
+        std::string str = "(id" + image + ")";
+        return str;
     }
     case t_literal:
     {
         match(t_literal);
 
-        std::string str1 = "(lit" + image + ")";
-        return str1;
+        std::string str = "(lit" + image + ")";
+        return str;
     }
     case t_lparen:
     {
         match(t_lparen);
-        std::string str1 = relation();
+        std::string str = relation();
         match(t_rparen);
 
-        return "(" + str1 + ")";
+        return "(" + str + ")";
     }
     default:
         throw std::string("factor"); //default case
@@ -509,9 +509,9 @@ std::string relation()
     { // using try/catch exception
 
         std::string str2 = expr();
-        std::string str1 = expr_tail();
+        std::string str = expr_tail();
 
-        return "(" + prefix(str2, str1) + ")\n";
+        return "(" + prefix(str2, str) + ")\n";
     }
     catch (std::string it)
     { // once you catch it
