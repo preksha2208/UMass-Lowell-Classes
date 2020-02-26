@@ -11,23 +11,26 @@
 #include "stdlib.h"
 #include "scan.h"
 
-const std::string names[] = {"check", "read", "write", "id", "literal", "gets", "if",
-                             "fi", "do", "od", "equal", "notequal", "smaller",
-                             "greater", "smallerorequal", "greaterorequal", "add", "sub", "mul",
-                             "div", "lparen", "rparen", "eof", "eps"};
+const char *names[] = {"check", "read", "write", "id", "literal", "gets", "if",
+                       "fi", "do", "od", "equal", "notequal", "smaller",
+                       "greater", "smallerorequal", "greaterorequal", "add", "sub", "mul",
+                       "div", "lparen", "rparen", "eof", "eps"};
 
 const std::string fullNames[] = {"\"check\"", "\"read\"", "\"write\"", "id", "literal", "\"gets\"", "\"if\"",
                                  "\"fi\"", "\"do\"", "\"od\"", "\"==\"", "\"<>\"", "\"<\"", "\">\"", "\"<=\"", "\">=\"", "\"+\"", "\"-\"", "\"*\"", "\"/\"",
                                  "\"(\"", "\")\"", "\"eof\"", "\"eps\""};
 
+static token input_token;
+static int tabNum = 0; //tab spaces
+static int hasError = 0;
+static std::string image = "";
+// check for the follow sets of statement, relation and expression to handle exceptions catched
 static token s_follow[] = {t_id, t_read, t_write, t_if, t_do, t_check, t_eof};
 static token r_follow[] = {t_id, t_read, t_write, t_if, t_do, t_check, t_eof, t_fi, t_rparen};
 static token e_follow[] = {t_id, t_read, t_write, t_if, t_do, t_check, t_eof, t_fi, t_rparen, t_equal, t_notequal, t_smaller, t_greater, t_smallerorequal, t_greaterorequal};
+//////////////////////////////////////////////////////////
 
-static token input_token;
-static int hasError = 0;
-static std::string image = "";
-
+////////////////////////////////////////////////////////////////////////////////////
 std::string prefix(std::string str, std::string tail)
 { // Print Prefix
     if (tail == "")
@@ -41,14 +44,7 @@ std::string prefix(std::string str, std::string tail)
     }
     return "prefix error"; //Print the error message
 }
-std::string preIndent(std::string str, int tab)
-{ // Print PreIndent
-    for (int i = 0; i <= tab; i++)
-    {
-        str = " " + str;
-    }
-    return str;
-}
+
 int contains(token take, token set[])
 { // CHECK if is in the set[] array
     int i = 0;
@@ -61,14 +57,7 @@ int contains(token take, token set[])
     }
     return 0;
 }
-std::string postIndent(std::string str, int tab)
-{ // Print postIndent
-    for (int i = 0; i <= tab; i++)
-    {
-        str += " ";
-    }
-    return str;
-}
+
 ////////////////////////////////////////////////////////////////////////////////////////
 
 void error()
@@ -77,7 +66,7 @@ void error()
     exit(1);
 }
 
-void match(token expected)
+std::string match(token expected)
 { // Match function
     if (input_token == expected)
     {
@@ -89,27 +78,27 @@ void match(token expected)
     else
     {
         image = getImage();
-        std::cout << "Token " << names[input_token] << ": do you mean " << fullNames[expected] << "?" << std::endl;
+        std::cout << "Token image: " << names[input_token] << ", Token expected:  " << fullNames[expected] << std::endl;
         throw std::string("match");
     }
-    return;
+    return "";
 }
 
-void program();
-void stmt_list();
-void stmt();
-void expr();
-void expr_tail();
-void term_tail();
-void term();
-void factor_tail();
-void factor();
-void relation_op();
-void relation();
-void add_op();
-void mul_op();
+std::string program();
+std::string stmt_list();
+std::string stmt();
+std::string expr();
+std::string expr_tail();
+std::string term_tail();
+std::string term();
+std::string factor_tail();
+std::string factor();
+std::string relation_op();
+std::string add_op();
+std::string mul_op();
+std::string relation();
 
-void program()
+std::string program()
 {
     try
     { // try/catch exception
@@ -123,33 +112,28 @@ void program()
         case t_check:
         case t_eof:
         {
-            std::cout << "(program \n";
 
-            std::cout << "[";
+            std::string str1 = "(program \n";
+            str1 += "[";
 
-            stmt_list();
+            str1 += stmt_list();
             match(t_eof);
-
-            std::cout << "]\n";
-
-            if (hasError)
-                return;
-            std::cout << ")\n";
-            return;
+            str1 += "]\n";
+            return str1 + ")\n";
         }
         default:
             throw std::string("program"); // default case
-            return;
+            return "";
         }
     }
     catch (std::string e)
     { // Once you catch it
-        std::cout << " Not expecting " << names[input_token] << " in Program" << std::endl;
-        return;
+        std::cout << "Not expecting " << names[input_token] << " in Program" << std::endl;
+        return "";
     }
 }
 
-void stmt_list()
+std::string stmt_list()
 {
     switch (input_token)
     { // using switch case
@@ -160,26 +144,25 @@ void stmt_list()
     case t_if:
     case t_do:
     { // add if/do
-        std::cout << "(";
-        stmt();
-        stmt_list();
+        std::string str1 = "";
 
-        std::cout << ")\n";
+        str1 += "(" + stmt();
+        str1 += stmt_list();
 
-        return;
+        str1 += ")\n";
+
+        return str1;
     }
     case t_eof:
 
-        std::cout << "\n"; /*  epsilon production */
-        return;
+        return "\n"; /*  epsilon production */
     default:
 
-        std::cout << "\n";
-        return;
+        return "\n";
     }
 }
 
-void stmt()
+std::string stmt()
 { // STATEMENT
 
     try
@@ -190,135 +173,127 @@ void stmt()
         {
             match(t_id);
             match(t_gets);
-            std::cout << "( := (id " << image << ")";
-            relation();
+            std::string str1 = "( := (id " + image + ")" + relation();
 
-            std::cout << ")";
+            str1 += ")";
 
-            return;
+            return str1;
         }
         case t_read:
             match(t_read);
             match(t_id);
 
-            std::cout << "read (id" << image << " )\n";
-            return;
+            return "read (id" + image + " )\n";
         case t_write:
         {
             match(t_write);
-            relation();
+            std::string str1 = relation();
 
-            std::cout << "(write ";
-            relation();
-            std::cout << ")\n";
-            return;
+            return "(write " + str1 + ")\n";
         }
         case t_if:
         {
             match(t_if);
-            std::cout << "(if \n";
+            std::string str1 = "(if \n";
+
+            str1 += relation();
+
+            std::string str2 = stmt_list();
 
             match(t_fi);
 
-            relation();
-            std::cout << "[\n";
-            stmt_list();
-            std::cout << "])\n";
-            return;
+            return str1 + "[\n" + str2 + "])\n";
         }
         case t_do:
         {
             match(t_do);
-            std::cout << "(do\n";
+            std::string str1 = "(do\n";
+            str1 += stmt_list();
 
             match(t_od);
 
-            std::cout << "[";
-            stmt_list();
-            std::cout << "])\n";
+            return "[" + str1 + "])\n";
         }
         case t_check:
         {
             match(t_check);
+            std::string str1 = "";
 
-            std::cout << "(check\n";
-            relation();
-            std::cout << ")\n";
+            str1 += relation();
+
+            return "(check\n" + str1 + ")\n";
         }
         default:
             error();
 
-            return;
+            return "";
         }
     }
     catch (std::string it)
-    {                 // Once you catch it
-        hasError = 1; // It has an error
+    { // Once you catch it
         if (it == "match")
-            std::cout << " Not expecting " << fullNames[input_token] << " in Statement" << std::endl;
+            std::cout << "Not expecting " << fullNames[input_token] << " in statement" << std::endl;
         else
-            std::cout << " Not expecting " << fullNames[input_token] << " in " << it << std::endl;
-        std::cout << " Skipped: " << fullNames[input_token] << std::endl;
+            std::cout << "Not expecting " << fullNames[input_token] << " in " << it << std::endl;
+        std::cout << "Skipped: " << fullNames[input_token] << std::endl;
         input_token = scan();
         while (!contains(input_token, s_follow) && input_token != t_eof)
         {
-            std::cout << " Skipped: " << fullNames[input_token] << std::endl;
+            std::cout << "Skipped: " << fullNames[input_token] << std::endl;
             input_token = scan();
         }
         if (contains(input_token, s_follow))
         {
-            hasError = 1;
-            std::cout << "(error)\n";
-            return;
+            return "(error)\n";
         }
         else
         {
         }
-        return;
+        return "";
     }
 }
 
-void expr()
+std::string expr()
 {
-    ;
+
     try
     { // using try/catch exception
-        term();
-        term_tail();
+        std::string str1 = term();
+        std::string str2 = term_tail();
 
-        return;
-        //return prefix(str1, str2);
+        return prefix(str1, str2);
     }
     catch (std::string it)
     {
-        hasError = 1;
         if (it == "match")
-            std::cout << " Not expecting " << fullNames[input_token] << " in expression" << std::endl;
+            std::cout << "Not expecting " << fullNames[input_token] << " in expression" << std::endl;
         else
-            std::cout << " Not expecting " << fullNames[input_token] << " in " << it << std::endl;
-        std::cout << " Skipped: " << fullNames[input_token] << std::endl;
+            std::cout << "Not expecting " << fullNames[input_token] << " in " << it << std::endl;
+        std::cout << "Skipped: " << fullNames[input_token] << std::endl;
         input_token = scan();
         while (!contains(input_token, e_follow) && input_token != t_eof)
         {
-            std::cout << " Skipped: " << fullNames[input_token] << std::endl;
+            std::cout << "Skipped: " << fullNames[input_token] << std::endl;
             input_token = scan();
         }
         if (contains(input_token, e_follow))
         {
-            hasError = 1;
-
-            std::cout << "(error)\n";
-            return;
+            return "(error)\n";
         }
-        return;
+        else
+        {
+        }
+
+        return "";
     }
     error();
 
-    return;
+    return "";
 }
 
-void expr_tail()
+std::string expr_tail()
 {
+
     switch (input_token)
     { //using switch/case
     case t_equal:
@@ -328,76 +303,81 @@ void expr_tail()
     case t_smallerorequal:
     case t_greaterorequal:
     {
-        relation_op();
-        std::cout << " ";
-        expr();
-        return;
+        std::string str1 = relation_op();
+        std::string str2 = expr();
+
+        return str1 + " " + str2;
     }
     case t_id:
     case t_read:
     case t_write:
     case t_eof:
-        return;
+
+        return "";
     default:
-        return;
+
+        return "";
     }
 }
 
-void term_tail()
+std::string term_tail()
 {
+
     switch (input_token)
     { //using swith/case
     case t_add:
     case t_sub:
     {
-        add_op();
-        std::cout << " ";
-        term();
-        term_tail();
+        std::string str1 = add_op();
+        str1 += " ";
+        str1 += term();
+        std::string str2 = term_tail();
 
-        //return prefix(str1, str2);
-        return;
+        return prefix(str1, str2);
     }
     case t_rparen:
     case t_id:
     case t_read:
     case t_write:
     case t_eof:
-        return; /*  epsilon production */
+
+        return ""; /*  epsilon production */
     default:
-        return;
+        return "";
     }
 }
 
-void term()
+std::string term()
 {
     try
     { // using try/catch exception
-        ;
-        factor();
-        factor_tail();
 
-        return;
+        std::string str1 = factor();
+        std::string str2 = factor_tail();
+
+        return prefix(str1, str2);
     }
     catch (std::string it)
     { // once you catch it
-        throw std::string("Term");
+        throw std::string("term");
     }
-    return;
+    return "";
 }
 
-void factor_tail()
+std::string factor_tail()
 {
-    ;
+
     switch (input_token)
     { //using switch/case
     case t_mul:
     case t_div:
     {
-        mul_op();
-        factor();
-        factor_tail();
-        return;
+        std::string str1 = mul_op();
+        std::string str2 = factor();
+        str1 += str2;
+        str1 += factor_tail();
+
+        return str1 + "";
     }
     case t_add:
     case t_sub:
@@ -406,165 +386,162 @@ void factor_tail()
     case t_read:
     case t_write:
     case t_eof:
-        return; /*  epsilon production */
+
+        return ""; /*  epsilon production */
     default:
-        return;
+        return "";
     }
 }
 
-void factor()
+std::string factor()
 {
-    ;
+
     switch (input_token)
     { // using switch/case
     case t_id:
     {
         match(t_id);
-        std::cout << "(id" << image << ")";
-        return;
+
+        std::string str1 = "(id" + image + ")";
+        return str1;
     }
     case t_literal:
     {
         match(t_literal);
-        std::cout << "(lit" << image << ")";
-        return;
+
+        std::string str1 = "(lit" + image + ")";
+        return str1;
     }
     case t_lparen:
     {
         match(t_lparen);
-        std::cout << "(";
-        relation();
+        std::string str1 = relation();
         match(t_rparen);
-        std::cout << ")";
+
+        return "(" + str1 + ")";
     }
     default:
-        throw std::string("Factor"); //default case
-        return;
+        throw std::string("factor"); //default case
+
+        return "";
     }
 }
 
-void relation_op()
+std::string relation_op()
 { // RELATION FUNCTION
-    ;
+
     switch (input_token)
     { // using switch/case
     case t_equal:
         match(t_equal);
-        std::cout << "== ";
-        return;
 
+        return "== ";
     case t_notequal:
         match(t_notequal);
-        std::cout << "<> ";
-        return;
 
+        return "<> ";
     case t_smaller:
         match(t_smaller);
-        std::cout << "< ";
-        return;
 
+        return "< ";
     case t_greater:
         match(t_greater);
-        std::cout << "> ";
-        return;
 
+        return "> ";
     case t_smallerorequal:
         match(t_smallerorequal);
-        std::cout << "<= ";
-        return;
 
+        return "<= ";
     case t_greaterorequal:
         match(t_greaterorequal);
-        std::cout << ">= ";
-        return;
 
+        return ">= ";
     default:
-        throw std::string("Relation Operation");
-        std::cout << "";
-        return;
+        throw std::string("relation_op");
+
+        return "";
     }
 }
 
-void add_op()
+std::string add_op()
 {
+
     switch (input_token)
     { // using switch/case
     case t_add:
         match(t_add);
-        std::cout << "+ ";
-        return;
+
+        return "+ ";
     case t_sub:
         match(t_sub);
-        std::cout << "- ";
-        return;
+
+        return "- ";
     default:
-        throw std::string("Arithmetic Operator");
-        return;
+        throw std::string("add_op");
+
+        return "";
     }
 }
 
-void mul_op()
+std::string mul_op()
 {
+
     switch (input_token)
     { // using switch/case
     case t_mul:
         match(t_mul);
-        std::cout << "* ";
-        return;
+
+        return "* ";
     case t_div:
         match(t_div);
-        std::cout << "/ ";
-        return;
+
+        return "/ ";
     default:
-        throw std::string("Multiplication Operator");
-        std::cout << "";
-        return;
+
+        throw std::string("mul_op");
+        return "";
     }
 }
 
-void relation()
+std::string relation()
 { //modified relation
     try
     { // using try/catch exception
-        std::cout << "(";
-        expr();
-        expr_tail();
-        std::cout << ")\n";
-        // std::cout << "(" + prefix(str2, str1) + ")\n";
-        return;
+
+        std::string str2 = expr();
+        std::string str1 = expr_tail();
+
+        return "(" + prefix(str2, str1) + ")\n";
     }
     catch (std::string it)
-    {                 // once you catch it
-        hasError = 1; // has an error
+    { // once you catch it
         if (it == "match")
-            std::cout << " Not expecting " << fullNames[input_token] << " in Relation" << std::endl;
+            std::cout << "Not expecting " << fullNames[input_token] << " in relation" << std::endl;
         else
-            std::cout << " Not expecting " << fullNames[input_token] << " in " << it << std::endl;
-        std::cout << " Skipped: " << fullNames[input_token] << std::endl;
+            std::cout << "Not expecting " << fullNames[input_token] << " in " << it << std::endl;
+        std::cout << "Skipped: " << fullNames[input_token] << std::endl;
         input_token = scan();
         while (!contains(input_token, r_follow) && input_token != t_eof)
         {
-            std::cout << " Skipped: " << fullNames[input_token] << std::endl;
+            std::cout << "Skipped: " << fullNames[input_token] << std::endl;
             input_token = scan();
             std::cout << input_token << std::endl;
         }
         if (contains(input_token, r_follow))
         {
-            hasError = 1;
-            std::cout << "(error)\n";
-            return;
+            return "(error)\n";
         }
         else
         {
         }
-        std::cout << " eof";
-        return;
+
+        return " eof";
     }
 }
 
 int main()
-{                        
-    input_token = scan(); 
-    program();           
+{                           // LETS CALL THE PROGRAM
+    input_token = scan();   // take the input
+    std::cout << program(); // program does its thing
     return 0;
 }

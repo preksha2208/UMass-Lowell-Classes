@@ -23,4 +23,3 @@ do check n > 0
     fi
     cp := cp + 1
 od
-$$

@@ -5,11 +5,13 @@
 
 test: parse.o scan.o
 	g++ -o test parse.o scan.o
-	./test < primes.txt > output.txt
+	./test < primes.txt > primesOutput.txt
+	./test < average.txt > averageOutput.txt
 clean:
 	rm *.o
 	rm test
-	rm output.txt
+	rm primesOutput.txt
+	rm averageOutput.txt
 
 parse.o: scan.h
 scan.o: scan.h
