@@ -11,9 +11,9 @@
 
 char token_image[100];
 std::string image;
-std::string getImage()
+std::string updatedImage()
 {
-    return " \"" + image + "\"";
+    return image;
 }
 
 token scan()
@@ -90,7 +90,6 @@ token scan()
         case ')':
             std::cin.get(c);
             return t_rparen;
-
         case ':':
             std::cin.get(c);
             if (c == '=')
