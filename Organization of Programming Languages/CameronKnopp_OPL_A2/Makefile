@@ -7,7 +7,8 @@ parse.o: scan.h
 scan.o: scan.h
 
 clean:
-	rm *.o *.gch
+	rm *.o
+	rm *.gch
 	rm test
 	rm primesOutput.txt
 	rm averageOutput.txt
