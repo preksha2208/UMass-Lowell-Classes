@@ -35,7 +35,7 @@ api = Api(app)
 
 
 class HelloWorld(Resource):
-    def post(self):
+    def post(self):  # used to set the LED on either the pi or esp
         value = request.get_data()
         value = json.loads(value)
 
@@ -46,19 +46,20 @@ class HelloWorld(Resource):
             GPIO.output(21, GPIO.LOW)   # turn off pi LED
 
         elif value['device'] == 'esp' and value['state'] == 'on':
-            client.publish("\led", "on")  # tell esp LED to turn on 
+            client.publish("\led", "on")  # tell esp LED to turn on
 
         elif value['device'] == 'esp' and value['state'] == 'off':
-            client.publish("\led", "off") # tell esp LED to turn off
+            client.publish("\led", "off")  # tell esp LED to turn off
 
         else:
             pass  # some other data was incorrectly passed in
         return
 
-    def get(self):
+    def get(self): # returns the light average over last ten seconds
         query = 'SELECT MEAN("lightstate") from "test" where "time" > now() - 10s'
         result = dbclient.query(query)  # query database for light average
-        return list(result.get_points(measurement='test'))[0]['mean']  # return light average
+        # return light average
+        return list(result.get_points(measurement='test'))[0]['mean']
 
 
 api.add_resource(HelloWorld, '/test')
@@ -66,13 +67,11 @@ api.add_resource(HelloWorld, '/test')
 app.run(host='0.0.0.0', debug=True)
 
 
-
-
 # Set up a client for InfluxDB
 dbclient = InfluxDBClient('0.0.0.0', 8086, 'root', 'root', 'mydb')
 
 
-def on_message(client, userdata, message):
+def on_message(client, userdata, message):  # what to do when get message from mqtt
     global lightstate
 
     # convert bytes -> string -> int
@@ -89,8 +88,6 @@ def on_message(client, userdata, message):
             "lightstate": lightstate}}]
 
     dbclient.write_points(json_body)
-
-
 
 
 client.loop_start()  # start client

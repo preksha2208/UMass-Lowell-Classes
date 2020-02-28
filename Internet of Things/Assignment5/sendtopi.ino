@@ -26,11 +26,11 @@ void callback(char *topic, byte *payload, unsigned int length)
 
     if (strcmp((char *)payload, "on") == 0)
     {
-        digitalWrite(LED, HIGH);
+        digitalWrite(LED, HIGH);  // turn on LED if message says "on"
     }
     else if (strcmp((char *)payload, "off") == 0)
     {
-        digitalWrite(LED, LOW);
+        digitalWrite(LED, LOW);  // turn off LED if message says "off"
     }
 }
 void setup()
