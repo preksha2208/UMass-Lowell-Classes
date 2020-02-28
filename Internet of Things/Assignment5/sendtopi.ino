@@ -1,6 +1,6 @@
 /* 
 send light sensor values to pi through mqtt
-receive 
+receive messages from pi to either turn on or turn off LED 
 
 
 */
