@@ -1,4 +1,9 @@
-// send light sensor values to pi through mqtt
+/* 
+send light sensor values to pi through mqtt
+receive 
+
+
+*/
 
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
@@ -7,6 +12,7 @@
 #define WLAN_SSID "182RSu3"
 #define WLAN_PASS "Redrum182u3"
 #define BROKER_IP "10.0.0.179"
+#define LED 5
 
 // wifi client and mqqt client
 WiFiClient client;
@@ -14,6 +20,19 @@ PubSubClient mqttclient(client);
 int lightstate;
 char str[5];
 
+void callback(char *topic, byte *payload, unsigned int length)
+{
+    payload[length] = '\0'; // add null terminator to byte payload so we can treat it as a string
+
+    if (strcmp((char *)payload, "on") == 0)
+    {
+        digitalWrite(LED, HIGH);
+    }
+    else if (strcmp((char *)payload, "off") == 0)
+    {
+        digitalWrite(LED, LOW);
+    }
+}
 void setup()
 {
     Serial.begin(115200);
