@@ -33,25 +33,27 @@ class light(Resource):
 
         if value['device'] == 'pi' and value['state'] == 'on':
             print("turning pi light on")
-            client.publish("/pilight", "on")
+            client.publish(client="/pilight", message="on")
 
         elif value['device'] == 'pi' and value['state'] == 'off':
             print("turning pi light off")
-            client.publish("/pilight", "off")
+            client.publish(client="/pilight", message="off")
 
         elif value['device'] == 'esp' and value['state'] == 'on':
             print("turning esp light on")
-            client.publish("/led", "on")  # tell esp LED to turn on
+            # tell esp LED to turn on
+            client.publish(client="/led", message="on")
 
         elif value['device'] == 'esp' and value['state'] == 'off':
             print("turning esp light off")
-            client.publish("/led", "off")  # tell esp LED to turn off
+            # tell esp LED to turn off
+            client.publish(client="/led", message="off")
 
         else:
             pass  # some other data was incorrectly passed in
         return
 
-    def get(self): # returns the light average over last ten seconds
+    def get(self):  # returns the light average over last ten seconds
         query = 'SELECT MEAN("lightstate") from "test" where "time" > now() - 10s'
         result = dbclient.query(query)  # query database for light average
         # return light average
