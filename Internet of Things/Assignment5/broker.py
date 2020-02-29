@@ -33,6 +33,9 @@ def on_message(client, userdata, message):  # what to do when get message from m
     elif client == "\pilight" and message == "off":
         GPIO.output(21, GPIO.LOW)  # turn off pi LED
         return
+    
+    if message == "on" or message == "off":  # check for messages that are intended for the esp
+        return
 
     global lightstate
 
