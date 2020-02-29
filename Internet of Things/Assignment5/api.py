@@ -29,7 +29,7 @@ app = Flask(__name__)
 api = Api(app)
 
 
-class HelloWorld(Resource):
+class light(Resource):
     def post(self):  # used to set the LED on either the pi or esp
         value = request.get_data()
         value = json.loads(value)
@@ -57,6 +57,6 @@ class HelloWorld(Resource):
         return list(result.get_points(measurement='test'))[0]['mean']
 
 
-api.add_resource(HelloWorld, '/test')
+api.add_resource(light, '/light')
 
 app.run(host='0.0.0.0', debug=True)
