@@ -47,7 +47,7 @@ class light(Resource):
         elif value['device'] == 'esp' and value['state'] == 'off':
             print("turning esp light off")
             # tell esp LED to turn off
-            client.publish("/led","off")
+            client.publish("/led", "off")
 
         else:
             pass  # some other data was incorrectly passed in

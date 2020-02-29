@@ -28,14 +28,17 @@ client.subscribe("/pilight")
 
 
 def on_message(client, userdata, message):  # what to do when get message from mqtt
-    if client == "/pilight" and message == "on":
+    cli = (message.topic).decode("utf-8")
+    msg = (message.payload).decode("utf-8")
+    
+    if cli == "/pilight" and msg == "on":
         GPIO.output(21, GPIO.HIGH)  # turn on pi LED
         return
-    elif client == "/pilight" and message == "off":
+    elif cli == "/pilight" and msg == "off":
         GPIO.output(21, GPIO.LOW)  # turn off pi LED
         return
     
-    if client == "/led" and (message == "on" or message == "off"):  # check for messages that are intended for the esp
+    if cli == "/led" and (msg == "on" or msg == "off"):  # check for messages that are intended for the esp
         return
 
     global lightstate

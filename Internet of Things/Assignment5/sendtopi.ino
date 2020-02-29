@@ -24,12 +24,12 @@ void callback(char *topic, byte *payload, unsigned int length)
 {
     payload[length] = '\0'; // add null terminator to byte payload so we can treat it as a string
 
-    if (strcmp((char *)payload, "on"))
+    if (strcmp((char *)payload, "on") == 0)
     {
         Serial.println(F("turning esp light on: "));
         digitalWrite(LED, HIGH);  // turn on LED if message says "on"
     }
-    else if (strcmp((char *)payload, "off"))
+    else if (strcmp((char *)payload, "off") == 0)
     {
         Serial.println(F("turning esp light off: "));
         digitalWrite(LED, LOW);  // turn off LED if message says "off"
