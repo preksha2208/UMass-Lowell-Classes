@@ -33,19 +33,19 @@ class light(Resource):
 
         if value['device'] == 'pi' and value['state'] == 'on':
             print("turning pi light on")
-            client.publish("\pilight", "on")
+            client.publish("/pilight", "on")
 
         elif value['device'] == 'pi' and value['state'] == 'off':
             print("turning pi light off")
-            client.publish("\pilight", "off")
+            client.publish("/pilight", "off")
 
         elif value['device'] == 'esp' and value['state'] == 'on':
             print("turning esp light on")
-            client.publish("\led", "on")  # tell esp LED to turn on
+            client.publish("/led", "on")  # tell esp LED to turn on
 
         elif value['device'] == 'esp' and value['state'] == 'off':
             print("turning esp light off")
-            client.publish("\led", "off")  # tell esp LED to turn off
+            client.publish("/led", "off")  # tell esp LED to turn off
 
         else:
             pass  # some other data was incorrectly passed in
