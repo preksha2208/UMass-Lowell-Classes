@@ -26,12 +26,12 @@ void callback(char *topic, byte *payload, unsigned int length)
 
     if (strcmp((char *)payload, "on") == 0)
     {
-        Serial.println(F("turning esp light on: "));
+        Serial.println(F("turning esp light on (within arduino code): "));
         digitalWrite(LED, HIGH);  // turn on LED if message says "on"
     }
     else if (strcmp((char *)payload, "off") == 0)
     {
-        Serial.println(F("turning esp light off: "));
+        Serial.println(F("turning esp light off (within arduino code): "));
         digitalWrite(LED, LOW);  // turn off LED if message says "off"
     }
 }
@@ -73,27 +73,24 @@ void loop()
 }
 
 // connect to mqtt
-void connect()
-{
-    while (WiFi.status() != WL_CONNECTED)
-    {
-        Serial.println(F("Wifi issue"));
-        delay(3000);
+void connect() {
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.println(F("Wifi issue"));
+    delay(3000);
+  }
+  Serial.print(F("Connecting to MQTT server... "));
+  while(!mqttclient.connected()) {
+    if (mqttclient.connect(WiFi.macAddress().c_str())) {
+      Serial.println(F("MQTT server Connected!"));
+
+       mqttclient.subscribe("/led");
+      
+    } else {
+      Serial.print(F("MQTT server connection failed! rc="));
+      Serial.print(mqttclient.state());
+      Serial.println("try again in 10 seconds");
+      // Wait 5 seconds before retrying
+      delay(20000);
     }
-    Serial.print(F("Connecting to MQTT server... "));
-    while (!mqttclient.connected())
-    {
-        if (mqttclient.connect(WiFi.macAddress().c_str()))
-        {
-            Serial.println(F("MQTT server Connected!"));
-        }
-        else
-        {
-            Serial.print(F("MQTT server connection failed! rc="));
-            Serial.print(mqttclient.state());
-            Serial.println("try again in 10 seconds");
-            // Wait 5 seconds before retrying
-            delay(20000);
-        }
-    }
+  }
 }
