@@ -33,20 +33,27 @@ class light(Resource):
     def post(self):  # used to set the LED on either the pi or esp
         value = request.get_data()
         value = json.loads(value)
+        print("value['device']: {}".format(value['device']))
+        print("value['state']: {}".format(value['state']))
 
         if value['device'] == 'pi' and value['state'] == 'on':
+            print("turning pi light on")
             client.publish("\pilight", "on")
 
         elif value['device'] == 'pi' and value['state'] == 'off':
+            print("turning pi light off")
             client.publish("\pilight", "off")
 
         elif value['device'] == 'esp' and value['state'] == 'on':
+            print("turning esp light on")
             client.publish("\led", "on")  # tell esp LED to turn on
 
         elif value['device'] == 'esp' and value['state'] == 'off':
+            print("turning esp light off")
             client.publish("\led", "off")  # tell esp LED to turn off
 
         else:
+            print("in else")
             pass  # some other data was incorrectly passed in
         return
 
