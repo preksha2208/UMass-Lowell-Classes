@@ -22,9 +22,6 @@ GPIO.setup(21, GPIO.OUT)
 client = mqtt.Client()  # create new client instance
 client.connect(broker_address)  # connect to broker
 
-
-client.subscribe("/led")  # subscribe to topic
-
 app = Flask(__name__)
 api = Api(app)
 
@@ -33,8 +30,6 @@ class light(Resource):
     def post(self):  # used to set the LED on either the pi or esp
         value = request.get_data()
         value = json.loads(value)
-        print("value['device']: {}".format(value['device']))
-        print("value['state']: {}".format(value['state']))
 
         if value['device'] == 'pi' and value['state'] == 'on':
             print("turning pi light on")
@@ -53,7 +48,6 @@ class light(Resource):
             client.publish("\led", "off")  # tell esp LED to turn off
 
         else:
-            print("in else")
             pass  # some other data was incorrectly passed in
         return
 

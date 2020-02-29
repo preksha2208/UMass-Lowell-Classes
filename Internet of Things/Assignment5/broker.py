@@ -24,17 +24,18 @@ client.connect(broker_address)  # connect to broker
 
 
 client.subscribe("/led")  # subscribe to topic
+client.subscribe("/pilight")
 
 
 def on_message(client, userdata, message):  # what to do when get message from mqtt
-    if client == "\pilight" and message == "on":
+    if client == "/pilight" and message == "on":
         GPIO.output(21, GPIO.HIGH)  # turn on pi LED
         return
-    elif client == "\pilight" and message == "off":
+    elif client == "/pilight" and message == "off":
         GPIO.output(21, GPIO.LOW)  # turn off pi LED
         return
     
-    if message == "on" or message == "off":  # check for messages that are intended for the esp
+    if client == "/led" and (message == "on" or message == "off"):  # check for messages that are intended for the esp
         return
 
     global lightstate
