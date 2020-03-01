@@ -86,24 +86,23 @@ class ReflexAgent(Agent):
             ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        print("successorGameState.getScore(): {}".format(successorGameState.getScore()))
 
         """
         add together euclidean distances from newpos to all new food dots
         from this sum subtract the euclidean distance from newpos to all ghost states
         """
-        score = 0
-        currentClosest = newFood.asList()[0]
+        score = successorGameState.getScore()
+
         for foodPos in newFood.asList():
-            score -= self.euclidean(newPos, foodPos)
+            foodDistance = util.manhattanDistance(newPos, foodPos)
+            score += float(1.0/foodDistance)
+
         for ghostPos in newGhostPositions:
-            score += self.euclidean(newPos, ghostPos)
-
-       # return successorGameState.getScore()
-        print("Score: {}".format(score))
-        return 20
-        #return score
-
+            ghostDistance = util.manhattanDistance(newPos, ghostPos)
+            if ghostDistance > 1:
+                score += float(1.0/ghostDistance)
+        
+        return score
 
 def scoreEvaluationFunction(currentGameState):
     """
@@ -166,6 +165,9 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
+
+
+
         util.raiseNotDefined()
 
 
