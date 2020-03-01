@@ -19,12 +19,13 @@
 # purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
 # John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
-
+from __future__ import print_function
 from util import *
 import time
 import os
 import traceback
 import sys
+
 
 #######################
 # Parts worth reading #
