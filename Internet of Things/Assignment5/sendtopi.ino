@@ -55,7 +55,11 @@ void setup()
 
     // connect to mqtt server
     mqttclient.setServer(BROKER_IP, 1883);
+    mqttclient.setCallback(callback);
     connect();
+
+    pinMode(LED, OUTPUT); // setup pin for input
+
 }
 
 void loop()
@@ -82,8 +86,7 @@ void connect() {
   while(!mqttclient.connected()) {
     if (mqttclient.connect(WiFi.macAddress().c_str())) {
       Serial.println(F("MQTT server Connected!"));
-
-       mqttclient.subscribe("/led");
+      mqttclient.subscribe("/led");
       
     } else {
       Serial.print(F("MQTT server connection failed! rc="));

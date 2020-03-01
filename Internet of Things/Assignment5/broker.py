@@ -17,19 +17,22 @@ broker_address = "10.0.0.179"  # broker address (your pis ip address)
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(21, GPIO.OUT)
-
+global dbclient
+dbclient = InfluxDBClient('0.0.0.0', 8086, 'root', 'root', 'mydb')
 
 def on_message(client, userdata, message):  # what to do when get message from mqtt
 
-    if message.topic == "/pilight" and str(message.payload) == "on":
+    if message.topic == "/pilight" and (message.payload).decode("utf-8") == "on":
+        print("received mqtt message")
         GPIO.output(21, GPIO.HIGH)  # turn on pi LED
         return
-    elif message.topic == "/pilight" and str(message.payload) == "off":
+    elif message.topic == "/pilight" and (message.payload).decode("utf-8") == "off":
+        print("received mqtt message")
         GPIO.output(21, GPIO.LOW)  # turn off pi LED
         return
 
     # check for messages that are intended for the esp
-    if message.topic == "/led" and (str(message.payload) == "on" or str(message.payload) == "off"):
+    if message.topic == "/led" and ((message.payload).decode("utf-8")== "on" or (message.payload).decode("utf-8") == "off"):
         return
 
     global lightstate
@@ -50,7 +53,6 @@ def on_message(client, userdata, message):  # what to do when get message from m
     dbclient.write_points(json_body)
 
 
-dbclient = InfluxDBClient('0.0.0.0', 8086, 'root', 'root', 'mydb')
 client = mqtt.Client()  # create new client instance
 client.connect(broker_address)  # connect to broker
 
