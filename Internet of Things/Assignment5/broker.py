@@ -39,7 +39,7 @@ def on_message(client, userdata, message):  # what to do when get message from m
 
     # convert bytes -> string -> int
     lightstate = int((message.payload).decode("utf-8"))
-
+    print("storing light state")
     # get current time
     receiveTime = datetime.datetime.utcnow()
 
