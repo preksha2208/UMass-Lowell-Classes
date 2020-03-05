@@ -97,8 +97,9 @@ class ReflexAgent(Agent):
             ghostDistance = util.manhattanDistance(newPos, ghostPos)
             if ghostDistance > 1:
                 score += float(1.0/ghostDistance)
-        
+
         return score
+
 
 def scoreEvaluationFunction(currentGameState):
     """
@@ -162,15 +163,37 @@ class MinimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
 
-    def maxAgent(self, gameState, depth):
-        util.raiseNotDefined()
-    
+        def minimax(agent, depth, gameState):
+            if depth == self.depth or gameState.isLose() or gameState.isWin():
+                return self.evaluationFunction(gameState)
+            if agent == 0:  # maximize for pacman
+                nodes = []
+                for nextState in gameState.getLegalActions(agent):
+                    nodes.append(minimax(1, depth, gameState.generateSuccessor(agent, nextState)))
+                return max(nodes)
+            else:
+                nextAgent = agent + 1  
+                if gameState.getNumAgents() == nextAgent:
+                    nextAgent = 0
+                if nextAgent == 0:
+                   depth += 1
+                nodes = []
+                for nextState in gameState.getLegalActions(agent):
+                    nodes.append(minimax(nextAgent, depth, gameState.generateSuccessor(agent, nextState)))
+                return min(nodes)
 
-    def minAgent(self, gameState, depth):
-        util.raiseNotDefined()
+        """Performing maximize action for the root node i.e. pacman"""
+        maximum = float("-inf")
+        action = Directions.WEST
+        for agentState in gameState.getLegalActions(0):
+            utility = minimax(1, 0, gameState.generateSuccessor(0, agentState))
+            if utility > maximum or maximum == float("-inf"):
+                maximum = utility
+                action = agentState
+        return action
 
 
-        util.raiseNotDefined()
+
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
@@ -183,7 +206,28 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        def minimax(agent, depth, gameState):
+            if gameState.isLose() or gameState.isWin() or depth == self.depth:  # return the utility in case the defined depth is reached or the game is won/lost.
+                return self.evaluationFunction(gameState)
+            if agent == 0:  # maximize for pacman
+                return max(minimax(1, depth, gameState.generateSuccessor(agent, newState)) for newState in gameState.getLegalActions(agent))
+            else:  # minize for ghosts
+                nextAgent = agent + 1  # calculate the next agent and increase depth accordingly.
+                if gameState.getNumAgents() == nextAgent:
+                    nextAgent = 0
+                if nextAgent == 0:
+                   depth += 1
+                return min(minimax(nextAgent, depth, gameState.generateSuccessor(agent, newState)) for newState in gameState.getLegalActions(agent))
+
+        """Performing maximize action for the root node i.e. pacman"""
+        maximum = float("-inf")
+        action = Directions.WEST
+        for agentState in gameState.getLegalActions(0):
+            utility = minimax(1, 0, gameState.generateSuccessor(0, agentState))
+            if utility > maximum or maximum == float("-inf"):
+                maximum = utility
+                action = agentState
+        return action
 
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
@@ -199,7 +243,29 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        def expectimax(agent, depth, gameState):
+            if gameState.isLose() or gameState.isWin() or depth == self.depth:  # return the utility in case the defined depth is reached or the game is won/lost.
+                return self.evaluationFunction(gameState)
+            if agent == 0:  # maximizing for pacman
+                return max(expectimax(1, depth, gameState.generateSuccessor(agent, newState)) for newState in gameState.getLegalActions(agent))
+            else:  # performing expectimax action for ghosts/chance nodes.
+                nextAgent = agent + 1  # calculate the next agent and increase depth accordingly.
+                if gameState.getNumAgents() == nextAgent:
+                    nextAgent = 0
+                if nextAgent == 0:
+                    depth += 1
+                return sum(expectimax(nextAgent, depth, gameState.generateSuccessor(agent, newState)) for newState in gameState.getLegalActions(agent)) / float(len(gameState.getLegalActions(agent)))
+
+        """Performing maximizing task for the root node i.e. pacman"""
+        maximum = float("-inf")
+        action = Directions.WEST
+        for agentState in gameState.getLegalActions(0):
+            utility = expectimax(1, 0, gameState.generateSuccessor(0, agentState))
+            if utility > maximum or maximum == float("-inf"):
+                maximum = utility
+                action = agentState
+
+        return action
 
 
 def betterEvaluationFunction(currentGameState):
