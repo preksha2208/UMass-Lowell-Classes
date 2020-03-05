@@ -56,10 +56,6 @@ class ReflexAgent(Agent):
 
         return legalMoves[chosenIndex]
 
-    def euclidean(self, firstCoord, secondCoord):
-        dist = math.sqrt((secondCoord[0] - firstCoord[0])**2 + (secondCoord[1] - firstCoord[1])**2)
-        return dist
-
     def evaluationFunction(self, currentGameState, action):
         """
         Design a better evaluation function here.
@@ -166,6 +162,12 @@ class MinimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
 
+    def maxAgent(self, gameState, depth):
+        util.raiseNotDefined()
+    
+
+    def minAgent(self, gameState, depth):
+        util.raiseNotDefined()
 
 
         util.raiseNotDefined()
