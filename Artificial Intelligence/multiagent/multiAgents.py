@@ -83,10 +83,6 @@ class ReflexAgent(Agent):
 
         "*** YOUR CODE HERE ***"
 
-        """
-        add together euclidean distances from newpos to all new food dots
-        from this sum subtract the euclidean distance from newpos to all ghost states
-        """
         score = successorGameState.getScore()
 
         for foodPos in newFood.asList():
@@ -171,27 +167,27 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 if next == gameState.getNumAgents():
                     next = 0
                 if next == 0:
-                    depth += 1
+                    depth = depth + 1
 
                 nodes = []
-                for nextState in gameState.getLegalActions(agent):
+                for state in gameState.getLegalActions(agent):
                     nodes.append(
-                        minimax(next, depth, gameState.generateSuccessor(agent, nextState)))
+                        minimax(next, depth, gameState.generateSuccessor(agent, state)))
                 return min(nodes)
 
             else:  # maximize for pacman
                 nodes = []
-                for nextState in gameState.getLegalActions(agent):
+                for state in gameState.getLegalActions(agent):
                     nodes.append(
-                        minimax(1, depth, gameState.generateSuccessor(agent, nextState)))
+                        minimax(1, depth, gameState.generateSuccessor(agent, state)))
                 return max(nodes)
 
         action = None
-        maximum = float("-inf")
+        maximum = None
 
         for state in gameState.getLegalActions(0):
             returnVal = minimax(1, 0, gameState.generateSuccessor(0, state))
-            if returnVal > maximum or maximum == float("-inf"):
+            if maximum is None or returnVal > maximum:
                 action = state
                 maximum = returnVal
 
@@ -226,29 +222,29 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                 if gameState.getNumAgents() == next:
                     next = 0
                 if next == 0:
-                    depth += 1
+                    depth = depth + 1
                 nodes = []
-                for newState in gameState.getLegalActions(agent):
+                for state in gameState.getLegalActions(agent):
                     nodes.append(expectimax(
-                        next, depth, gameState.generateSuccessor(agent, newState)))
+                        next, depth, gameState.generateSuccessor(agent, state)))
                 total = sum(nodes)
-                return total / float(len(gameState.getLegalActions(agent)))
+                return total / len(gameState.getLegalActions(agent))
 
             else:  # maximize for pacman
                 nodes = []
-                for newState in gameState.getLegalActions(agent):
+                for state in gameState.getLegalActions(agent):
                     nodes.append(expectimax(
-                        1, depth, gameState.generateSuccessor(agent, newState)))
+                        1, depth, gameState.generateSuccessor(agent, state)))
                 return max(nodes)
 
         action = None
-        maximum = float("-inf")
+        maximum = None
 
-        for agentState in gameState.getLegalActions(0):
+        for state in gameState.getLegalActions(0):
             returnVal = expectimax(
-                1, 0, gameState.generateSuccessor(0, agentState))
-            if maximum == float("-inf") or returnVal > maximum:
-                action = agentState
+                1, 0, gameState.generateSuccessor(0, state))
+            if maximum is None or returnVal > maximum:
+                action = state
                 maximum = returnVal
 
         return action
@@ -280,10 +276,9 @@ def betterEvaluationFunction(currentGameState):
     elif currentGameState.isWin():
         winLose += 100000
 
-    foodPenalty = -10*len(food)
-
-    for dot in food:
-        foodDistance += 2.5*manhattanDistance(position, dot)
+    for food in currentGameState.getFood().asList():
+        foodPenalty -= 10
+        foodDistance += 2.5*manhattanDistance(position, food)
 
     for ghost in currentGameState.getGhostPositions():
         distance = manhattanDistance(position, ghost)
