@@ -162,38 +162,38 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-
         def minimax(agent, depth, gameState):
-            if depth == self.depth or gameState.isLose() or gameState.isWin():
+            if depth == self.depth or gameState.isWin() or gameState.isLose():
                 return self.evaluationFunction(gameState)
-            if agent == 0:  # maximize for pacman
+
+            if agent > 0: # minimize for ghosts
+                next = agent + 1
+                if gameState.getNumAgents() == next:
+                    next = 0
+                if next == 0:
+                    depth += 1
                 nodes = []
                 for nextState in gameState.getLegalActions(agent):
-                    nodes.append(minimax(1, depth, gameState.generateSuccessor(agent, nextState)))
-                return max(nodes)
-            else:
-                nextAgent = agent + 1  
-                if gameState.getNumAgents() == nextAgent:
-                    nextAgent = 0
-                if nextAgent == 0:
-                   depth += 1
-                nodes = []
-                for nextState in gameState.getLegalActions(agent):
-                    nodes.append(minimax(nextAgent, depth, gameState.generateSuccessor(agent, nextState)))
+                    nodes.append(
+                        minimax(next, depth, gameState.generateSuccessor(agent, nextState)))
                 return min(nodes)
 
-        """Performing maximize action for the root node i.e. pacman"""
+            else:  # maximize for pacman
+                nodes = []
+                for nextState in gameState.getLegalActions(agent):
+                    nodes.append(
+                        minimax(1, depth, gameState.generateSuccessor(agent, nextState)))
+                return max(nodes)
+
+        action = None
         maximum = float("-inf")
-        action = Directions.WEST
-        for agentState in gameState.getLegalActions(0):
-            utility = minimax(1, 0, gameState.generateSuccessor(0, agentState))
-            if utility > maximum or maximum == float("-inf"):
-                maximum = utility
-                action = agentState
+
+        for state in gameState.getLegalActions(0):
+            returnVal = minimax(1, 0, gameState.generateSuccessor(0, state))
+            if maximum == float("-inf") or returnVal > maximum:
+                maximum = returnVal
+                action = state
         return action
-
-
-
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
@@ -206,8 +206,8 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         alpha = float('-inf')
         beta = float('inf')
         return self.getMaxValue(gameState, alpha, beta, depth)[1]
-        
-    def getMaxValue(self, gameState, alpha, beta, depth, agent = 0):
+
+    def getMaxValue(self, gameState, alpha, beta, depth, agent=0):
         actions = gameState.getLegalActions(agent)
 
         if not actions or gameState.isWin() or depth >= self.depth:
@@ -219,7 +219,8 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         for action in actions:
             successor = gameState.generateSuccessor(agent, action)
 
-            cost = self.getMinValue(successor, alpha, beta, depth, agent + 1)[0]
+            cost = self.getMinValue(
+                successor, alpha, beta, depth, agent + 1)[0]
 
             if cost > successorCost:
                 successorCost = cost
@@ -249,7 +250,8 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             if agent == gameState.getNumAgents() - 1:
                 cost = self.getMaxValue(successor, alpha, beta, depth + 1)[0]
             else:
-                cost = self.getMinValue(successor, alpha, beta, depth, agent + 1)[0]
+                cost = self.getMinValue(
+                    successor, alpha, beta, depth, agent + 1)[0]
 
             if cost < successorCost:
                 successorCost = cost
@@ -261,6 +263,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             beta = min(beta, successorCost)
 
         return successorCost, successorAction
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
@@ -276,25 +279,35 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         def expectimax(agent, depth, gameState):
-            if gameState.isLose() or gameState.isWin() or depth == self.depth:  # return the utility in case the defined depth is reached or the game is won/lost.
+            if depth == self.depth or gameState.isWin() or gameState.isLose():
                 return self.evaluationFunction(gameState)
-            if agent == 0:  # maximizing for pacman
-                return max(expectimax(1, depth, gameState.generateSuccessor(agent, newState)) for newState in gameState.getLegalActions(agent))
-            else:  # performing expectimax action for ghosts/chance nodes.
-                nextAgent = agent + 1  # calculate the next agent and increase depth accordingly.
-                if gameState.getNumAgents() == nextAgent:
-                    nextAgent = 0
-                if nextAgent == 0:
+            if agent > 0:  # minimize for ghosts
+                next = agent + 1
+                if gameState.getNumAgents() == next:
+                    next = 0
+                if next == 0:
                     depth += 1
-                return sum(expectimax(nextAgent, depth, gameState.generateSuccessor(agent, newState)) for newState in gameState.getLegalActions(agent)) / float(len(gameState.getLegalActions(agent)))
+                nodes = []
+                for newState in gameState.getLegalActions(agent):
+                    nodes.append(expectimax(
+                        next, depth, gameState.generateSuccessor(agent, newState)))
+                total = sum(nodes)
+                return total / float(len(gameState.getLegalActions(agent)))
+            else:  # maximize for pacman
+                nodes = []
+                for newState in gameState.getLegalActions(agent):
+                    nodes.append(expectimax(
+                        1, depth, gameState.generateSuccessor(agent, newState)))
+                return max(nodes)
 
-        """Performing maximizing task for the root node i.e. pacman"""
+        action = None
         maximum = float("-inf")
-        action = Directions.WEST
+
         for agentState in gameState.getLegalActions(0):
-            utility = expectimax(1, 0, gameState.generateSuccessor(0, agentState))
-            if utility > maximum or maximum == float("-inf"):
-                maximum = utility
+            returnVal = expectimax(
+                1, 0, gameState.generateSuccessor(0, agentState))
+            if returnVal > maximum or maximum == float("-inf"):
+                maximum = returnVal
                 action = agentState
 
         return action
@@ -306,42 +319,39 @@ def betterEvaluationFunction(currentGameState):
     evaluation function (question 5).
 
     DESCRIPTION: 
-    - sum distance to all food dots
+    - add 100k if win state, and subtract 100k if lose state
+    - sum manhattan distances to all food dots
+    - sum manhattan distances to all ghosts with a manhattan distance from pacman <= 5
     - 
-    This will ultimately be subtracted
-        from the score to attempt to keep Pacman relatively close to all food.
-      Find the distance to all ghosts and weight this distances by relative
-        danger (only ghosts within 4 tiles of Pacman arte considered to be
-        an active threat).  This value is then squared and added to a cumulative
-        ghostDanger score which is later subtracted from the utility score.
-      Additional factors are then taken into account.  First, a penalty is subtracted
-        for every dot of food still present on the board.  Then, a large value of
-        +/- 5000 is added based on whether or not a given state is a win/lose state.
       Finally, these terms are summed together and the result is returned as the
         utility score for that state.
- 
+
     """
     "*** YOUR CODE HERE ***"
     position = currentGameState.getPacmanPosition()
     food = currentGameState.getFood().asList()
 
-    foodDist = 0
+    winLose = 0
+    foodDistance = 0
+    foodPenalty = 0
+    ghosts = 0
+
+    if currentGameState.isLose():
+        winLose -= 100000
+    elif currentGameState.isWin():
+        winLose += 100000
+
+    foodPenalty = -20*len(food)
+
     for dot in food:
-        foodDist += 2.5*manhattanDistance(position, dot)
+        foodDistance += manhattanDistance(position, dot)
 
-    ghostDanger = 0
     for ghost in currentGameState.getGhostPositions():
-        dist = max(4 - manhattanDistance(position, ghost), 0)
-        ghostDanger += math.pow(dist, 3)
+        distance = manhattanDistance(position, ghost)
+        if distance <= 5:
+            ghosts += distance
 
-    additionalFactors = -10*len(food) # penalty for amount of food remaining
-    if currentGameState.isLose(): 
-        additionalFactors -= 100000
-    elif currentGameState.isWin(): 
-        additionalFactors += 100000
-    additionalFactors += random.randint(-5, 5) # prevent paralysis due to ties
-
-    return currentGameState.getScore() - foodDist - ghostDanger + additionalFactors
+    return currentGameState.getScore() + winLose + foodPenalty - foodDistance - ghosts
 
 
 # Abbreviation
