@@ -202,33 +202,65 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
 
     def getAction(self, gameState):
-        """
-        Returns the minimax action using self.depth and self.evaluationFunction
-        """
-        "*** YOUR CODE HERE ***"
-        def minimax(agent, depth, gameState):
-            if gameState.isLose() or gameState.isWin() or depth == self.depth:  # return the utility in case the defined depth is reached or the game is won/lost.
-                return self.evaluationFunction(gameState)
-            if agent == 0:  # maximize for pacman
-                return max(minimax(1, depth, gameState.generateSuccessor(agent, newState)) for newState in gameState.getLegalActions(agent))
-            else:  # minize for ghosts
-                nextAgent = agent + 1  # calculate the next agent and increase depth accordingly.
-                if gameState.getNumAgents() == nextAgent:
-                    nextAgent = 0
-                if nextAgent == 0:
-                   depth += 1
-                return min(minimax(nextAgent, depth, gameState.generateSuccessor(agent, newState)) for newState in gameState.getLegalActions(agent))
+        depth = 0
+        alpha = float('-inf')
+        beta = float('inf')
+        return self.getMaxValue(gameState, alpha, beta, depth)[1]
+        
+    def getMaxValue(self, gameState, alpha, beta, depth, agent = 0):
+        actions = gameState.getLegalActions(agent)
 
-        """Performing maximize action for the root node i.e. pacman"""
-        maximum = float("-inf")
-        action = Directions.WEST
-        for agentState in gameState.getLegalActions(0):
-            utility = minimax(1, 0, gameState.generateSuccessor(0, agentState))
-            if utility > maximum or maximum == float("-inf"):
-                maximum = utility
-                action = agentState
-        return action
+        if not actions or gameState.isWin() or depth >= self.depth:
+            return self.evaluationFunction(gameState), Directions.STOP
 
+        successorCost = float('-inf')
+        successorAction = Directions.STOP
+
+        for action in actions:
+            successor = gameState.generateSuccessor(agent, action)
+
+            cost = self.getMinValue(successor, alpha, beta, depth, agent + 1)[0]
+
+            if cost > successorCost:
+                successorCost = cost
+                successorAction = action
+
+            if successorCost > beta:
+                return successorCost, successorAction
+
+            alpha = max(alpha, successorCost)
+
+        return successorCost, successorAction
+
+    def getMinValue(self, gameState, alpha, beta, depth, agent):
+        actions = gameState.getLegalActions(agent)
+
+        if not actions or gameState.isLose() or depth >= self.depth:
+            return self.evaluationFunction(gameState), Directions.STOP
+
+        successorCost = float('inf')
+        successorAction = Directions.STOP
+
+        for action in actions:
+            successor = gameState.generateSuccessor(agent, action)
+
+            cost = 0
+
+            if agent == gameState.getNumAgents() - 1:
+                cost = self.getMaxValue(successor, alpha, beta, depth + 1)[0]
+            else:
+                cost = self.getMinValue(successor, alpha, beta, depth, agent + 1)[0]
+
+            if cost < successorCost:
+                successorCost = cost
+                successorAction = action
+
+            if successorCost < alpha:
+                return successorCost, successorAction
+
+            beta = min(beta, successorCost)
+
+        return successorCost, successorAction
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
@@ -273,10 +305,43 @@ def betterEvaluationFunction(currentGameState):
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 5).
 
-    DESCRIPTION: <write something here so we know what you did>
+    DESCRIPTION: 
+    - sum distance to all food dots
+    - 
+    This will ultimately be subtracted
+        from the score to attempt to keep Pacman relatively close to all food.
+      Find the distance to all ghosts and weight this distances by relative
+        danger (only ghosts within 4 tiles of Pacman arte considered to be
+        an active threat).  This value is then squared and added to a cumulative
+        ghostDanger score which is later subtracted from the utility score.
+      Additional factors are then taken into account.  First, a penalty is subtracted
+        for every dot of food still present on the board.  Then, a large value of
+        +/- 5000 is added based on whether or not a given state is a win/lose state.
+      Finally, these terms are summed together and the result is returned as the
+        utility score for that state.
+ 
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    position = currentGameState.getPacmanPosition()
+    food = currentGameState.getFood().asList()
+
+    foodDist = 0
+    for dot in food:
+        foodDist += 2.5*manhattanDistance(position, dot)
+
+    ghostDanger = 0
+    for ghost in currentGameState.getGhostPositions():
+        dist = max(4 - manhattanDistance(position, ghost), 0)
+        ghostDanger += math.pow(dist, 3)
+
+    additionalFactors = -10*len(food) # penalty for amount of food remaining
+    if currentGameState.isLose(): 
+        additionalFactors -= 100000
+    elif currentGameState.isWin(): 
+        additionalFactors += 100000
+    additionalFactors += random.randint(-5, 5) # prevent paralysis due to ties
+
+    return currentGameState.getScore() - foodDist - ghostDanger + additionalFactors
 
 
 # Abbreviation
