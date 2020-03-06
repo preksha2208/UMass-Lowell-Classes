@@ -201,12 +201,14 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
     Your minimax agent with alpha-beta pruning (question 3)
     """
+
     def getAction(self, gameState):
-        
+
         def maximize(agent, depth, game_state, alpha, beta):  # maximize function
             v = float("-inf")
             for newState in game_state.getLegalActions(agent):
-                v = max(v, alphabetaprune(1, depth, game_state.generateSuccessor(agent, newState), alpha, beta))
+                v = max(v, alphabetaprune(
+                    1, depth, game_state.generateSuccessor(agent, newState), alpha, beta))
                 if v > beta:
                     return v
                 alpha = max(alpha, v)
@@ -215,21 +217,24 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         def minimize(agent, depth, game_state, alpha, beta):  # minimize function
             v = float("inf")
 
-            next_agent = agent + 1  # calculate the next agent and increase depth accordingly.
+            # calculate the next agent and increase depth accordingly.
+            next_agent = agent + 1
             if game_state.getNumAgents() == next_agent:
                 next_agent = 0
             if next_agent == 0:
                 depth += 1
 
             for newState in game_state.getLegalActions(agent):
-                v = min(v, alphabetaprune(next_agent, depth, game_state.generateSuccessor(agent, newState), alpha, beta))
+                v = min(v, alphabetaprune(
+                    next_agent, depth, game_state.generateSuccessor(agent, newState), alpha, beta))
                 if v < alpha:
                     return v
                 beta = min(beta, v)
             return v
 
         def alphabetaprune(agent, depth, game_state, alpha, beta):
-            if game_state.isLose() or game_state.isWin() or depth == self.depth:  # return the utility in case the defined depth is reached or the game is won/lost.
+            # return the utility in case the defined depth is reached or the game is won/lost.
+            if game_state.isLose() or game_state.isWin() or depth == self.depth:
                 return self.evaluationFunction(game_state)
 
             if agent == 0:  # maximize for pacman
@@ -239,11 +244,12 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
         """Performing maximize function to the root node i.e. pacman using alpha-beta pruning."""
         utility = float("-inf")
-        action = Directions.WEST
+        action = None
         alpha = float("-inf")
         beta = float("inf")
         for agentState in gameState.getLegalActions(0):
-            ghostValue = alphabetaprune(1, 0, gameState.generateSuccessor(0, agentState), alpha, beta)
+            ghostValue = alphabetaprune(
+                1, 0, gameState.generateSuccessor(0, agentState), alpha, beta)
             if ghostValue > utility:
                 utility = ghostValue
                 action = agentState
@@ -270,6 +276,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         def expectimax(agent, depth, gameState):
             if depth == self.depth or gameState.isWin() or gameState.isLose():
                 return self.evaluationFunction(gameState)
+
             if agent > 0:  # minimize for ghosts
                 next = agent + 1
                 if gameState.getNumAgents() == next:
@@ -282,6 +289,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                         next, depth, gameState.generateSuccessor(agent, newState)))
                 total = sum(nodes)
                 return total / float(len(gameState.getLegalActions(agent)))
+
             else:  # maximize for pacman
                 nodes = []
                 for newState in gameState.getLegalActions(agent):
