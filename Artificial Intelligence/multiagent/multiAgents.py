@@ -168,10 +168,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
             if agent > 0:  # minimize for ghosts
                 next = agent + 1
-                if gameState.getNumAgents() == next:
+                if next == gameState.getNumAgents():
                     next = 0
                 if next == 0:
                     depth += 1
+
                 nodes = []
                 for nextState in gameState.getLegalActions(agent):
                     nodes.append(
@@ -201,63 +202,6 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
     Your minimax agent with alpha-beta pruning (question 3)
     """
-
-    def getAction(self, gameState):
-
-        def maximize(agent, depth, game_state, alpha, beta):  # maximize function
-            v = float("-inf")
-            for newState in game_state.getLegalActions(agent):
-                v = max(v, alphabetaprune(
-                    1, depth, game_state.generateSuccessor(agent, newState), alpha, beta))
-                if v > beta:
-                    return v
-                alpha = max(alpha, v)
-            return v
-
-        def minimize(agent, depth, game_state, alpha, beta):  # minimize function
-            v = float("inf")
-
-            # calculate the next agent and increase depth accordingly.
-            next_agent = agent + 1
-            if game_state.getNumAgents() == next_agent:
-                next_agent = 0
-            if next_agent == 0:
-                depth += 1
-
-            for newState in game_state.getLegalActions(agent):
-                v = min(v, alphabetaprune(
-                    next_agent, depth, game_state.generateSuccessor(agent, newState), alpha, beta))
-                if v < alpha:
-                    return v
-                beta = min(beta, v)
-            return v
-
-        def alphabetaprune(agent, depth, game_state, alpha, beta):
-            # return the utility in case the defined depth is reached or the game is won/lost.
-            if game_state.isLose() or game_state.isWin() or depth == self.depth:
-                return self.evaluationFunction(game_state)
-
-            if agent == 0:  # maximize for pacman
-                return maximize(agent, depth, game_state, alpha, beta)
-            else:  # minimize for ghosts
-                return minimize(agent, depth, game_state, alpha, beta)
-
-        """Performing maximize function to the root node i.e. pacman using alpha-beta pruning."""
-        utility = float("-inf")
-        action = None
-        alpha = float("-inf")
-        beta = float("inf")
-        for agentState in gameState.getLegalActions(0):
-            ghostValue = alphabetaprune(
-                1, 0, gameState.generateSuccessor(0, agentState), alpha, beta)
-            if ghostValue > utility:
-                utility = ghostValue
-                action = agentState
-            if utility > beta:
-                return utility
-            alpha = max(alpha, utility)
-
-        return action
 
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
@@ -319,10 +263,8 @@ def betterEvaluationFunction(currentGameState):
     - add 100k if win state, and subtract 100k if lose state
     - sum manhattan distances to all food dots
     - sum manhattan distances to all ghosts with a manhattan distance from pacman <= 5
+    - add in penalty for each food dot still left 
     - 
-      Finally, these terms are summed together and the result is returned as the
-        utility score for that state.
-
     """
     "*** YOUR CODE HERE ***"
     position = currentGameState.getPacmanPosition()
@@ -338,17 +280,17 @@ def betterEvaluationFunction(currentGameState):
     elif currentGameState.isWin():
         winLose += 100000
 
-    foodPenalty = -20*len(food)
+    foodPenalty = -10*len(food)
 
     for dot in food:
-        foodDistance += manhattanDistance(position, dot)
+        foodDistance += 2.5*manhattanDistance(position, dot)
 
     for ghost in currentGameState.getGhostPositions():
         distance = manhattanDistance(position, ghost)
         if distance <= 5:
             ghosts += distance
 
-    return currentGameState.getScore() + winLose + foodPenalty - foodDistance - ghosts
+    return currentGameState.getScore() + winLose + foodPenalty + random.randint(-5, 5) - foodDistance - ghosts
 
 
 # Abbreviation
