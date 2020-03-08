@@ -1,10 +1,12 @@
 # Code from tutorial at https://www.youtube.com/watch?v=XpYz-q1lxu8&t=812s
 
 import numpy as np
+import pygame
+import sys
 
 ROW_COUNT = 6
 COLUMN_COUNT = 7
-
+BLUE = (0, 0, 255)
 
 def create_board():
     board = np.zeros((ROW_COUNT, COLUMN_COUNT))
@@ -27,6 +29,11 @@ def get_next_open_row(board, col):
 
 def print_board(board):
     print(np.flip(board, 0))
+
+def draw_board(screen):
+    for col in range(COLUMN_COUNT):
+        for row in range(ROW_COUNT):
+            pygame.draw.rect(screen, BLUE, (col*SQUARESIZE, row*SQUARESIZE, SQUARESIZE, SQUARESIZE))
 
 
 def winning_move(board, piece):
@@ -56,10 +63,29 @@ def winning_move(board, piece):
 
 
 board = create_board()
+
+
 game_over = False
 turn = 0
+pygame.init()
+SQUARESIZE = 100
+width = COLUMN_COUNT * SQUARESIZE
+height = (ROW_COUNT+1) * SQUARESIZE
+size = (width, height)
+screen = pygame.display.set_mode(size)
+draw_board(screen)
+pygame.display.update()
+
 
 while not game_over:
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            sys.exit()
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            continue
+
     col = None
     # ask for player 1 input
     if turn == 0:
@@ -90,7 +116,6 @@ while not game_over:
                 print("Player 2 wins!")
                 game_over = True
                 break
-            
 
     print_board(board)
     if turn == 1:
