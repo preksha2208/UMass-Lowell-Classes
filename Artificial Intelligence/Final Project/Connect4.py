@@ -206,15 +206,15 @@ while not game_over:
                 game_over = True
                 break
 
-    # ask for player 2 input
+    # ai's turn
     else:
-        while (col is None or col > 7 or col < 1):
+        while (col is None or col > 6 or col < 0):
             col = choose_best_move(board, 2)
         time.sleep(1)
 
-        if is_valid_location(board, col-1):
-            row = get_next_open_row(board, col-1)
-            drop_piece(board, row, col-1, 2)
+        if is_valid_location(board, col):
+            row = get_next_open_row(board, col)
+            drop_piece(board, row, col, 2)
 
             if winning_move(board, 2):
                 print_board(board)
