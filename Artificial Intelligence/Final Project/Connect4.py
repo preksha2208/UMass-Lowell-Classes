@@ -67,12 +67,12 @@ def evaluate_window(window, piece):
     if window.count(piece) == 4:
         score += 100
     elif window.count(piece) == 3 and window.count(0) == 1:
-        score += 10
-    elif window.count(piece) == 2 and window.count(0) == 1:
         score += 5
+    elif window.count(piece) == 2 and window.count(0) == 1:
+        score += 2
 
     if window.count(OPPONENT) == 3 and window.count(0) == 1:
-        score -= 80
+        score -= 4
 
     return score
 
@@ -84,7 +84,7 @@ def score_position(board, piece):
     # score center column
     center_array = [int(i) for i in list(board[:, COLUMN_COUNT//2])]
     center_count = center_array.count(piece)
-    score += center_count * 6
+    score += center_count * 3
 
     # score horizontal
     for row in range(ROW_COUNT):
@@ -115,7 +115,7 @@ def score_position(board, piece):
     return score
 
 def is_terminal_node(board):
-    return winning_move(board, 1) or winning_move(board, 2) or len(get_valid_locations) == 0
+    return winning_move(board, 1) or winning_move(board, 2) or len(get_valid_locations(board)) == 0
 
 def minimax(board, depth, maximizingPlayer, ):
     valid_locations = get_valid_locations(board)
@@ -143,7 +143,7 @@ def minimax(board, depth, maximizingPlayer, ):
             if new_score > value:
                 value = new_score
                 column = col
-            return column, value
+        return column, value
 
     else:
         value = math.inf
@@ -156,7 +156,7 @@ def minimax(board, depth, maximizingPlayer, ):
             if new_score < value:
                 value = new_score
                 column = col
-            return column, value
+        return column, value
 
 def get_valid_locations(board):
     valid_locations = []
@@ -208,8 +208,7 @@ while not game_over:
 
     # ai's turn
     else:
-        while (col is None or col > 6 or col < 0):
-            col = choose_best_move(board, 2)
+        score, col = minimax(board, 4, True)
         time.sleep(1)
 
         if is_valid_location(board, col):
