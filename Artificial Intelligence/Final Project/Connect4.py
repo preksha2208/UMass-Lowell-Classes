@@ -4,8 +4,6 @@ import numpy as np
 import math
 import time
 import random
-import pylab as Player
-import networkx as nx
 
 ROW_COUNT = 6
 COLUMN_COUNT = 7
@@ -210,9 +208,8 @@ def expectimax(board, depth, maximizingPlayer):
 
 
 def Q_learning(board):
+    pass
     
-
-    return
 
 
 def get_valid_locations(board):
@@ -250,8 +247,8 @@ while not game_over:
     col = None
     # Player's turn
     if turn == 0:
-        #while (col is None or col > 7 or col < 1 or not is_valid_location(board, col-1)):
-           # col = int(input("Player 1 Make your Selection (1-7): "))
+        # while (col is None or col > 7 or col < 1 or not is_valid_location(board, col-1)):
+        # col = int(input("Player 1 Make your Selection (1-7): "))
         col, score = minimax(board, 4, True)
         time.sleep(.25)
         print("minimax chooses column {}".format(col))
