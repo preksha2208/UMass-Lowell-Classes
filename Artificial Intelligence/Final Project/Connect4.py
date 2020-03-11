@@ -4,6 +4,8 @@ import numpy as np
 import math
 import time
 import random
+import pylab as Player
+import networkx as nx
 
 ROW_COUNT = 6
 COLUMN_COUNT = 7
@@ -208,14 +210,7 @@ def expectimax(board, depth, maximizingPlayer):
 
 
 def Q_learning(board):
-    num_episodes = 10000
-    max_steps_per_episode = 21  # board is 6x7, so therefore a single agent can possibly make 21 moves per game
-    learning_rate = 0.1
-    discount_rate = 0.99
-    exploration_rate = 1
-    max_exploration_rate = 1
-    min_exploration_rate = 0.01
-    exploration_decay_rate = 0.01
+    
 
     return
 
