@@ -207,6 +207,19 @@ def expectimax(board, depth, maximizingPlayer):
         return column, (total/len(valid_locations))
 
 
+def Q_learning(board):
+    num_episodes = 10000
+    max_steps_per_episode = 21  # board is 6x7, so therefore a single agent can possibly make 21 moves per game
+    learning_rate = 0.1
+    discount_rate = 0.99
+    exploration_rate = 1
+    max_exploration_rate = 1
+    min_exploration_rate = 0.01
+    exploration_decay_rate = 0.01
+
+    return
+
+
 def get_valid_locations(board):
     valid_locations = []
     for col in range(COLUMN_COUNT):
