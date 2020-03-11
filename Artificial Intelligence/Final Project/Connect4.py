@@ -242,16 +242,19 @@ while not game_over:
     col = None
     # Player's turn
     if turn == 0:
-        while (col is None or col > 7 or col < 1 or not is_valid_location(board, col-1)):
-            col = int(input("Player 1 Make your Selection (1-7): "))
+        #while (col is None or col > 7 or col < 1 or not is_valid_location(board, col-1)):
+           # col = int(input("Player 1 Make your Selection (1-7): "))
+        col, score = minimax(board, 4, True)
+        time.sleep(.25)
+        print("minimax chooses column {}".format(col))
 
-        if is_valid_location(board, col-1):
-            row = get_next_open_row(board, col-1)
-            drop_piece(board, row, col-1, 1)
+        if is_valid_location(board, col):
+            row = get_next_open_row(board, col)
+            drop_piece(board, row, col, 1)
 
             if winning_move(board, 1):
                 print_board(board)
-                print("Player 1 wins!")
+                print("minimax wins!")
                 game_over = True
                 break
 
@@ -259,8 +262,8 @@ while not game_over:
     else:
         #col, score = minimax(board, 4, True)
         col, score = expectimax(board, 4, True)
-        time.sleep(1)
-        print("AI chooses column {}".format(col))
+        time.sleep(.25)
+        print("expectimax chooses column {}".format(col))
 
         if is_valid_location(board, col):
             row = get_next_open_row(board, col)
@@ -268,9 +271,9 @@ while not game_over:
 
             if winning_move(board, 2):
                 print_board(board)
-                print("Player 2 wins!")
+                print("expectimax wins!")
                 game_over = True
                 break
-
+    print("-----------")
     print_board(board)
     turn = (turn+1) % 2
