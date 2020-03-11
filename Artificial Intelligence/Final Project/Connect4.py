@@ -33,7 +33,7 @@ def print_board(board):
 
 
 def winning_move(board, piece):
-
+    print("checking if winning move")
     # check for horizontal win
     for col in range(COLUMN_COUNT-3):
         for row in range(ROW_COUNT):
@@ -41,8 +41,8 @@ def winning_move(board, piece):
                 return True
 
     # check for vertical win
-    for col in range(COLUMN_COUNT-3):
-        for row in range(ROW_COUNT):
+    for col in range(COLUMN_COUNT):
+        for row in range(ROW_COUNT-3):
             if board[row][col] == piece and board[row+1][col] == piece and board[row+2][col] == piece and board[row+3][col] == piece:
                 return True
 
@@ -56,6 +56,7 @@ def winning_move(board, piece):
         for row in range(3, ROW_COUNT):
             if board[row][col] == piece and board[row-1][col+1] == piece and board[row-2][col+2] == piece and board[row-3][col+3] == piece:
                 return True
+    print("not a winning move")
 
 
 def evaluate_window(window, piece):
@@ -114,22 +115,27 @@ def score_position(board, piece):
 
     return score
 
+
 def is_terminal_node(board):
     return winning_move(board, 1) or winning_move(board, 2) or len(get_valid_locations(board)) == 0
 
-def minimax(board, depth, maximizingPlayer, ):
+
+def minimax(board, depth, maximizingPlayer):
     valid_locations = get_valid_locations(board)
-    is_terminal  = is_terminal_node(board)
+    is_terminal = is_terminal_node(board)
 
     if depth == 0 or is_terminal:
+        
         if is_terminal:
+            print("is_terminal")
             if winning_move(board, 2):
                 return (None, 10000000000)
             elif winning_move(board, 1):
-                return (None,-1000000000)
+                return (None, -1000000000)
             else:
                 return (None, 0)
         else:
+            print("reached depth of 0")
             return (None, score_position(board, 2))
 
     if maximizingPlayer:
@@ -157,6 +163,7 @@ def minimax(board, depth, maximizingPlayer, ):
                 value = new_score
                 column = col
         return column, value
+
 
 def get_valid_locations(board):
     valid_locations = []
@@ -208,7 +215,8 @@ while not game_over:
 
     # ai's turn
     else:
-        score, col = minimax(board, 4, True)
+        col, score = minimax(board, 4, True)
+        print("col: {}".format(col))
         time.sleep(1)
 
         if is_valid_location(board, col):
