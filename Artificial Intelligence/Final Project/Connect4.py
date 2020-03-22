@@ -4,6 +4,8 @@ import numpy as np
 import math
 import time
 import random
+import gym
+import gym_connect4
 
 ROW_COUNT = 6
 COLUMN_COUNT = 7
