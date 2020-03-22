@@ -1,0 +1,1 @@
+Contained in this directory is a custom OpenAI gym environment for our Connect4 game. 
