@@ -1,3 +1,5 @@
+# Base game code from tutorial at https://www.youtube.com/watch?v=XpYz-q1lxu8&t=812s
+
 import gym
 import numpy as np
 from gym import error, spaces, utils

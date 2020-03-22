@@ -1,4 +1,4 @@
-# Code from tutorial at https://www.youtube.com/watch?v=XpYz-q1lxu8&t=812s
+# Base game code from tutorial at https://www.youtube.com/watch?v=XpYz-q1lxu8&t=812s
 
 import numpy as np
 import math
